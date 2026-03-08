@@ -411,7 +411,7 @@ const Plants = () => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-2xl bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                  className="flex-1 rounded-full bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
                 >
                   Yes, already watered
                 </button>
