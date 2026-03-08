@@ -39,7 +39,7 @@ const Profile = () => {
             <div className="space-y-2">
               <button
                 onClick={() => navigate("/connected-services")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Link className="h-4 w-4 text-primary" />
@@ -52,7 +52,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/notification-preferences")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Bell className="h-4 w-4 text-primary" />
