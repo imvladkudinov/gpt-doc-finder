@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
+import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
 import PlantDetail from "@/components/PlantDetail";
 import AddPlantDialog from "@/components/AddPlantDialog";
@@ -63,6 +64,7 @@ const Plants = () => {
 
   return (
     <PageTransition>
+    <ScrollFadeLayout>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="px-6 pt-6 pb-4">
@@ -89,7 +91,7 @@ const Plants = () => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 gap-3 px-6 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2.5 px-6">
         {plants.map((plant, i) => (
           <PlantCard
             key={plant.id}
@@ -137,6 +139,7 @@ const Plants = () => {
 
       
     </div>
+    </ScrollFadeLayout>
     </PageTransition>
   );
 };
