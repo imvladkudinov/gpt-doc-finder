@@ -59,6 +59,7 @@ const Onboarding = () => {
         </p>
       </motion.div>
     </div>
+    </PageTransition>
   );
 };
 
