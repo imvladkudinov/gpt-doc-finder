@@ -1,5 +1,5 @@
 import TabBar from "@/components/TabBar";
-import { User, Bell, Shield, Link } from "lucide-react";
+import { User, Bell, Shield, Link, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -26,22 +26,34 @@ const Profile = () => {
         <div className="space-y-2">
           <button
             onClick={() => navigate("/connected-services")}
-            className="flex w-full items-center gap-3 rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            <Link className="h-4 w-4 text-muted-foreground" />
-            Connected services
+            <div className="flex items-center gap-3">
+              <Link className="h-4 w-4 text-primary" />
+              Connected services
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">2</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
           </button>
           <button
-            className="flex w-full items-center gap-3 rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            <Bell className="h-4 w-4 text-muted-foreground" />
-            Notification preferences
+            <div className="flex items-center gap-3">
+              <Bell className="h-4 w-4 text-primary" />
+              Notification preferences
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
           <button
-            className="flex w-full items-center gap-3 rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            <Shield className="h-4 w-4 text-muted-foreground" />
-            Privacy & data
+            <div className="flex items-center gap-3">
+              <Shield className="h-4 w-4 text-primary" />
+              Privacy & data
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
       </div>
