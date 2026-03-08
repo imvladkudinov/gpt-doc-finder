@@ -31,8 +31,8 @@ const CalendarPage = () => {
   const days = eachDayOfInterval({ start: calStart, end: calEnd });
 
   // Mock events
-  const wateringDays = [3, 7, 10, 14, 17, 21, 24, 28];
-  const rareDays = [5, 15, 25];
+  const wateringDays = [1, 3, 5, 7, 8, 10, 12, 14, 16, 17, 19, 21, 23, 24, 26, 28, 30];
+  const rareDays = [2, 5, 9, 15, 20, 25, 28];
   const eventDays = activeTab === "Plants" ? wateringDays : rareDays;
 
   return (
