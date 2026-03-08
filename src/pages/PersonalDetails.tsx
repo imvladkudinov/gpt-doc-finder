@@ -166,7 +166,7 @@ const PersonalDetails = () => {
                 </div>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Lock className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Confirm</span>
