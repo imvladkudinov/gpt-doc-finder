@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Home, Droplets, X, Sparkles, RefreshCw, CircleHelp } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
