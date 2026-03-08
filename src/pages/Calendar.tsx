@@ -162,7 +162,7 @@ const CalendarPage = () => {
                 {days.map((day, i) => {
                   const inMonth = isSameMonth(day, currentMonth);
                   const today = isToday(day);
-                  const selected = selectedDate && isSameDay(day, selectedDate);
+                  const selected = false;
                   const dayNum = day.getDate();
                   const eventCount = inMonth ? getEventCount(dayNum, activeTab) : 0;
                   const clickable = inMonth && eventCount > 0;
