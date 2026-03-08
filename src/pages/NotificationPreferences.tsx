@@ -25,7 +25,7 @@ const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowPro
     <button
       onClick={onToggle}
       className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
-        enabled ? "bg-primary" : "bg-muted"
+        enabled ? "bg-primary" : "bg-muted-foreground/30"
       }`}
     >
       <div
@@ -256,7 +256,7 @@ const NotificationPreferences = () => {
                     boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
                   }}
                 >
-                  <X className="h-[18px] w-[18px] text-foreground/55" strokeWidth={2.5} />
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
 
