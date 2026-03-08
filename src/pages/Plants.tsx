@@ -5,6 +5,7 @@ import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
 import AddPlantDialog from "@/components/AddPlantDialog";
+import WheelPicker from "@/components/WheelPicker";
 
 import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
