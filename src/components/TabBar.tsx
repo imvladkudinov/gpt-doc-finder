@@ -15,7 +15,7 @@ const TabBar = () => {
   return (
     <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-6">
       <nav
-        className="flex items-center gap-1 rounded-[22px] px-2 py-2"
+        className="flex items-center gap-1 rounded-full px-2 py-2"
         style={{
           background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
           backdropFilter: "blur(40px) saturate(1.8)",
@@ -30,12 +30,12 @@ const TabBar = () => {
             <button
               key={path}
               onClick={() => navigate(path)}
-              className="relative flex h-12 w-14 items-center justify-center rounded-2xl transition-colors"
+              className="relative flex h-12 w-14 items-center justify-center rounded-full transition-colors"
             >
               {active && (
                 <motion.div
                   layoutId="tab-active"
-                  className="absolute inset-0 rounded-2xl"
+                  className="absolute inset-0 rounded-full"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%)",
                     border: "1px solid rgba(255,255,255,0.55)",

@@ -22,8 +22,10 @@ const services = [
 const ConnectedServices = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="flex items-center gap-3 px-6 pt-12 pb-4">
+      <div className="fixed top-6 left-6 z-40">
         <GlassBackButton to="/profile" />
+      </div>
+      <div className="px-6 pt-20 pb-4">
         <h1 className="font-serif text-2xl font-bold text-foreground">Connected services</h1>
       </div>
 
