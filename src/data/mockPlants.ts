@@ -138,7 +138,7 @@ export const mockPlants: Plant[] = [
     nextWatering: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
     wateringInterval: 4,
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
-    missedWatering: true,
+    missedWatering: false,
     notes: "Loves humidity",
     replantingInterval: 12,
     nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45),
