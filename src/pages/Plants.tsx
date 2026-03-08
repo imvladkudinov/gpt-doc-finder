@@ -486,13 +486,10 @@ const WheelPicker = ({
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
           >
-            <div className="mb-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{selectedPlant.emoji}</span>
-                <h2 className="font-serif text-lg font-bold text-foreground">
-                  {selectedPlant.name}
-                </h2>
-              </div>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="font-serif text-lg font-bold text-foreground">
+                {selectedPlant.name}
+              </h2>
               <button
                 onClick={() => setShowPlantInfo(false)}
                 className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
@@ -512,16 +509,16 @@ const WheelPicker = ({
               const info = getPlantInfo(selectedPlant.name);
               return (
                 <div className="space-y-5">
-                  <div className="rounded-2xl bg-secondary p-4">
-                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.about.title}</h3>
+                  <div>
+                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.about.title}</h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">{info.about.body}</p>
                   </div>
-                  <div className="rounded-2xl bg-secondary p-4">
-                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.likes.title}</h3>
+                  <div>
+                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.likes.title}</h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">{info.likes.body}</p>
                   </div>
-                  <div className="rounded-2xl bg-secondary p-4">
-                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.care.title}</h3>
+                  <div>
+                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.care.title}</h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">{info.care.body}</p>
                   </div>
                 </div>
