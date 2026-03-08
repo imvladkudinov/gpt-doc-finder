@@ -303,7 +303,7 @@ const WheelPicker = ({
               </div>
 
               {/* Auto schedule toggle */}
-              <div className="flex items-center justify-between rounded-2xl bg-background p-4">
+              <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Let app decide</span>
