@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { Check, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import telegramLogo from "@/assets/telegram-logo.svg";
 import googleCalendarLogo from "@/assets/google-calendar-logo.svg";
 
-const services = [
+const initialServices = [
   {
     id: "telegram",
     name: "Telegram",
@@ -23,6 +25,21 @@ const services = [
 ];
 
 const ConnectedServices = () => {
+  const [services, setServices] = useState(initialServices);
+  const [disconnectTarget, setDisconnectTarget] = useState<string | null>(null);
+
+  const targetService = services.find((s) => s.id === disconnectTarget);
+
+  const handleDisconnect = () => {
+    if (!disconnectTarget) return;
+    setServices((prev) =>
+      prev.map((s) =>
+        s.id === disconnectTarget ? { ...s, connected: false, status: "Not connected" } : s
+      )
+    );
+    setDisconnectTarget(null);
+  };
+
   return (
     <PageTransition>
       <ScrollFadeLayout>
@@ -46,6 +63,7 @@ const ConnectedServices = () => {
                     </div>
                   </div>
                   <button
+                    onClick={() => connected && setDisconnectTarget(id)}
                     className={`rounded-xl px-4 py-2 text-xs font-medium transition-all ${
                       connected
                         ? "bg-muted text-muted-foreground"
@@ -66,6 +84,58 @@ const ConnectedServices = () => {
             </div>
           </div>
         </div>
+
+        {/* Disconnect confirmation modal */}
+        <AnimatePresence>
+          {disconnectTarget && targetService && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-50 bg-black/40"
+                onClick={() => setDisconnectTarget(null)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ type: "spring", damping: 24, stiffness: 300 }}
+                className="fixed left-1/2 top-1/2 z-50 w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl p-6 text-center"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%)",
+                  backdropFilter: "blur(40px) saturate(1.6)",
+                  WebkitBackdropFilter: "blur(40px) saturate(1.6)",
+                  border: "1px solid rgba(255,255,255,0.35)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                }}
+              >
+                <p className="text-base font-semibold text-foreground mb-1">
+                  Disconnect {targetService.name}?
+                </p>
+                <p className="text-xs text-muted-foreground mb-5">
+                  You will stop receiving updates from this service.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDisconnectTarget(null)}
+                    className="flex-1 rounded-2xl bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDisconnect}
+                    className="flex-1 rounded-2xl py-3 text-sm font-medium text-white transition-colors"
+                    style={{ background: "hsl(0 60% 55%)" }}
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </ScrollFadeLayout>
     </PageTransition>
   );
