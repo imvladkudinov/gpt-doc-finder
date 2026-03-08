@@ -1,4 +1,4 @@
-import { User, Bell, Shield, Link, ChevronRight, Leaf } from "lucide-react";
+import { User, Bell, Shield, Link, ChevronRight, Leaf, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
