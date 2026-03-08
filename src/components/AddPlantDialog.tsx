@@ -70,9 +70,9 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Photo identification row */}
-          <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-3">
-              <span className="text-xl">📷</span>
+              <Camera className="h-5 w-5 text-primary" />
               <div>
                 <span className="text-sm font-medium text-foreground">Identify by photo</span>
                 <p className="text-xs text-muted-foreground">We'll take care</p>
