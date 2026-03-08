@@ -238,7 +238,7 @@ const CalendarPage = () => {
                     boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
                   }}
                 >
-                  <X className="h-[18px] w-[18px] text-foreground/55" strokeWidth={2.5} />
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
 

@@ -25,7 +25,7 @@ const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowPro
     <button
       onClick={onToggle}
       className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
-        enabled ? "bg-primary" : "bg-muted"
+        enabled ? "bg-primary" : "bg-muted-foreground/30"
       }`}
     >
       <div
