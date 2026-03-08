@@ -190,12 +190,9 @@ const Plants = () => {
                   <Droplets className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Watering interval</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`rounded-xl px-3 py-1 text-xs font-semibold text-primary-foreground bg-primary ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
-                    {selectedPlant.wateringInterval} days
-                  </span>
-                  {!selectedPlant.autoSchedule && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                </div>
+                <span className={`text-xs font-medium text-muted-foreground ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
+                  {selectedPlant.wateringInterval} days
+                </span>
               </button>
 
               {/* Replanting interval row */}
@@ -207,28 +204,31 @@ const Plants = () => {
                   <RefreshCw className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Replanting interval</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`rounded-xl px-3 py-1 text-xs font-semibold text-primary-foreground bg-primary ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
-                    {selectedPlant.replantingInterval} mo
-                  </span>
-                  {!selectedPlant.autoSchedule && <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                </div>
+                <span className={`text-xs font-medium text-muted-foreground ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
+                  {selectedPlant.replantingInterval} mo
+                </span>
               </button>
 
               {/* Next watering info */}
-              <div className="mb-2 rounded-2xl bg-background p-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <Droplets className="h-4 w-4 text-primary" />
-                  Next watering: {formatWateringDate(selectedPlant.nextWatering)}
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+                <div className="flex items-center gap-3">
+                  <Droplets className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Next watering</span>
                 </div>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {formatWateringDate(selectedPlant.nextWatering)}
+                </span>
               </div>
 
               {/* Next replanting info */}
-              <div className="mb-2 rounded-2xl bg-background p-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <RefreshCw className="h-4 w-4 text-primary" />
-                  Next replanting: {formatWateringDate(selectedPlant.nextReplanting)}
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+                <div className="flex items-center gap-3">
+                  <RefreshCw className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Next replanting</span>
                 </div>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {formatWateringDate(selectedPlant.nextReplanting)}
+                </span>
               </div>
 
               {/* Auto schedule toggle */}
@@ -253,6 +253,61 @@ const Plants = () => {
                   />
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* iOS-style scroll picker bottom sheet */}
+      <AnimatePresence>
+        {selectedPlant && carouselField && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setCarouselField(null)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-foreground">
+                  {carouselField === "watering" ? "Watering interval" : "Replanting interval"}
+                </h2>
+                <button
+                  onClick={() => setCarouselField(null)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              {/* iOS wheel picker */}
+              <IosPicker
+                values={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
+                unit={carouselField === "watering" ? "days" : "months"}
+                selected={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
+                onChange={(val) => {
+                  const updated = carouselField === "watering"
+                    ? { ...selectedPlant, wateringInterval: val }
+                    : { ...selectedPlant, replantingInterval: val };
+                  setSelectedPlant(updated);
+                  setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
+                }}
+              />
             </motion.div>
           </motion.div>
         )}
