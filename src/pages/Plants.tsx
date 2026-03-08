@@ -234,6 +234,12 @@ const WheelPicker = ({
                     <h2 className="font-serif text-lg font-bold text-foreground">
                       {selectedPlant.name}
                     </h2>
+                    <p className="text-xs text-muted-foreground">
+                      {(() => {
+                        const status = getWateringStatus(selectedPlant);
+                        return status.daysLeft === 0 ? "In 0 days" : status.label;
+                      })()}
+                    </p>
                   </div>
                 </div>
                 <button
