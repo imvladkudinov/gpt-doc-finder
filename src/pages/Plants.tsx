@@ -251,7 +251,7 @@ const Plants = () => {
                   <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Replanting interval</span>
                 </div>
-                <span className={`rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
+                <span className={`rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
                   {selectedPlant.replantingInterval} mo
                 </span>
               </button>

@@ -64,9 +64,9 @@ const ConnectedServices = () => {
                   </div>
                   <button
                     onClick={() => connected && setDisconnectTarget(id)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
                       connected
-                        ? "bg-muted text-muted-foreground"
+                        ? "bg-primary/15 text-primary"
                         : "bg-primary text-primary-foreground hover:opacity-90"
                     }`}
                   >

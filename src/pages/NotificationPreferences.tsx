@@ -149,7 +149,7 @@ const NotificationPreferences = () => {
                       <p className="text-xs text-muted-foreground">When to send daily reminders</p>
                     </div>
                   </div>
-                  <span className="rounded-lg bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
+                  <span className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
                     {timeDisplay}
                   </span>
                 </div>
