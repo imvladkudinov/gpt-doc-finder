@@ -275,19 +275,16 @@ const CalendarPage = () => {
                   : sheetRare.map((item, i) => (
                       <div
                         key={i}
-                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                        className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
                       >
-                        <div className="text-2xl">{item.emoji}</div>
+                        <div className="text-4xl">{item.emoji}</div>
                         <div className="w-full">
-                          <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+                          <h3 className="font-serif text-[15px] font-semibold text-foreground leading-tight line-clamp-2">
                             {item.name}
                           </h3>
-                          <div className="mt-1.5 flex items-center gap-1">
-                            <span className="text-sm">🔄</span>
-                            <span className="text-[10px] font-medium text-muted-foreground">
-                              Replant
-                            </span>
-                          </div>
+                          <span className="text-[10px] font-medium text-muted-foreground leading-none">
+                            Replant
+                          </span>
                         </div>
                       </div>
                     ))}
