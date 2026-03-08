@@ -9,6 +9,7 @@ import Plants from "./pages/Plants";
 import ConnectedServices from "./pages/ConnectedServices";
 import CalendarPage from "./pages/Calendar";
 import Profile from "./pages/Profile";
+import NotificationPreferences from "./pages/NotificationPreferences";
 import NotFound from "./pages/NotFound";
 import TabBar from "./components/TabBar";
 
