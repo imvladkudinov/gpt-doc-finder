@@ -48,7 +48,7 @@ const Onboarding = () => {
 
         <button
           onClick={() => navigate("/plants")}
-          className="w-full rounded-2xl px-6 py-4 font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]"
+          className="w-full rounded-full px-6 py-4 font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]"
         >
           Skip setup
         </button>
