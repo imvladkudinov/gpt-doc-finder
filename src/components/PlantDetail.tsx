@@ -104,14 +104,14 @@ const PlantDetail = ({ plant, onClose, onWater }: PlantDetailProps) => {
           </div>
 
           {/* Intervals - muted/disabled style */}
-          <div className="mb-4 rounded-2xl bg-muted/50 p-4 opacity-60">
+          <div className="mb-4 rounded-2xl bg-border/40 p-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-foreground/60">Watering interval</span>
-              <span className="text-foreground/60">{plant.wateringInterval} days</span>
+              <span className="text-muted-foreground">Watering interval</span>
+              <span className="text-muted-foreground">{plant.wateringInterval} days</span>
             </div>
             <div className="mt-2 flex items-center justify-between text-sm">
-              <span className="text-foreground/60">Replanting interval</span>
-              <span className="text-foreground/60">{plant.replantingInterval} months</span>
+              <span className="text-muted-foreground">Replanting interval</span>
+              <span className="text-muted-foreground">{plant.replantingInterval} months</span>
             </div>
           </div>
 

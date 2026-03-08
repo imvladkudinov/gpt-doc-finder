@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Droplets, RefreshCw, Pencil, Camera } from "lucide-react";
+import { X, Plus, Droplets, RefreshCw, Pencil } from "lucide-react";
 
 interface AddPlantDialogProps {
   open: boolean;
@@ -72,9 +72,6 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           {/* Photo identification banner */}
           <div className="mb-5 flex items-center justify-between rounded-2xl bg-secondary p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
-                <Camera className="h-5 w-5 text-primary" />
-              </div>
               <div>
                 <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
                 <p className="text-xs text-muted-foreground">We'll take care</p>
@@ -101,7 +98,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
               </button>
             ))}
             <button
-              className="flex items-center justify-center rounded-xl p-2.5 text-muted-foreground hover:bg-secondary transition-all"
+              className="flex items-center justify-center rounded-xl bg-primary/15 p-2.5 text-primary transition-all hover:bg-primary/25"
             >
               <Plus className="h-6 w-6" strokeWidth={1.5} />
             </button>
