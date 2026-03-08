@@ -1,4 +1,4 @@
-import TabBar from "@/components/TabBar";
+import { Check, Plus } from "lucide-react";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import telegramLogo from "@/assets/telegram-logo.svg";
@@ -9,13 +9,15 @@ const services = [
     id: "telegram",
     name: "Telegram",
     logo: telegramLogo,
-    connected: false,
+    connected: true,
+    status: "Notifications active",
   },
   {
     id: "google-calendar",
     name: "Google Calendar",
     logo: googleCalendarLogo,
-    connected: false,
+    connected: true,
+    status: "Syncing schedule",
   },
 ];
 
@@ -29,14 +31,17 @@ const ConnectedServices = () => {
         </div>
         <div className="px-6 pt-20">
           <div className="space-y-2">
-            {services.map(({ id, name, logo, connected }) => (
+            {services.map(({ id, name, logo, connected, status }) => (
               <div
                 key={id}
-                className="flex items-center justify-between rounded-2xl bg-secondary px-4 py-5"
+                className="flex items-center justify-between rounded-2xl bg-card px-4 py-5"
               >
                 <div className="flex items-center gap-3">
                   <img src={logo} alt={name} className="h-6 w-6" />
-                  <p className="text-sm font-medium text-foreground">{name}</p>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{name}</p>
+                    <p className="text-xs text-muted-foreground">{status}</p>
+                  </div>
                 </div>
                 <button
                   className={`rounded-xl px-4 py-2 text-xs font-medium transition-all ${
@@ -49,10 +54,16 @@ const ConnectedServices = () => {
                 </button>
               </div>
             ))}
+
+            {/* Add service */}
+            <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-4 py-5 transition-colors hover:bg-secondary">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary">
+                <Plus className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
+              </div>
+              <span className="text-sm font-medium text-foreground">Add service</span>
+            </button>
           </div>
         </div>
-
-        <TabBar />
       </div>
     </PageTransition>
   );

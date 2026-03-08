@@ -1,4 +1,3 @@
-import TabBar from "@/components/TabBar";
 import { User, Bell, Shield, Link, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -9,7 +8,7 @@ const Profile = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-24">
-        <div className="px-6 pt-12 pb-4">
+        <div className="px-6 pt-6 pb-4">
           <h1 className="font-serif text-2xl font-bold text-foreground">Profile</h1>
         </div>
 
@@ -26,7 +25,7 @@ const Profile = () => {
           <div className="space-y-2">
             <button
               onClick={() => navigate("/connected-services")}
-              className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
             >
               <div className="flex items-center gap-3">
                 <Link className="h-4 w-4 text-primary" />
@@ -38,7 +37,7 @@ const Profile = () => {
               </div>
             </button>
             <button
-              className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
             >
               <div className="flex items-center gap-3">
                 <Bell className="h-4 w-4 text-primary" />
@@ -47,7 +46,7 @@ const Profile = () => {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
             <button
-              className="flex w-full items-center justify-between rounded-2xl bg-secondary px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
             >
               <div className="flex items-center gap-3">
                 <Shield className="h-4 w-4 text-primary" />
@@ -57,8 +56,6 @@ const Profile = () => {
             </button>
           </div>
         </div>
-
-        <TabBar />
       </div>
     </PageTransition>
   );

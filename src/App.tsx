@@ -10,23 +10,30 @@ import ConnectedServices from "./pages/ConnectedServices";
 import CalendarPage from "./pages/Calendar";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import TabBar from "./components/TabBar";
 
 const queryClient = new QueryClient();
 
+const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services"];
+
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const showTabBar = TAB_PATHS.some((p) => location.pathname.startsWith(p));
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Onboarding />} />
-        <Route path="/plants" element={<Plants />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/connected-services" element={<ConnectedServices />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AnimatePresence>
+    <>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Onboarding />} />
+          <Route path="/plants" element={<Plants />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/connected-services" element={<ConnectedServices />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AnimatePresence>
+      {showTabBar && <TabBar />}
+    </>
   );
 };
 
