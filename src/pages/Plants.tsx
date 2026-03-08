@@ -20,6 +20,7 @@ const Plants = () => {
   const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
   const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
   const [showPlantInfo, setShowPlantInfo] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
 
   const handleWater = (id: string) => {
     setPlants((prev) =>
