@@ -34,6 +34,7 @@ const AnimatedRoutes = () => {
           <Route path="/connected-services" element={<ConnectedServices />} />
           <Route path="/notification-preferences" element={<NotificationPreferences />} />
           <Route path="/plant-personalization" element={<PlantPersonalization />} />
+          <Route path="/personal-details" element={<PersonalDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>

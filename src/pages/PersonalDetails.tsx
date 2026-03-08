@@ -1,0 +1,280 @@
+import { useState } from "react";
+import { Pencil, Mail, Lock, Crown, X, Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import GlassBackButton from "@/components/GlassBackButton";
+import PageTransition from "@/components/PageTransition";
+import ScrollFadeLayout from "@/components/ScrollFadeLayout";
+import avatarPlant from "@/assets/avatar-plant.png";
+
+const PersonalDetails = () => {
+  const [name, setName] = useState("Alejandra García");
+  const [editingName, setEditingName] = useState(false);
+  const [tempName, setTempName] = useState(name);
+  const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleSaveName = () => {
+    if (tempName.trim()) {
+      setName(tempName.trim());
+    }
+    setEditingName(false);
+  };
+
+  const handlePasswordChange = () => {
+    if (newPassword.length >= 6 && newPassword === confirmPassword) {
+      setShowPasswordSheet(false);
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+  };
+
+  return (
+    <PageTransition>
+      <ScrollFadeLayout>
+        <div className="min-h-screen bg-background pb-24">
+          <div className="fixed top-6 left-6 right-6 z-40 flex items-center gap-3">
+            <GlassBackButton to="/profile" />
+            <h1 className="font-serif text-lg font-bold text-foreground">Personal details</h1>
+          </div>
+
+          <div className="px-6 pt-20">
+            {/* Avatar */}
+            <div className="mb-6 flex justify-center">
+              <img
+                src={avatarPlant}
+                alt="Profile avatar"
+                className="h-24 w-24 rounded-3xl bg-sage-100 object-cover"
+              />
+            </div>
+
+            {/* Name */}
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setTempName(name);
+                  setEditingName(true);
+                }}
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+              >
+                <div className="flex items-center gap-3">
+                  <Pencil className="h-4 w-4 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Name</p>
+                    <p className="text-xs text-muted-foreground">{name}</p>
+                  </div>
+                </div>
+                <span className="rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary">
+                  Edit
+                </span>
+              </button>
+
+              {/* Email (read-only) */}
+              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-4 w-4 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Email</p>
+                    <p className="text-xs text-muted-foreground">alejandra@plantcare.com</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Password */}
+              <button
+                onClick={() => setShowPasswordSheet(true)}
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+              >
+                <div className="flex items-center gap-3">
+                  <Lock className="h-4 w-4 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Password</p>
+                    <p className="text-xs text-muted-foreground">••••••••</p>
+                  </div>
+                </div>
+                <span className="rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary">
+                  Change
+                </span>
+              </button>
+            </div>
+
+            {/* Subscription */}
+            <p className="mb-2 mt-6 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Subscription
+            </p>
+            <div className="rounded-2xl bg-card px-5 py-5">
+              <div className="flex items-center gap-3">
+                <Crown className="h-4 w-4 shrink-0 text-accent" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">Premium Plan</p>
+                    <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
+                      Active
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Renews on March 15, 2027</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ScrollFadeLayout>
+
+      {/* Edit name bottom sheet */}
+      <AnimatePresence>
+        {editingName && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setEditingName(false)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-foreground">Edit name</h2>
+                <button
+                  onClick={() => setEditingName(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <div className="flex items-center gap-3">
+                  <Pencil className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Name</span>
+                </div>
+                <input
+                  value={tempName}
+                  onChange={(e) => setTempName(e.target.value)}
+                  className="w-1/2 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                  autoFocus
+                />
+              </div>
+
+              <button
+                onClick={handleSaveName}
+                disabled={!tempName.trim()}
+                className="mt-4 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+              >
+                Save
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Change password bottom sheet */}
+      <AnimatePresence>
+        {showPasswordSheet && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setShowPasswordSheet(false)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-foreground">Change password</h2>
+                <button
+                  onClick={() => setShowPasswordSheet(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              {/* New password */}
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <div className="flex items-center gap-3">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">New password</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type={showNew ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 6 chars"
+                    className="w-24 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                    autoFocus
+                  />
+                  <button onClick={() => setShowNew(!showNew)} className="text-muted-foreground">
+                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm password */}
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <div className="flex items-center gap-3">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">Confirm</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat"
+                    className="w-24 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                  />
+                  <button onClick={() => setShowConfirm(!showConfirm)} className="text-muted-foreground">
+                    {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                <p className="mb-2 text-xs text-accent px-1">Passwords don't match</p>
+              )}
+
+              <button
+                onClick={handlePasswordChange}
+                disabled={newPassword.length < 6 || newPassword !== confirmPassword}
+                className="mt-4 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+              >
+                Update password
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </PageTransition>
+  );
+};
+
+export default PersonalDetails;
