@@ -63,6 +63,88 @@ const Plants = () => {
     setPlants((prev) => [...prev, newPlant]);
   };
 
+const ITEM_HEIGHT = 44;
+const VISIBLE_ITEMS = 5;
+
+const IosPicker = ({
+  values,
+  unit,
+  selected,
+  onChange,
+}: {
+  values: number[];
+  unit: string;
+  selected: number;
+  onChange: (val: number) => void;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const initialIdx = values.indexOf(selected);
+  const [activeIdx, setActiveIdx] = useState(initialIdx >= 0 ? initialIdx : 0);
+
+  const scrollToIdx = useCallback((idx: number, smooth = true) => {
+    containerRef.current?.scrollTo({
+      top: idx * ITEM_HEIGHT,
+      behavior: smooth ? "smooth" : "auto",
+    });
+  }, []);
+
+  useEffect(() => {
+    scrollToIdx(activeIdx, false);
+  }, []); // eslint-disable-line
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const scrollTop = containerRef.current.scrollTop;
+    const idx = Math.round(scrollTop / ITEM_HEIGHT);
+    const clamped = Math.max(0, Math.min(idx, values.length - 1));
+    if (clamped !== activeIdx) {
+      setActiveIdx(clamped);
+      onChange(values[clamped]);
+    }
+  };
+
+  return (
+    <div className="relative" style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}>
+      {/* Selection highlight */}
+      <div
+        className="pointer-events-none absolute left-0 right-0 rounded-xl bg-background"
+        style={{ top: ITEM_HEIGHT * 2, height: ITEM_HEIGHT }}
+      />
+      {/* Fade edges */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-card to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-card to-transparent" />
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="h-full overflow-y-auto scrollbar-hide"
+        style={{
+          scrollSnapType: "y mandatory",
+          paddingTop: ITEM_HEIGHT * 2,
+          paddingBottom: ITEM_HEIGHT * 2,
+        }}
+      >
+        {values.map((val, i) => (
+          <div
+            key={val}
+            className="flex items-center justify-center transition-all"
+            style={{
+              height: ITEM_HEIGHT,
+              scrollSnapAlign: "center",
+              opacity: i === activeIdx ? 1 : 0.3,
+              transform: i === activeIdx ? "scale(1)" : "scale(0.9)",
+              fontWeight: i === activeIdx ? 600 : 400,
+            }}
+          >
+            <span className="text-lg text-foreground">
+              {val} {unit}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
   return (
     <PageTransition>
