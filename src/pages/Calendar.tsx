@@ -179,28 +179,35 @@ const CalendarPage = () => {
                 {days.map((day, i) => {
                   const inMonth = isSameMonth(day, currentMonth);
                   const today = isToday(day);
-                  const selected = false;
+                  const selected = selectedDay ? isSameDay(day, selectedDay) : false;
                   const dayNum = day.getDate();
                   const eventCount = inMonth ? getEventCount(dayNum, activeTab) : 0;
-                  const clickable = inMonth && eventCount > 0;
+                  const clickable = inMonth;
                   const dotCount = Math.min(eventCount, 3);
 
                   return (
                     <button
                       key={i}
-                      onClick={() => clickable && handleDayClick(day)}
-                      className={`relative flex h-10 w-full items-center justify-center rounded-xl text-sm transition-all ${
+                      onClick={() => inMonth && handleDayClick(day)}
+                      className={`relative flex h-10 w-full items-center justify-center rounded-full text-sm transition-all ${
                         selected
-                          ? "bg-primary text-primary-foreground font-semibold"
+                          ? "font-semibold text-foreground"
                           : today
-                          ? "bg-sage-100 text-primary font-semibold"
-                          : inMonth && clickable
+                          ? "text-primary font-semibold"
+                          : inMonth && eventCount > 0
                           ? "text-foreground hover:bg-secondary cursor-pointer"
                           : inMonth
-                          ? "text-foreground/50 cursor-default"
+                          ? "text-foreground/50 cursor-pointer"
                           : "text-muted-foreground/30 cursor-default"
                       }`}
-                      disabled={!clickable}
+                      style={selected ? {
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(255,255,255,0.5)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                      } : undefined}
+                      disabled={!inMonth}
                     >
                       {day.getDate()}
                       {dotCount > 0 && !selected && (
