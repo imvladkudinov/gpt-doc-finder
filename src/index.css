@@ -153,3 +153,39 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Mobile phone frame on desktop */
+.mobile-frame-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: hsl(150 10% 20%);
+}
+
+.mobile-frame {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mobile-frame-wrapper {
+    padding: 24px;
+  }
+  .mobile-frame {
+    width: 390px;
+    height: 844px;
+    max-height: calc(100vh - 48px);
+    border-radius: 40px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 0 8px hsl(150 10% 15%);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .mobile-frame .scrollbar-none {
+    scrollbar-width: none;
+  }
+}
