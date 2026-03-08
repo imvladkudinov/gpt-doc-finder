@@ -231,12 +231,9 @@ const PersonalDetails = () => {
               </div>
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 shrink-0 text-premium" fill="currentColor" />
-                  <span className="text-sm font-medium text-foreground">Plan</span>
-                </div>
+                <span className="text-sm font-medium text-foreground">Plan</span>
                 <span
-                  className="rounded-full px-3 py-1 text-xs font-semibold text-foreground"
+                  className="rounded-full px-3 py-1 text-xs font-semibold text-purple-500"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                     backdropFilter: "blur(40px) saturate(1.8)",
@@ -247,11 +244,6 @@ const PersonalDetails = () => {
                 >
                   Premium
                 </span>
-              </div>
-
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
-                <span className="text-sm font-medium text-foreground">Status</span>
-                <span className="rounded-lg bg-premium px-2.5 py-1 text-xs font-semibold text-white">Active</span>
               </div>
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
