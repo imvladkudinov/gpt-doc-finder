@@ -47,20 +47,20 @@ const Profile = () => {
             <div className="space-y-2">
               <button
                 onClick={() => navigate("/personal-details")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-primary" />
+                  <User className="h-5 w-5 shrink-0 text-primary" />
                   Personal details
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
                 onClick={() => navigate("/connected-services")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Link className="h-4 w-4 text-primary" />
+                  <Link className="h-5 w-5 shrink-0 text-primary" />
                   Connected services
                 </div>
                 <div className="flex items-center gap-2">
@@ -70,29 +70,29 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/notification-preferences")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Bell className="h-4 w-4 text-primary" />
+                  <Bell className="h-5 w-5 shrink-0 text-primary" />
                   Notification preferences
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
                 onClick={() => navigate("/plant-personalization")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Leaf className="h-4 w-4 text-primary" />
+                  <Leaf className="h-5 w-5 shrink-0 text-primary" />
                   Plant personalization
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Shield className="h-4 w-4 text-primary" />
+                  <Shield className="h-5 w-5 shrink-0 text-primary" />
                   Privacy & data
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />

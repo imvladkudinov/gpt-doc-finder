@@ -5,6 +5,14 @@ import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 
+const glassClose = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+  backdropFilter: "blur(40px) saturate(1.8)",
+  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+};
+
 const PersonalDetails = () => {
   const [name, setName] = useState("Alejandra García");
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
@@ -20,14 +28,6 @@ const PersonalDetails = () => {
       setNewPassword("");
       setConfirmPassword("");
     }
-  };
-
-  const glassClose = {
-    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-    backdropFilter: "blur(40px) saturate(1.8)",
-    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-    border: "1px solid rgba(255,255,255,0.5)",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
   };
 
   return (
@@ -48,7 +48,7 @@ const PersonalDetails = () => {
               {/* Name — inline editable */}
               <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Pencil className="h-4 w-4 shrink-0 text-primary" />
+                  <Pencil className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Name</span>
                 </div>
                 <input
@@ -61,7 +61,7 @@ const PersonalDetails = () => {
               {/* Email (read-only) */}
               <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 shrink-0 text-primary" />
+                  <Mail className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Email</span>
                 </div>
                 <span className="text-sm text-muted-foreground">alejandra@plantcare.com</span>
@@ -73,10 +73,10 @@ const PersonalDetails = () => {
                 className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Lock className="h-4 w-4 shrink-0 text-primary" />
+                  <Lock className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Password</span>
                 </div>
-                <span className="rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary">
+                <span className="rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary">
                   Change
                 </span>
               </button>
@@ -88,10 +88,10 @@ const PersonalDetails = () => {
             </p>
             <button
               onClick={() => setShowSubscriptionSheet(true)}
-              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
             >
               <div className="flex items-center gap-3">
-                <Crown className="h-4 w-4 shrink-0 text-premium" fill="currentColor" />
+                <Crown className="h-5 w-5 shrink-0 text-premium" fill="currentColor" />
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground">Premium Plan</p>
@@ -137,9 +137,9 @@ const PersonalDetails = () => {
                 </button>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Lock className="h-5 w-5 text-primary" />
+                  <Lock className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">New password</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -157,9 +157,9 @@ const PersonalDetails = () => {
                 </div>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Lock className="h-5 w-5 text-primary" />
+                  <Lock className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Confirm</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -221,25 +221,25 @@ const PersonalDetails = () => {
                 </button>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 text-premium" fill="currentColor" />
+                  <Crown className="h-5 w-5 shrink-0 text-premium" fill="currentColor" />
                   <span className="text-sm font-medium text-foreground">Plan</span>
                 </div>
                 <span className="text-sm font-medium text-foreground">Premium</span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Status</span>
                 <span className="rounded-lg bg-premium px-2.5 py-1 text-xs font-semibold text-white">Active</span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Next billing</span>
                 <span className="text-sm text-muted-foreground">March 15, 2027</span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Price</span>
                 <span className="text-sm text-muted-foreground">€4.99 / month</span>
               </div>

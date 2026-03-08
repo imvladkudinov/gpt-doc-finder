@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Bell, CalendarPlus, MessageSquare, CheckCheck, Sparkles, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
+import WheelPicker from "@/components/WheelPicker";
 
 interface ToggleRowProps {
   icon: React.ReactNode;
@@ -14,7 +15,7 @@ interface ToggleRowProps {
 }
 
 const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowProps) => (
-  <div className="flex items-center justify-between rounded-2xl bg-card px-5 py-5">
+  <div className="flex items-center justify-between rounded-2xl bg-card px-5 py-4">
     <div className="flex items-center gap-3 pr-4">
       {icon}
       <div>
@@ -40,78 +41,12 @@ const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowPro
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 60 }, (_, i) => i);
 
-const ITEM_HEIGHT = 44;
-const VISIBLE_ITEMS = 5;
-
-const WheelPicker = ({
-  items,
-  value,
-  onChange,
-  formatItem,
-}: {
-  items: number[];
-  value: number;
-  onChange: (v: number) => void;
-  formatItem: (v: number) => string;
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isScrollingRef = useRef(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-
-  useEffect(() => {
-    if (containerRef.current && !isScrollingRef.current) {
-      const idx = items.indexOf(value);
-      containerRef.current.scrollTop = idx * ITEM_HEIGHT;
-    }
-  }, [value, items]);
-
-  const handleScroll = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    isScrollingRef.current = true;
-    timeoutRef.current = setTimeout(() => {
-      if (containerRef.current) {
-        const idx = Math.round(containerRef.current.scrollTop / ITEM_HEIGHT);
-        const clamped = Math.max(0, Math.min(idx, items.length - 1));
-        containerRef.current.scrollTo({ top: clamped * ITEM_HEIGHT, behavior: "smooth" });
-        onChange(items[clamped]);
-      }
-      isScrollingRef.current = false;
-    }, 80);
-  };
-
-  return (
-    <div className="relative flex-1" style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}>
-      {/* Selection highlight */}
-      <div
-        className="pointer-events-none absolute left-0 right-0 z-10 rounded-xl bg-sage-100"
-        style={{ top: ITEM_HEIGHT * 2, height: ITEM_HEIGHT }}
-      />
-      {/* Fade top */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 h-20 bg-gradient-to-b from-card to-transparent" />
-      {/* Fade bottom */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-20 bg-gradient-to-t from-card to-transparent" />
-      <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className="h-full overflow-y-auto scrollbar-none"
-        style={{
-          scrollSnapType: "y mandatory",
-          paddingTop: ITEM_HEIGHT * 2,
-          paddingBottom: ITEM_HEIGHT * 2,
-        }}
-      >
-        {items.map((item) => (
-          <div
-            key={item}
-            className="flex items-center justify-center text-lg font-semibold text-foreground"
-            style={{ height: ITEM_HEIGHT, scrollSnapAlign: "start" }}
-          >
-            {formatItem(item)}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const glassClose = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+  backdropFilter: "blur(40px) saturate(1.8)",
+  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
 };
 
 const NotificationPreferences = () => {
@@ -161,35 +96,35 @@ const NotificationPreferences = () => {
               </p>
               <div className="space-y-2">
                 <ToggleRow
-                  icon={<CalendarPlus className="h-4 w-4 shrink-0 text-primary" />}
+                  icon={<CalendarPlus className="h-5 w-5 shrink-0 text-primary" />}
                   label="Add events to calendar"
                   description="Auto-create watering events in your calendar"
                   enabled={settings.calendarEvents}
                   onToggle={() => toggle("calendarEvents")}
                 />
                 <ToggleRow
-                  icon={<MessageSquare className="h-4 w-4 shrink-0 text-primary" />}
+                  icon={<MessageSquare className="h-5 w-5 shrink-0 text-primary" />}
                   label="Send messages"
                   description="Receive reminders via connected services"
                   enabled={settings.messages}
                   onToggle={() => toggle("messages")}
                 />
                 <ToggleRow
-                  icon={<CheckCheck className="h-4 w-4 shrink-0 text-primary" />}
+                  icon={<CheckCheck className="h-5 w-5 shrink-0 text-primary" />}
                   label="Double-check messages"
                   description="Get a follow-up if you haven't marked as watered"
                   enabled={settings.doubleCheck}
                   onToggle={() => toggle("doubleCheck")}
                 />
                 <ToggleRow
-                  icon={<Bell className="h-4 w-4 shrink-0 text-primary" />}
+                  icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
                   label="Push notifications"
                   description="Direct notifications on your device"
                   enabled={settings.pushNotifications}
                   onToggle={() => toggle("pushNotifications")}
                 />
                 <ToggleRow
-                  icon={<Sparkles className="h-4 w-4 shrink-0 text-primary" />}
+                  icon={<Sparkles className="h-5 w-5 shrink-0 text-primary" />}
                   label="Rare activities"
                   description="Replanting, fertilizing, and seasonal tips"
                   enabled={settings.rareActivities}
@@ -204,17 +139,17 @@ const NotificationPreferences = () => {
               </p>
               <button
                 onClick={openPicker}
-                className="w-full rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+                className="w-full rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Clock className="h-4 w-4 shrink-0 text-primary" />
+                    <Clock className="h-5 w-5 shrink-0 text-primary" />
                     <div>
                       <p className="text-sm font-medium text-foreground">Preferred time</p>
                       <p className="text-xs text-muted-foreground">When to send daily reminders</p>
                     </div>
                   </div>
-                  <span className="rounded-xl bg-sage-100 px-3 py-1.5 text-sm font-semibold text-primary">
+                  <span className="rounded-lg bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
                     {timeDisplay}
                   </span>
                 </div>
@@ -242,25 +177,17 @@ const NotificationPreferences = () => {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
             >
-              {/* Header */}
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="font-serif text-lg font-bold text-foreground">Set time</h2>
                 <button
                   onClick={() => setShowTimePicker(false)}
                   className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                    backdropFilter: "blur(40px) saturate(1.8)",
-                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  }}
+                  style={glassClose}
                 >
                   <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
 
-              {/* Wheels */}
               <div className="flex items-center gap-2">
                 <WheelPicker
                   items={HOURS}
@@ -277,7 +204,6 @@ const NotificationPreferences = () => {
                 />
               </div>
 
-              {/* Apply button */}
               <button
                 onClick={applyTime}
                 className="mt-6 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"

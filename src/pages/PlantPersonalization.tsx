@@ -14,9 +14,9 @@ const PlantPersonalization = () => {
           </div>
 
           <div className="space-y-2 px-6 pt-20">
-            <button className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary">
+            <button className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary">
               <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                <MapPin className="h-5 w-5 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium text-foreground">City</p>
                   <p className="text-xs text-muted-foreground">Used for climate-based care tips</p>
@@ -28,15 +28,15 @@ const PlantPersonalization = () => {
               </div>
             </button>
 
-            <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
+            <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
               <div className="flex items-center gap-3">
-                <Thermometer className="h-4 w-4 shrink-0 text-primary" />
+                <Thermometer className="h-5 w-5 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Home thermometer</p>
                   <p className="text-xs text-muted-foreground">Connect a smart thermometer</p>
                 </div>
               </div>
-              <button className="rounded-xl bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all">
+              <button className="rounded-lg bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all">
                 Connected
               </button>
             </div>
