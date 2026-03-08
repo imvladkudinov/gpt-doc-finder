@@ -23,12 +23,12 @@ const PlantPersonalization = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">San Francisco</span>
+                <span className="text-xs text-muted-foreground">Barcelona</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </button>
 
-            <button className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors hover:bg-secondary">
+            <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
               <div className="flex items-center gap-3">
                 <Thermometer className="h-4 w-4 shrink-0 text-primary" />
                 <div>
@@ -36,11 +36,10 @@ const PlantPersonalization = () => {
                   <p className="text-xs text-muted-foreground">Connect a smart thermometer</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Not connected</span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </button>
+              <button className="rounded-xl bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all">
+                Connected
+              </button>
+            </div>
           </div>
         </div>
       </ScrollFadeLayout>
