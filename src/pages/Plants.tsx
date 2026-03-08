@@ -135,7 +135,7 @@ const Plants = () => {
         )}
       </AnimatePresence>
 
-      <TabBar />
+      
     </div>
     </PageTransition>
   );
