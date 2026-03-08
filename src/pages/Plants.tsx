@@ -14,6 +14,7 @@ const Plants = () => {
   const [plants, setPlants] = useState<Plant[]>(mockPlants);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
 
   const handleWater = (id: string) => {
     setPlants((prev) =>
