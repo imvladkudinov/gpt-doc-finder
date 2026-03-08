@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Droplets } from "lucide-react";
 import { Plant } from "@/types/plant";
 import { getWateringStatus } from "@/lib/plant-utils";
 
