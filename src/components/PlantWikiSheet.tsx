@@ -115,7 +115,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
 
         {/* Search */}
         <div
-          className="mb-4 flex items-center gap-2 rounded-2xl px-4 py-3"
+          className="mb-4 flex items-center gap-2 rounded-full px-4 py-3"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
             backdropFilter: "blur(40px) saturate(1.8)",
