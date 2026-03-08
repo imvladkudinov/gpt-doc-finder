@@ -246,7 +246,7 @@ const PersonalDetails = () => {
                 </span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Next billing</span>
                 <span className="text-sm text-muted-foreground">March 15, 2027</span>
               </div>
