@@ -216,6 +216,18 @@ const CalendarPage = () => {
                 })}
               </div>
             </div>
+
+          {/* Upcoming notification */}
+          <div className="px-6 mt-4">
+            <div className="flex gap-3 rounded-2xl bg-card p-4">
+              <span className="text-2xl shrink-0">🪴</span>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Monstera replanting on the 14th</h3>
+                <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                  You may need fresh potting mix, a larger pot, and drainage stones. Consider picking these up in advance so you're ready on the day.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </ScrollFadeLayout>
