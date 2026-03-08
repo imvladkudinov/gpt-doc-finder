@@ -54,6 +54,9 @@ const Plants = () => {
       lastWatered: new Date(),
       missedWatering: false,
       notes: "",
+      replantingInterval: 12,
+      nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+      autoSchedule: false,
     };
     setPlants((prev) => [...prev, newPlant]);
   };
