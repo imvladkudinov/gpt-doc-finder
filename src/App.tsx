@@ -15,7 +15,7 @@ import TabBar from "./components/TabBar";
 
 const queryClient = new QueryClient();
 
-const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services"];
+const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services", "/notification-preferences"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
