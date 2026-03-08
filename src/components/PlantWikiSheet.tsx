@@ -86,13 +86,18 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10 max-h-[85vh] overflow-y-auto"
       >
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-serif text-lg font-bold text-foreground">
-            Plant Wiki
-          </h2>
+        <div className="mb-5 flex items-start justify-between">
+          <div>
+            <h2 className="font-serif text-lg font-bold text-foreground">
+              Plant Wiki
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Essential tips for happy, healthy houseplants
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all active:scale-95"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
               backdropFilter: "blur(40px) saturate(1.8)",
@@ -109,10 +114,10 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
           {WIKI_TOPICS.map((topic, i) => {
             const isExpanded = expandedIndex === i;
             return (
-              <div key={i}>
+              <div key={i} className="rounded-2xl bg-secondary overflow-hidden">
                 <button
                   onClick={() => setExpandedIndex(isExpanded ? null : i)}
-                  className="flex w-full items-center justify-between rounded-2xl bg-secondary px-5 py-4 transition-colors active:bg-secondary/80"
+                  className="flex w-full items-center justify-between px-5 py-4 transition-colors active:bg-secondary/80"
                 >
                   <span className="text-sm font-medium text-foreground text-left pr-3">
                     {topic.title}
@@ -124,7 +129,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
                     <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                   </motion.div>
                 </button>
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                   {isExpanded && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
@@ -133,7 +138,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <p className="px-5 pt-3 pb-1 text-sm leading-relaxed text-muted-foreground">
+                      <p className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
                         {topic.content}
                       </p>
                     </motion.div>
