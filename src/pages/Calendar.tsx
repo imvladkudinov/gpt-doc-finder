@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Droplets } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
+import { mockPlants } from "@/data/mockPlants";
 import {
   format,
   startOfMonth,
@@ -19,10 +21,42 @@ import {
 const TABS = ["Plants", "Rare activities"] as const;
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+// Map day numbers to plant subsets for demo
+const dayPlantMap: Record<number, string[]> = {
+  1: ["Monstera", "Pothos"],
+  3: ["Boston Fern", "Peace Lily"],
+  5: ["Succulent", "Aloe Vera", "Orchid"],
+  7: ["Monstera", "ZZ Plant"],
+  8: ["Calathea", "Rubber Plant"],
+  10: ["Pothos", "Fiddle Leaf"],
+  12: ["Boston Fern", "Snake Plant"],
+  14: ["Monstera", "Peace Lily", "Orchid"],
+  16: ["Aloe Vera", "Calathea"],
+  17: ["Pothos", "Rubber Plant"],
+  19: ["Succulent", "ZZ Plant"],
+  21: ["Monstera", "Boston Fern", "Fiddle Leaf"],
+  23: ["Peace Lily", "Snake Plant"],
+  24: ["Calathea", "Orchid"],
+  26: ["Pothos", "Aloe Vera"],
+  28: ["Monstera", "Rubber Plant", "ZZ Plant"],
+  30: ["Boston Fern", "Succulent"],
+};
+
+const rareActivitiesMap: Record<number, { name: string; emoji: string; task: string }[]> = {
+  2: [{ name: "Monstera", emoji: "🪴", task: "Repotting" }],
+  5: [{ name: "Orchid", emoji: "🌸", task: "Fertilizing" }],
+  9: [{ name: "Fiddle Leaf", emoji: "🌳", task: "Pruning" }],
+  15: [{ name: "Peace Lily", emoji: "🪷", task: "Fertilizing" }, { name: "Calathea", emoji: "🍃", task: "Repotting" }],
+  20: [{ name: "Snake Plant", emoji: "🐍", task: "Repotting" }],
+  25: [{ name: "Aloe Vera", emoji: "🪴", task: "Fertilizing" }],
+  28: [{ name: "Rubber Plant", emoji: "🌱", task: "Pruning" }],
+};
+
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Plants");
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [sheetDate, setSheetDate] = useState<Date | null>(null);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -30,10 +64,28 @@ const CalendarPage = () => {
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: calStart, end: calEnd });
 
-  // Mock events
-  const wateringDays = [1, 3, 5, 7, 8, 10, 12, 14, 16, 17, 19, 21, 23, 24, 26, 28, 30];
-  const rareDays = [2, 5, 9, 15, 20, 25, 28];
+  const wateringDays = Object.keys(dayPlantMap).map(Number);
+  const rareDays = Object.keys(rareActivitiesMap).map(Number);
   const eventDays = activeTab === "Plants" ? wateringDays : rareDays;
+
+  const handleDayClick = (day: Date) => {
+    setSelectedDate(day);
+    if (isSameMonth(day, currentMonth)) {
+      setSheetDate(day);
+    }
+  };
+
+  // Get plants for the sheet
+  const sheetDayNum = sheetDate?.getDate() ?? 0;
+  const sheetPlants =
+    activeTab === "Plants"
+      ? (dayPlantMap[sheetDayNum] ?? []).map((name) => {
+          const plant = mockPlants.find((p) => p.name === name);
+          return plant ?? { id: name, name, emoji: "🌿" };
+        })
+      : [];
+  const sheetRare = activeTab === "Rare activities" ? (rareActivitiesMap[sheetDayNum] ?? []) : [];
+  const hasSheetContent = activeTab === "Plants" ? sheetPlants.length > 0 : sheetRare.length > 0;
 
   return (
     <PageTransition>
@@ -97,7 +149,6 @@ const CalendarPage = () => {
           {/* Calendar grid */}
           <div className="px-6">
             <div className="rounded-2xl bg-card p-4">
-              {/* Weekday headers */}
               <div className="grid grid-cols-7 mb-2">
                 {WEEKDAYS.map((day) => (
                   <div
@@ -109,7 +160,6 @@ const CalendarPage = () => {
                 ))}
               </div>
 
-              {/* Days */}
               <div className="grid grid-cols-7 gap-y-1">
                 {days.map((day, i) => {
                   const inMonth = isSameMonth(day, currentMonth);
@@ -120,7 +170,7 @@ const CalendarPage = () => {
                   return (
                     <button
                       key={i}
-                      onClick={() => setSelectedDate(day)}
+                      onClick={() => handleDayClick(day)}
                       className={`relative flex h-10 w-full items-center justify-center rounded-xl text-sm transition-all ${
                         selected
                           ? "bg-primary text-primary-foreground font-semibold"
@@ -143,6 +193,96 @@ const CalendarPage = () => {
           </div>
         </div>
       </ScrollFadeLayout>
+
+      {/* Day detail bottom sheet */}
+      <AnimatePresence>
+        {sheetDate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setSheetDate(null)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+            >
+              {/* Header */}
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-foreground">
+                  {format(sheetDate, "EEEE, MMM d")}
+                </h2>
+                <button
+                  onClick={() => setSheetDate(null)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <X className="h-[18px] w-[18px] text-foreground/55" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              {/* Plant tiles */}
+              {hasSheetContent ? (
+                <div className="grid grid-cols-3 gap-2.5">
+                  {activeTab === "Plants"
+                    ? sheetPlants.map((plant) => (
+                        <div
+                          key={plant.id}
+                          className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
+                        >
+                          <div className="text-2xl">{plant.emoji}</div>
+                          <div className="w-full">
+                            <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+                              {plant.name}
+                            </h3>
+                            <div className="mt-1.5 flex items-center gap-1">
+                              <Droplets className="h-3 w-3 text-primary" />
+                              <span className="text-[10px] font-medium text-muted-foreground">
+                                Water
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    : sheetRare.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
+                        >
+                          <div className="text-2xl">{item.emoji}</div>
+                          <div className="w-full">
+                            <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+                              {item.name}
+                            </h3>
+                            <div className="mt-1.5">
+                              <span className="text-[10px] font-medium text-accent">
+                                {item.task}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                </div>
+              ) : (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  No {activeTab === "Plants" ? "watering" : "activities"} scheduled
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PageTransition>
   );
 };
