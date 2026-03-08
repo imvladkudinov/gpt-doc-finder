@@ -1,8 +1,16 @@
-import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown } from "lucide-react";
+import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import avatarPlant from "@/assets/avatar-plant.png";
+
+const glassStyle = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+  backdropFilter: "blur(40px) saturate(1.8)",
+  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+};
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -13,42 +21,48 @@ const Profile = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="px-6 pt-6 pb-4 flex items-center justify-between">
             <h1 className="font-serif text-2xl font-bold text-foreground">Profile</h1>
-            <button
-              className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                backdropFilter: "blur(40px) saturate(1.8)",
-                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-              }}
-            >
-              <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                style={glassStyle}
+              >
+                <Settings className="h-4 w-4 text-foreground" strokeWidth={2} />
+              </button>
+              <button
+                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                style={glassStyle}
+              >
+                <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
+              </button>
+            </div>
           </div>
 
           <div className="px-6">
-            {/* Profile info block */}
-            <button
-              onClick={() => navigate("/personal-details")}
-              className="mb-6 flex w-full items-center gap-4 rounded-3xl bg-card p-5 text-left transition-colors active:bg-secondary"
-            >
+            {/* Centered avatar + name + premium */}
+            <div className="mb-6 flex flex-col items-center">
               <img
                 src={avatarPlant}
                 alt="Profile avatar"
-                className="h-14 w-14 rounded-2xl bg-sage-100 object-cover"
+                className="h-24 w-24 rounded-3xl object-cover"
               />
-              <div className="flex-1 min-w-0">
-                <p className="font-serif text-lg font-semibold text-foreground">Alejandra García</p>
-                <div className="mt-1 flex items-center gap-1.5">
-                  <Crown className="h-3 w-3 text-accent" />
-                  <span className="text-xs font-medium text-accent">Premium</span>
-                </div>
+              <p className="mt-3 font-serif text-xl font-semibold text-foreground">Alejandra García</p>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <Crown className="h-3 w-3 text-accent" />
+                <span className="text-xs font-medium text-accent">Premium</span>
               </div>
-              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </button>
+            </div>
 
             <div className="space-y-2">
+              <button
+                onClick={() => navigate("/personal-details")}
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+              >
+                <div className="flex items-center gap-3">
+                  <Link className="h-4 w-4 text-primary" />
+                  Personal details
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
               <button
                 onClick={() => navigate("/connected-services")}
                 className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"

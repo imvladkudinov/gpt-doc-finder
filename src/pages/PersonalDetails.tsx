@@ -4,24 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
-import avatarPlant from "@/assets/avatar-plant.png";
 
 const PersonalDetails = () => {
   const [name, setName] = useState("Alejandra García");
-  const [editingName, setEditingName] = useState(false);
-  const [tempName, setTempName] = useState(name);
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
-  const handleSaveName = () => {
-    if (tempName.trim()) {
-      setName(tempName.trim());
-    }
-    setEditingName(false);
-  };
 
   const handlePasswordChange = () => {
     if (newPassword.length >= 6 && newPassword === confirmPassword) {
@@ -41,45 +31,27 @@ const PersonalDetails = () => {
           </div>
 
           <div className="px-6 pt-20">
-            {/* Avatar */}
-            <div className="mb-6 flex justify-center">
-              <img
-                src={avatarPlant}
-                alt="Profile avatar"
-                className="h-24 w-24 rounded-3xl bg-sage-100 object-cover"
-              />
-            </div>
-
-            {/* Name */}
             <div className="space-y-2">
-              <button
-                onClick={() => {
-                  setTempName(name);
-                  setEditingName(true);
-                }}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
-              >
+              {/* Name — inline editable */}
+              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
                 <div className="flex items-center gap-3">
                   <Pencil className="h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Name</p>
-                    <p className="text-xs text-muted-foreground">{name}</p>
-                  </div>
+                  <span className="text-sm font-medium text-foreground">Name</span>
                 </div>
-                <span className="rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary">
-                  Edit
-                </span>
-              </button>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-1/2 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                />
+              </div>
 
               {/* Email (read-only) */}
               <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
                 <div className="flex items-center gap-3">
                   <Mail className="h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Email</p>
-                    <p className="text-xs text-muted-foreground">alejandra@plantcare.com</p>
-                  </div>
+                  <span className="text-sm font-medium text-foreground">Email</span>
                 </div>
+                <span className="text-sm text-muted-foreground">alejandra@plantcare.com</span>
               </div>
 
               {/* Password */}
@@ -89,10 +61,7 @@ const PersonalDetails = () => {
               >
                 <div className="flex items-center gap-3">
                   <Lock className="h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Password</p>
-                    <p className="text-xs text-muted-foreground">••••••••</p>
-                  </div>
+                  <span className="text-sm font-medium text-foreground">Password</span>
                 </div>
                 <span className="rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary">
                   Change
@@ -121,66 +90,6 @@ const PersonalDetails = () => {
           </div>
         </div>
       </ScrollFadeLayout>
-
-      {/* Edit name bottom sheet */}
-      <AnimatePresence>
-        {editingName && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setEditingName(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-serif text-lg font-bold text-foreground">Edit name</h2>
-                <button
-                  onClick={() => setEditingName(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                    backdropFilter: "blur(40px) saturate(1.8)",
-                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  }}
-                >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
-                <div className="flex items-center gap-3">
-                  <Pencil className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Name</span>
-                </div>
-                <input
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  className="w-1/2 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                  autoFocus
-                />
-              </div>
-
-              <button
-                onClick={handleSaveName}
-                disabled={!tempName.trim()}
-                className="mt-4 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
-              >
-                Save
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Change password bottom sheet */}
       <AnimatePresence>
