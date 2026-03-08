@@ -120,13 +120,13 @@ const ConnectedServices = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setDisconnectTarget(null)}
-                    className="flex-1 rounded-2xl bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                    className="flex-1 rounded-full bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleDisconnect}
-                    className="flex-1 rounded-2xl py-3 text-sm font-medium text-white transition-colors"
+                    className="flex-1 rounded-full py-3 text-sm font-medium text-white transition-colors"
                     style={{ background: "hsl(0 60% 55%)" }}
                   >
                     Disconnect

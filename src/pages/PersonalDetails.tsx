@@ -192,7 +192,7 @@ const PersonalDetails = () => {
               <button
                 onClick={handlePasswordChange}
                 disabled={newPassword.length < 6 || newPassword !== confirmPassword}
-                className="mt-4 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+                className="mt-4 w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
               >
                 Update password
               </button>
@@ -279,7 +279,7 @@ const PersonalDetails = () => {
                 >
                   Upgrade to yearly
                 </button>
-                <button className="w-full rounded-2xl py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
+                <button className="w-full rounded-full py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
                   Cancel subscription
                 </button>
               </div>
