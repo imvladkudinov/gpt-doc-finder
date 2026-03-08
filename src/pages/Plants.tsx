@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Home, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, BookOpen, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
 import AddPlantDialog from "@/components/AddPlantDialog";
 import WheelPicker from "@/components/WheelPicker";
+import PlantWikiSheet from "@/components/PlantWikiSheet";
 
 import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
@@ -19,6 +20,7 @@ const Plants = () => {
   const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
   const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
   const [showPlantInfo, setShowPlantInfo] = useState(false);
+  const [showWiki, setShowWiki] = useState(false);
 
   const handleWater = (id: string) => {
     setPlants((prev) =>
@@ -72,20 +74,35 @@ const Plants = () => {
     <PageTransition>
     <ScrollFadeLayout>
     <div className="min-h-screen bg-background pb-24">
-      {/* Fixed + button */}
-      <button
-        onClick={() => setShowAdd(true)}
-        className="fixed top-6 right-6 z-40 flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-          backdropFilter: "blur(40px) saturate(1.8)",
-          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-          border: "1px solid rgba(255,255,255,0.5)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-        }}
-      >
-        <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-      </button>
+      {/* Fixed top-right buttons */}
+      <div className="fixed top-6 right-6 z-40 flex items-center gap-2">
+        <button
+          onClick={() => setShowWiki(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          <BookOpen className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+        </button>
+        <button
+          onClick={() => setShowAdd(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+        </button>
+      </div>
 
       {/* Header */}
       <div className="px-6 pt-6 pb-2">
@@ -123,7 +140,7 @@ const Plants = () => {
               border: "1px solid rgba(255,255,255,0.5)",
             }}
           >
-            <Home className="h-3 w-3 text-foreground fill-foreground" />
+            <span className="text-xs">🏠</span>
             <span className="text-xs font-medium text-foreground">22°C</span>
           </div>
         </div>
@@ -473,6 +490,11 @@ const Plants = () => {
           </motion.div>
         </motion.div>
       )}
+    </AnimatePresence>
+
+    {/* Wiki Sheet */}
+    <AnimatePresence>
+      {showWiki && <PlantWikiSheet open={showWiki} onClose={() => setShowWiki(false)} />}
     </AnimatePresence>
 
     </ScrollFadeLayout>
