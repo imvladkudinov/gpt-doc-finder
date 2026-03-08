@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const tabs = [
-  { path: "/plants", icon: Leaf },
-  { path: "/calendar", icon: CalendarDays },
-  { path: "/profile", icon: User },
+  { path: "/plants", matchPaths: ["/plants"], icon: Leaf },
+  { path: "/calendar", matchPaths: ["/calendar"], icon: CalendarDays },
+  { path: "/profile", matchPaths: ["/profile", "/connected-services"], icon: User },
 ];
 
 const TabBar = () => {
@@ -14,27 +14,41 @@ const TabBar = () => {
 
   return (
     <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-6">
-      <nav className="flex items-center gap-2 rounded-full bg-foreground/5 p-1.5 backdrop-blur-2xl saturate-150 border border-foreground/[0.08] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)]">
-        {tabs.map(({ path, icon: Icon }) => {
-          const active = location.pathname === path;
+      <nav
+        className="flex items-center gap-1 rounded-[22px] px-2 py-2"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
+          backdropFilter: "blur(40px) saturate(1.8)",
+          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+          border: "1px solid rgba(255,255,255,0.5)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+        }}
+      >
+        {tabs.map(({ path, matchPaths, icon: Icon }) => {
+          const active = matchPaths.some((p) => location.pathname.startsWith(p));
           return (
             <button
               key={path}
               onClick={() => navigate(path)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+              className="relative flex h-12 w-14 items-center justify-center rounded-2xl transition-colors"
             >
               {active && (
                 <motion.div
                   layoutId="tab-active"
-                  className="absolute inset-0 rounded-full bg-foreground/[0.08] backdrop-blur-md border border-foreground/[0.06]"
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%)",
+                    border: "1px solid rgba(255,255,255,0.55)",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
+                  }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               <Icon
-                className={`relative z-10 h-[18px] w-[18px] transition-colors ${
-                  active ? "text-foreground" : "text-foreground/35"
+                className={`relative z-10 h-5 w-5 transition-all duration-200 ${
+                  active ? "text-foreground" : "text-foreground/30"
                 }`}
-                strokeWidth={active ? 2.2 : 1.8}
+                strokeWidth={active ? 2 : 1.6}
               />
             </button>
           );
