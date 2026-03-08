@@ -16,7 +16,6 @@ import {
   eachDayOfInterval,
   isSameMonth,
   isToday,
-  isSameDay,
 } from "date-fns";
 
 const TABS = ["Plants", "Rare activities"] as const;
