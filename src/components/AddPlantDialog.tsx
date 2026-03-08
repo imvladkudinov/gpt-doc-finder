@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Droplets, RefreshCw, Pencil } from "lucide-react";
+import { X, Plus, Droplets, RefreshCw, Pencil, Camera } from "lucide-react";
 import WheelPicker from "@/components/WheelPicker";
 
 interface AddPlantDialogProps {
