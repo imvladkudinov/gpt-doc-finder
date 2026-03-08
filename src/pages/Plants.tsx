@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Home, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, Home, Droplets, X, Sparkles, RefreshCw, HelpCircle } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
