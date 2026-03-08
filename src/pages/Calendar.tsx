@@ -274,9 +274,10 @@ const CalendarPage = () => {
                           <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
                             {item.name}
                           </h3>
-                          <div className="mt-1.5">
-                            <span className="text-[10px] font-medium text-accent">
-                              {item.task}
+                          <div className="mt-1.5 flex items-center gap-1">
+                            <span className="text-sm">🔄</span>
+                            <span className="text-[10px] font-medium text-muted-foreground">
+                              Replant
                             </span>
                           </div>
                         </div>
