@@ -137,6 +137,7 @@ const Plants = () => {
 
       <TabBar />
     </div>
+    </PageTransition>
   );
 };
 
