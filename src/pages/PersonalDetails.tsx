@@ -192,7 +192,7 @@ const PersonalDetails = () => {
               <button
                 onClick={handlePasswordChange}
                 disabled={newPassword.length < 6 || newPassword !== confirmPassword}
-                className="mt-4 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
+                className="mt-4 w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
               >
                 Update password
               </button>
