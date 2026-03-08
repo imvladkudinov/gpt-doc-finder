@@ -259,7 +259,7 @@ const WheelPicker = ({
                     }}
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/80 border border-border transition-all active:scale-95"
                   >
-                    <HelpCircle className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
+                    <MessageCircleQuestion className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
                   </button>
                   {/* Close button */}
                   <button
