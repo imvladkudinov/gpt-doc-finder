@@ -15,6 +15,7 @@ const Plants = () => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
+  const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
 
   const handleWater = (id: string) => {
     setPlants((prev) =>
@@ -62,9 +63,6 @@ const Plants = () => {
     setPlants((prev) => [...prev, newPlant]);
   };
 
-  const needsWater = plants.filter(
-    (p) => p.missedWatering || new Date(p.nextWatering) <= new Date()
-  );
 
   return (
     <PageTransition>
@@ -80,19 +78,9 @@ const Plants = () => {
         >
           <div>
             <h1 className="font-serif text-2xl font-bold text-foreground">
-              My Plants <span className="font-sans text-lg font-normal text-muted-foreground">{plants.length}</span>
+              My Plants
             </h1>
-            {needsWater.length > 0 && (
-              <p className="mt-1 text-sm text-accent">
-                {needsWater.length} plant{needsWater.length > 1 ? "s" : ""} need
-                water
-              </p>
-            )}
-            {needsWater.length === 0 && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                All plants are happy! 🎉
-              </p>
-            )}
+            <p className="mt-0.5 text-sm text-muted-foreground">{plants.length} plants</p>
           </div>
           <button
             onClick={() => setShowAdd(true)}
@@ -120,7 +108,7 @@ const Plants = () => {
               border: "1px solid rgba(255,255,255,0.5)",
             }}
           >
-            <span className="text-xs">📍</span>
+            <span className="text-xs">☀️</span>
             <span className="text-xs font-medium text-foreground">Barcelona, ES</span>
           </div>
           <div
@@ -146,6 +134,7 @@ const Plants = () => {
             plant={plant}
             index={i}
             onClick={() => setSelectedPlant(plant)}
+            onOverdueClick={() => setOverduePlant(plant)}
           />
         ))}
       </div>
@@ -347,6 +336,64 @@ const Plants = () => {
             onClose={() => setShowAdd(false)}
             onAdd={handleAddPlant}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Overdue modal */}
+      <AnimatePresence>
+        {overduePlant && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[70] bg-black/40"
+              onClick={() => setOverduePlant(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ type: "spring", damping: 24, stiffness: 300 }}
+              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl p-6 text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%)",
+                backdropFilter: "blur(40px) saturate(1.6)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.6)",
+                border: "1px solid rgba(255,255,255,0.35)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+              }}
+            >
+              <p className="text-3xl mb-2">{overduePlant.emoji}</p>
+              <p className="text-base font-semibold text-foreground mb-1">
+                {overduePlant.name} needs water
+              </p>
+              <p className="text-xs text-muted-foreground mb-5">
+                Was it watered earlier and you forgot to mark it?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    handleWater(overduePlant.id);
+                    setOverduePlant(null);
+                  }}
+                  className="flex-1 rounded-2xl bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                >
+                  Yes, already watered
+                </button>
+                <button
+                  onClick={() => {
+                    handleWater(overduePlant.id);
+                    setOverduePlant(null);
+                  }}
+                  className="flex-1 rounded-2xl bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                >
+                  Water now
+                </button>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

@@ -1,15 +1,15 @@
 import { motion } from "framer-motion";
 import { Plant } from "@/types/plant";
 import { getWateringStatus } from "@/lib/plant-utils";
-import { Droplets } from "lucide-react";
 
 interface PlantCardProps {
   plant: Plant;
   onClick: () => void;
+  onOverdueClick?: () => void;
   index: number;
 }
 
-const PlantCard = ({ plant, onClick, index }: PlantCardProps) => {
+const PlantCard = ({ plant, onClick, onOverdueClick, index }: PlantCardProps) => {
   const status = getWateringStatus(plant);
 
   return (
@@ -19,19 +19,25 @@ const PlantCard = ({ plant, onClick, index }: PlantCardProps) => {
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-card p-3.5 text-left shadow-sm transition-shadow hover:shadow-md"
+      className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-card p-3.5 text-left shadow-sm transition-shadow hover:shadow-md"
     >
+      {/* Orange overdue indicator */}
+      {status.daysLeft === 0 && (
+        <div
+          className="absolute top-2.5 right-2.5 h-3 w-3 rounded-full"
+          style={{ background: "hsl(25 90% 55%)", boxShadow: "0 0 6px hsla(25,90%,55%,0.4)" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOverdueClick?.();
+          }}
+        />
+      )}
       <div className="text-2xl">{plant.emoji}</div>
       <div className="w-full">
         <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
           {plant.name}
         </h3>
-        <div className="mt-1.5 flex items-center gap-1">
-          <Droplets
-            className={`h-3 w-3 ${
-              status.urgent ? "text-accent" : "text-primary"
-            }`}
-          />
+        <div className="mt-1.5">
           <span
             className={`text-[10px] font-medium ${
               status.urgent ? "text-accent" : "text-muted-foreground"
