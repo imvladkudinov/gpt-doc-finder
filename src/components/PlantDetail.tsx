@@ -63,31 +63,20 @@ const PlantDetail = ({ plant, onClose, onWater }: PlantDetailProps) => {
             <div className="flex items-center gap-2">
               {/* Help button */}
               <button
-                onClick={() => setShowInfo(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                  backdropFilter: "blur(40px) saturate(1.8)",
-                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                  border: "1px solid rgba(255,255,255,0.5)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowInfo(true);
                 }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/80 border border-border transition-all active:scale-95"
               >
-                <HelpCircle className="h-[18px] w-[18px] text-foreground/55" strokeWidth={2.5} />
+                <HelpCircle className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
               </button>
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                  backdropFilter: "blur(40px) saturate(1.8)",
-                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                  border: "1px solid rgba(255,255,255,0.5)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/80 border border-border transition-all active:scale-95"
               >
-                <X className="h-[18px] w-[18px] text-foreground/55" strokeWidth={2.5} />
+                <X className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
               </button>
             </div>
           </div>
