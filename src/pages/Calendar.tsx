@@ -58,7 +58,7 @@ function hasEvents(dayNum: number, tab: (typeof TABS)[number]): boolean {
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Plants");
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  
   const [sheetDate, setSheetDate] = useState<Date | null>(null);
 
   const monthStart = startOfMonth(currentMonth);
