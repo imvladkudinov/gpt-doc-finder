@@ -201,11 +201,9 @@ const CalendarPage = () => {
                           : "text-muted-foreground/30 cursor-default"
                       }`}
                       style={selected ? {
-                        background: "linear-gradient(135deg, rgba(70,120,75,0.45) 0%, rgba(70,120,75,0.2) 100%)",
-                        backdropFilter: "blur(40px) saturate(1.8)",
-                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                        border: "1px solid rgba(70,120,75,0.5)",
-                        boxShadow: "0 4px 16px rgba(70,120,75,0.18), inset 0 1px 0 rgba(255,255,255,0.3)",
+                        background: "hsl(var(--primary))",
+                        color: "hsl(var(--primary-foreground))",
+                        boxShadow: "0 4px 16px rgba(70,120,75,0.3)",
                       } : undefined}
                       disabled={!inMonth}
                     >
