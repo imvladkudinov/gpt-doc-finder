@@ -28,7 +28,7 @@ const Onboarding = () => {
           Never forget your plants again
         </h1>
         <p className="max-w-xs text-base text-muted-foreground">
-          Smart watering reminders that adapt to your life. Start caring in under 30 seconds.
+          Set up once, and we'll remind you when each plant needs attention.
         </p>
       </motion.div>
 
@@ -43,20 +43,15 @@ const Onboarding = () => {
           onClick={() => navigate("/plants")}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
         >
-          <Leaf className="h-5 w-5" />
-          Sign in to start caring effortlessly
+          Register
         </button>
 
         <button
           onClick={() => navigate("/plants")}
           className="w-full rounded-2xl px-6 py-4 font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]"
         >
-          Skip setup — we'll handle it for you
+          Skip setup
         </button>
-
-        <p className="text-center text-xs text-muted-foreground">
-          Your plants, stress-free 🌿
-        </p>
       </motion.div>
     </div>
     </PageTransition>
