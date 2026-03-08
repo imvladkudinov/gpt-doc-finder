@@ -139,6 +139,7 @@ const Plants = () => {
 
       
     </div>
+    </ScrollFadeLayout>
     </PageTransition>
   );
 };
