@@ -65,7 +65,7 @@ const Plants = () => {
     <PageTransition>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="px-6 pt-12 pb-4">
+      <div className="px-6 pt-6 pb-4">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
