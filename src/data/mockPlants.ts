@@ -10,6 +10,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
     missedWatering: false,
     notes: "",
+    replantingInterval: 12,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90),
+    autoSchedule: true,
   },
   {
     id: "2",
@@ -20,6 +23,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
     missedWatering: true,
     notes: "",
+    replantingInterval: 18,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 200),
+    autoSchedule: false,
   },
   {
     id: "3",
@@ -30,6 +36,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
     missedWatering: false,
     notes: "Keep in bright light",
+    replantingInterval: 24,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 300),
+    autoSchedule: true,
   },
   {
     id: "4",
@@ -40,6 +49,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
     missedWatering: false,
     notes: "",
+    replantingInterval: 12,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60),
+    autoSchedule: false,
   },
   {
     id: "5",
@@ -50,6 +62,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
     missedWatering: false,
     notes: "Likes humidity",
+    replantingInterval: 18,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 150),
+    autoSchedule: true,
   },
   {
     id: "6",
@@ -60,6 +75,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9),
     missedWatering: false,
     notes: "",
+    replantingInterval: 24,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 400),
+    autoSchedule: false,
   },
   {
     id: "7",
@@ -70,6 +88,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
     missedWatering: false,
     notes: "Indirect sunlight",
+    replantingInterval: 18,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180),
+    autoSchedule: true,
   },
   {
     id: "8",
@@ -80,6 +101,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
     missedWatering: false,
     notes: "",
+    replantingInterval: 12,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 100),
+    autoSchedule: false,
   },
   {
     id: "9",
@@ -90,6 +114,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
     missedWatering: false,
     notes: "Very low maintenance",
+    replantingInterval: 24,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 500),
+    autoSchedule: true,
   },
   {
     id: "10",
@@ -100,6 +127,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
     missedWatering: false,
     notes: "Ice cube watering",
+    replantingInterval: 24,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 350),
+    autoSchedule: false,
   },
   {
     id: "11",
@@ -110,6 +140,9 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
     missedWatering: true,
     notes: "Loves humidity",
+    replantingInterval: 12,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45),
+    autoSchedule: true,
   },
   {
     id: "12",
@@ -120,5 +153,8 @@ export const mockPlants: Plant[] = [
     lastWatered: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
     missedWatering: false,
     notes: "",
+    replantingInterval: 18,
+    nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 250),
+    autoSchedule: false,
   },
 ];
