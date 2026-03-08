@@ -37,6 +37,7 @@ const Profile = () => {
               </div>
             </button>
             <button
+              onClick={() => navigate("/notification-preferences")}
               className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
             >
               <div className="flex items-center gap-3">
