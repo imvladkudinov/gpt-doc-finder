@@ -69,13 +69,16 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
             </button>
           </div>
 
-          {/* Photo identification banner */}
-          <div className="mb-5 flex items-center justify-between rounded-xl bg-secondary p-4">
-            <div>
-              <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
-              <p className="text-xs text-muted-foreground">We'll take care</p>
+          {/* Photo identification row */}
+          <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">📷</span>
+              <div>
+                <span className="text-sm font-medium text-foreground">Identify by photo</span>
+                <p className="text-xs text-muted-foreground">We'll take care</p>
+              </div>
             </div>
-            <button className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-all active:scale-95">
+            <button className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground transition-all active:scale-95">
               Photo
             </button>
           </div>
