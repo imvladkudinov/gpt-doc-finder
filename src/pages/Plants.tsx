@@ -402,13 +402,9 @@ const Plants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-card p-6 text-center shadow-xl"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
             >
-              <p className="text-3xl mb-2">{overduePlant.emoji}</p>
-              <p className="text-base font-semibold text-foreground mb-1">
-                {overduePlant.name} needs water
-              </p>
-              <p className="text-xs text-muted-foreground mb-5">
+              <p className="text-sm text-muted-foreground mb-5">
                 Was it watered earlier and you forgot to mark it?
               </p>
               <div className="flex gap-3">
@@ -417,16 +413,16 @@ const Plants = () => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-full bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                  className="flex-1 rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
-                  Yes, already watered
+                  Already watered
                 </button>
                 <button
                   onClick={() => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                  className="flex-1 rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Water now
                 </button>
@@ -453,13 +449,9 @@ const Plants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-card p-6 text-center shadow-xl"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
             >
-              <p className="text-3xl mb-2">{lateWaterPlant.emoji}</p>
-              <p className="text-base font-semibold text-foreground mb-1">
-                {lateWaterPlant.name}
-              </p>
-              <p className="text-xs text-muted-foreground mb-5">
+              <p className="text-sm text-muted-foreground mb-5">
                 Did you forget to mark it, or was watering actually delayed?
               </p>
               <div className="flex flex-col gap-2">
@@ -468,7 +460,7 @@ const Plants = () => {
                     handleWater(lateWaterPlant.id);
                     setLateWaterPlant(null);
                   }}
-                  className="w-full rounded-full bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                  className="w-full rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Forgot to mark
                 </button>
@@ -477,7 +469,7 @@ const Plants = () => {
                     handleWater(lateWaterPlant.id);
                     setLateWaterPlant(null);
                   }}
-                  className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                  className="w-full rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Watering was delayed
                 </button>
