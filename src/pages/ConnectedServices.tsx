@@ -22,42 +22,9 @@ const initialServices = [
     connected: true,
     status: "Syncing schedule",
   },
-  {
-    id: "apple-health",
-    name: "Apple Health",
-    emoji: "🍎",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "home-assistant",
-    name: "Home Assistant",
-    emoji: "🏠",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "alexa",
-    name: "Amazon Alexa",
-    emoji: "🔊",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "weather",
-    name: "Weather API",
-    emoji: "🌤️",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "notion",
-    name: "Notion",
-    emoji: "📝",
-    connected: false,
-    status: "Not connected",
-  },
 ];
+
+const availableServiceEmojis = ["🍎", "🏠", "🔊", "🌤️", "📝"];
 
 const ConnectedServices = () => {
   const [services, setServices] = useState(initialServices);
