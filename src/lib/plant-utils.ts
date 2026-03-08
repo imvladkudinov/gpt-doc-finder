@@ -6,16 +6,17 @@ export function getWateringStatus(plant: Plant) {
   const next = new Date(plant.nextWatering);
 
   if (plant.missedWatering || isBefore(next, now)) {
-    return { label: "Needs water!", urgent: true, color: "terracotta" as const };
+    return { label: "Needs water!", urgent: true, color: "terracotta" as const, daysLeft: 0 };
   }
   if (isToday(next)) {
-    return { label: "Water today", urgent: false, color: "accent" as const };
+    return { label: "Water today", urgent: false, color: "accent" as const, daysLeft: 0 };
   }
   const days = differenceInDays(next, now);
   return {
     label: days === 1 ? "Tomorrow" : `In ${days} days`,
     urgent: false,
     color: "primary" as const,
+    daysLeft: days,
   };
 }
 
