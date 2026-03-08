@@ -1,4 +1,4 @@
-import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown, Settings } from "lucide-react";
+import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
@@ -21,24 +21,16 @@ const Profile = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="px-6 pt-6 pb-4 flex items-center justify-between">
             <h1 className="font-serif text-2xl font-bold text-foreground">Profile</h1>
-            <div className="flex items-center gap-2">
-              <button
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                style={glassStyle}
-              >
-                <Settings className="h-4 w-4 text-foreground" strokeWidth={2} />
-              </button>
-              <button
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                style={glassStyle}
-              >
-                <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
-              </button>
-            </div>
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+              style={glassStyle}
+            >
+              <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
+            </button>
           </div>
 
           <div className="px-6">
-            {/* Centered avatar + name + premium */}
+            {/* Centered avatar + name + premium label */}
             <div className="mb-6 flex flex-col items-center">
               <img
                 src={avatarPlant}
@@ -46,9 +38,9 @@ const Profile = () => {
                 className="h-24 w-24 rounded-3xl object-cover"
               />
               <p className="mt-3 font-serif text-xl font-semibold text-foreground">Alejandra García</p>
-              <div className="mt-1.5 flex items-center gap-1.5">
-                <Crown className="h-3 w-3 text-accent" />
-                <span className="text-xs font-medium text-accent">Premium</span>
+              <div className="mt-2 flex items-center gap-1.5 rounded-full bg-accent px-3 py-1">
+                <Crown className="h-3 w-3 text-white" />
+                <span className="text-xs font-semibold text-white">Premium</span>
               </div>
             </div>
 
@@ -58,7 +50,7 @@ const Profile = () => {
                 className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
-                  <Link className="h-4 w-4 text-primary" />
+                  <User className="h-4 w-4 text-primary" />
                   Personal details
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />

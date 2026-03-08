@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Mail, Lock, Crown, X, Eye, EyeOff } from "lucide-react";
+import { Pencil, Mail, Lock, Crown, X, Eye, EyeOff, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
@@ -8,6 +8,7 @@ import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 const PersonalDetails = () => {
   const [name, setName] = useState("Alejandra García");
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+  const [showSubscriptionSheet, setShowSubscriptionSheet] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
@@ -21,6 +22,14 @@ const PersonalDetails = () => {
     }
   };
 
+  const glassClose = {
+    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+    backdropFilter: "blur(40px) saturate(1.8)",
+    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+    border: "1px solid rgba(255,255,255,0.5)",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+  };
+
   return (
     <PageTransition>
       <ScrollFadeLayout>
@@ -31,9 +40,13 @@ const PersonalDetails = () => {
           </div>
 
           <div className="px-6 pt-20">
+            {/* General section */}
+            <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              General
+            </p>
             <div className="space-y-2">
               {/* Name — inline editable */}
-              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
+              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Pencil className="h-4 w-4 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Name</span>
@@ -46,7 +59,7 @@ const PersonalDetails = () => {
               </div>
 
               {/* Email (read-only) */}
-              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5">
+              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Mail className="h-4 w-4 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Email</span>
@@ -57,7 +70,7 @@ const PersonalDetails = () => {
               {/* Password */}
               <button
                 onClick={() => setShowPasswordSheet(true)}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Lock className="h-4 w-4 shrink-0 text-primary" />
@@ -73,7 +86,10 @@ const PersonalDetails = () => {
             <p className="mb-2 mt-6 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Subscription
             </p>
-            <div className="rounded-2xl bg-card px-5 py-5">
+            <button
+              onClick={() => setShowSubscriptionSheet(true)}
+              className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
+            >
               <div className="flex items-center gap-3">
                 <Crown className="h-4 w-4 shrink-0 text-accent" />
                 <div>
@@ -86,7 +102,8 @@ const PersonalDetails = () => {
                   <p className="mt-0.5 text-xs text-muted-foreground">Renews on March 15, 2027</p>
                 </div>
               </div>
-            </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </button>
           </div>
         </div>
       </ScrollFadeLayout>
@@ -114,19 +131,12 @@ const PersonalDetails = () => {
                 <button
                   onClick={() => setShowPasswordSheet(false)}
                   className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                    backdropFilter: "blur(40px) saturate(1.8)",
-                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  }}
+                  style={glassClose}
                 >
                   <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
 
-              {/* New password */}
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <Lock className="h-5 w-5 text-primary" />
@@ -147,7 +157,6 @@ const PersonalDetails = () => {
                 </div>
               </div>
 
-              {/* Confirm password */}
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <Lock className="h-5 w-5 text-primary" />
@@ -178,6 +187,72 @@ const PersonalDetails = () => {
               >
                 Update password
               </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Subscription bottom sheet */}
+      <AnimatePresence>
+        {showSubscriptionSheet && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            onClick={() => setShowSubscriptionSheet(false)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+            >
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-lg font-bold text-foreground">Subscription</h2>
+                <button
+                  onClick={() => setShowSubscriptionSheet(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={glassClose}
+                >
+                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <div className="flex items-center gap-3">
+                  <Crown className="h-5 w-5 text-accent" />
+                  <span className="text-sm font-medium text-foreground">Plan</span>
+                </div>
+                <span className="text-sm font-medium text-foreground">Premium</span>
+              </div>
+
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <span className="text-sm font-medium text-foreground">Status</span>
+                <span className="rounded-lg bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent">Active</span>
+              </div>
+
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <span className="text-sm font-medium text-foreground">Next billing</span>
+                <span className="text-sm text-muted-foreground">March 15, 2027</span>
+              </div>
+
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+                <span className="text-sm font-medium text-foreground">Price</span>
+                <span className="text-sm text-muted-foreground">€4.99 / month</span>
+              </div>
+
+              <div className="mt-4 rounded-2xl bg-sage-100 p-4">
+                <p className="text-sm font-medium text-primary mb-1">Premium includes</p>
+                <ul className="space-y-1.5 text-xs text-muted-foreground">
+                  <li>• Unlimited plants & smart reminders</li>
+                  <li>• AI-powered care recommendations</li>
+                  <li>• Calendar & service integrations</li>
+                  <li>• Priority support</li>
+                </ul>
+              </div>
             </motion.div>
           </motion.div>
         )}
