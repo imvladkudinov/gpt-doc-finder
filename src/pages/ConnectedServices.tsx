@@ -53,7 +53,7 @@ const ConnectedServices = () => {
               {services.map(({ id, name, logo, connected, status }) => (
                 <div
                   key={id}
-                  className="flex items-center justify-between rounded-2xl bg-card px-4 py-5"
+                  className="flex items-center justify-between rounded-2xl bg-card px-5 py-5"
                 >
                   <div className="flex items-center gap-3">
                     <img src={logo} alt={name} className="h-6 w-6" />
