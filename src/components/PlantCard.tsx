@@ -32,18 +32,14 @@ const PlantCard = ({ plant, onClick, onOverdueClick, index }: PlantCardProps) =>
           }}
         />
       )}
-      <div className="text-2xl">{plant.emoji}</div>
+      <div className="text-3xl">{plant.emoji}</div>
       <div className="w-full">
-        <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+        <h3 className="font-serif text-sm font-semibold text-foreground leading-tight truncate">
           {plant.name}
         </h3>
-        <div className="mt-1.5">
-          <span
-            className={`text-[10px] font-medium ${
-              status.urgent ? "text-accent" : "text-muted-foreground"
-            }`}
-          >
-            {status.label}
+        <div className="mt-0.5">
+          <span className="text-[10px] font-medium text-muted-foreground">
+            {status.daysLeft === 0 ? "In 0 days" : status.label}
           </span>
         </div>
       </div>
