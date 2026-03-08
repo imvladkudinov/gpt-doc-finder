@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ChevronDown } from "lucide-react";
+import { X, ChevronDown, Search } from "lucide-react";
 
 interface WikiTopic {
   title: string;
@@ -67,6 +67,7 @@ interface PlantWikiSheetProps {
 
 const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
 
   if (!open) return null;
 
@@ -95,23 +96,40 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
               Essential tips for happy, healthy houseplants
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all active:scale-95"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-              backdropFilter: "blur(40px) saturate(1.8)",
-              WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-              border: "1px solid rgba(255,255,255,0.5)",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-            }}
-          >
-            <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={onClose}
+              className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
+            >
+              <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+            </button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="mb-4 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setExpandedIndex(null); }}
+            placeholder="Search topics…"
+            className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+          />
         </div>
 
         <div className="space-y-2">
-          {WIKI_TOPICS.map((topic, i) => {
+          {WIKI_TOPICS.filter((t) =>
+            t.title.toLowerCase().includes(search.toLowerCase()) ||
+            t.content.toLowerCase().includes(search.toLowerCase())
+          ).map((topic, i) => {
             const isExpanded = expandedIndex === i;
             return (
               <div key={i} className="rounded-2xl bg-secondary overflow-hidden">
