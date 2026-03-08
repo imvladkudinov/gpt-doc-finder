@@ -10,12 +10,6 @@ import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
 import { getWateringStatus, formatWateringDate } from "@/lib/plant-utils";
 import { getPlantInfo } from "@/lib/plant-info";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 
 const Plants = () => {
   const [plants, setPlants] = useState<Plant[]>(mockPlants);
