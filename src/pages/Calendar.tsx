@@ -53,18 +53,19 @@ const CalendarPage = () => {
                 style={
                   activeTab === tab
                     ? {
-                        background: "linear-gradient(135deg, rgba(104,159,107,0.18) 0%, rgba(104,159,107,0.08) 100%)",
-                        backdropFilter: "blur(20px) saturate(1.5)",
-                        WebkitBackdropFilter: "blur(20px) saturate(1.5)",
-                        border: "1px solid rgba(104,159,107,0.25)",
-                        boxShadow: "0 2px 12px rgba(104,159,107,0.08)",
+                        background: "linear-gradient(135deg, rgba(104,159,107,0.35) 0%, rgba(104,159,107,0.18) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(104,159,107,0.4)",
+                        boxShadow: "0 4px 16px rgba(104,159,107,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
                         color: "hsl(var(--sage-700))",
                       }
                     : {
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 100%)",
-                        backdropFilter: "blur(20px) saturate(1.5)",
-                        WebkitBackdropFilter: "blur(20px) saturate(1.5)",
-                        border: "1px solid rgba(255,255,255,0.4)",
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(255,255,255,0.5)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
                         color: "hsl(var(--muted-foreground))",
                       }
                 }
