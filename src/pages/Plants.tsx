@@ -62,6 +62,7 @@ const Plants = () => {
   );
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="px-6 pt-12 pb-4">
