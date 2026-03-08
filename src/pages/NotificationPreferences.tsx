@@ -134,9 +134,6 @@ const NotificationPreferences = () => {
               </div>
             </div>
 
-            <p className="text-center text-xs text-muted-foreground">
-              Your plants will thank you at the time you choose 🌿
-            </p>
           </div>
         </div>
       </ScrollFadeLayout>
