@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Plus } from "lucide-react";
+import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
