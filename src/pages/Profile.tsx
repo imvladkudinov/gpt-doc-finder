@@ -48,8 +48,8 @@ const Profile = () => {
                   boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
                 }}
               >
-                <Crown className="h-3 w-3 text-foreground" fill="currentColor" />
-                <span className="text-xs font-semibold text-foreground">Premium</span>
+                <Crown className="h-3 w-3 text-purple-500" fill="currentColor" />
+                <span className="text-xs font-semibold text-purple-500">Premium</span>
               </div>
             </div>
 

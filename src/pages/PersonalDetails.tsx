@@ -256,8 +256,8 @@ const PersonalDetails = () => {
                 <span className="text-sm text-muted-foreground">€4.99 / month</span>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-premium-light p-4">
-                <p className="text-sm font-medium text-premium mb-1">Premium includes</p>
+              <div className="mt-4 rounded-2xl bg-purple-50 p-4">
+                <p className="text-sm font-medium text-purple-500 mb-1">Premium includes</p>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                   <li>• Unlimited plants & smart reminders</li>
                   <li>• AI-powered care recommendations</li>
@@ -267,7 +267,16 @@ const PersonalDetails = () => {
               </div>
 
               <div className="mt-4 space-y-2">
-                <button className="w-full rounded-2xl bg-premium py-4 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]">
+                <button
+                  className="w-full rounded-full py-4 text-sm font-semibold text-purple-500 transition-all hover:opacity-90 active:scale-[0.98]"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
                   Upgrade to yearly
                 </button>
                 <button className="w-full rounded-2xl py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
