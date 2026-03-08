@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Plus, Droplets, RefreshCw, Pencil } from "lucide-react";
+import WheelPicker from "@/components/WheelPicker";
 
 interface AddPlantDialogProps {
   open: boolean;
@@ -10,16 +11,23 @@ interface AddPlantDialogProps {
 
 const PLANT_EMOJIS = ["🪴", "🌿", "🌵", "🌱", "🪷", "🌸", "🌻", "🍀", "🌾", "🌺"];
 
-const WATERING_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 10, 14, 21, 30];
+const WATERING_OPTIONS = [1, 2, 3, 4, 5, 7, 10, 14, 21, 30];
 const REPLANTING_OPTIONS = [3, 6, 9, 12, 18, 24, 36];
+
+const glassClose = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+  backdropFilter: "blur(40px) saturate(1.8)",
+  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+};
 
 const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
   const [name, setName] = useState("");
   const [emoji, setEmoji] = useState("🪴");
   const [wateringInterval, setWateringInterval] = useState(7);
   const [replantingInterval, setReplantingInterval] = useState(12);
-  const [showWateringPicker, setShowWateringPicker] = useState(false);
-  const [showReplantingPicker, setShowReplantingPicker] = useState(false);
+  const [pickerField, setPickerField] = useState<"watering" | "replanting" | null>(null);
 
   if (!open) return null;
 
@@ -31,14 +39,6 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
     setWateringInterval(7);
     setReplantingInterval(12);
     onClose();
-  };
-
-  const glassClose = {
-    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-    backdropFilter: "blur(40px) saturate(1.8)",
-    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-    border: "1px solid rgba(255,255,255,0.5)",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
   };
 
   return (
@@ -71,11 +71,9 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
 
           {/* Photo identification banner */}
           <div className="mb-5 flex items-center justify-between rounded-2xl bg-secondary p-4">
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
-                <p className="text-xs text-muted-foreground">We'll take care</p>
-              </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
+              <p className="text-xs text-muted-foreground">We'll take care</p>
             </div>
             <button className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-all active:scale-95">
               Photo
@@ -125,7 +123,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
               <span className="text-sm font-medium text-foreground">Watering interval</span>
             </div>
             <button
-              onClick={() => setShowWateringPicker(true)}
+              onClick={() => setPickerField("watering")}
               className="rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all active:scale-95"
             >
               {wateringInterval} days
@@ -139,7 +137,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
               <span className="text-sm font-medium text-foreground">Replanting interval</span>
             </div>
             <button
-              onClick={() => setShowReplantingPicker(true)}
+              onClick={() => setPickerField("replanting")}
               className="rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all active:scale-95"
             >
               {replantingInterval} mo
@@ -156,15 +154,15 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
         </motion.div>
       </motion.div>
 
-      {/* Watering interval picker */}
+      {/* WheelPicker bottom sheet */}
       <AnimatePresence>
-        {showWateringPicker && (
+        {pickerField && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setShowWateringPicker(false)}
+            onClick={() => setPickerField(null)}
           >
             <motion.div
               initial={{ y: "100%" }}
@@ -175,84 +173,30 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
               className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
             >
               <div className="mb-5 flex items-center justify-between">
-                <h3 className="font-serif text-lg font-bold text-foreground">Watering interval</h3>
+                <h2 className="font-serif text-lg font-bold text-foreground">
+                  {pickerField === "watering" ? "Watering interval" : "Replanting interval"}
+                </h2>
                 <button
-                  onClick={() => setShowWateringPicker(false)}
+                  onClick={() => setPickerField(null)}
                   className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
                   style={glassClose}
                 >
                   <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {WATERING_OPTIONS.map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => {
-                      setWateringInterval(d);
-                      setShowWateringPicker(false);
-                    }}
-                    className={`rounded-2xl py-3 text-sm font-medium transition-all active:scale-95 ${
-                      wateringInterval === d
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {d} {d === 1 ? "day" : "days"}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Replanting interval picker */}
-      <AnimatePresence>
-        {showReplantingPicker && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setShowReplantingPicker(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <h3 className="font-serif text-lg font-bold text-foreground">Replanting interval</h3>
-                <button
-                  onClick={() => setShowReplantingPicker(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={glassClose}
-                >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {REPLANTING_OPTIONS.map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => {
-                      setReplantingInterval(m);
-                      setShowReplantingPicker(false);
-                    }}
-                    className={`rounded-2xl py-3 text-sm font-medium transition-all active:scale-95 ${
-                      replantingInterval === m
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {m} mo
-                  </button>
-                ))}
-              </div>
+              <WheelPicker
+                items={pickerField === "watering" ? WATERING_OPTIONS : REPLANTING_OPTIONS}
+                value={pickerField === "watering" ? wateringInterval : replantingInterval}
+                onChange={(val) => {
+                  if (pickerField === "watering") {
+                    setWateringInterval(val);
+                  } else {
+                    setReplantingInterval(val);
+                  }
+                }}
+                formatItem={(v) => `${v} ${pickerField === "watering" ? (v === 1 ? "day" : "days") : "months"}`}
+              />
             </motion.div>
           </motion.div>
         )}
