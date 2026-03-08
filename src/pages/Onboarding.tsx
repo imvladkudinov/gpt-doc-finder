@@ -8,6 +8,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   return (
+    <PageTransition>
     <div className="flex min-h-screen flex-col items-center justify-between bg-background px-6 py-12">
       {/* Hero */}
       <motion.div
