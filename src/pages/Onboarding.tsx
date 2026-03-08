@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
 import plantsHero from "@/assets/plants-hero.png";
 import { Leaf } from "lucide-react";
