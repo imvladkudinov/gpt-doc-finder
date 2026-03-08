@@ -492,6 +492,11 @@ const Plants = () => {
       )}
     </AnimatePresence>
 
+    {/* Wiki Sheet */}
+    <AnimatePresence>
+      {showWiki && <PlantWikiSheet open={showWiki} onClose={() => setShowWiki(false)} />}
+    </AnimatePresence>
+
     </ScrollFadeLayout>
     </PageTransition>
   );
