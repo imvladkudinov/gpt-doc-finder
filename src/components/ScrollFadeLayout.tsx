@@ -12,10 +12,13 @@ const ScrollFadeLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="relative min-h-screen">
+      {/* Top fade */}
       <div
         className="pointer-events-none fixed top-0 left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
         style={{ opacity: scrolled ? 1 : 0 }}
       />
+      {/* Bottom fade - always visible */}
+      <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-30 h-24 bg-gradient-to-t from-background to-transparent" />
       {children}
     </div>
   );

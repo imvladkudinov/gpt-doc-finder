@@ -139,33 +139,32 @@ const WheelPicker = ({
     <PageTransition>
     <ScrollFadeLayout>
     <div className="min-h-screen bg-background pb-24">
+      {/* Fixed + button */}
+      <button
+        onClick={() => setShowAdd(true)}
+        className="fixed top-6 right-6 z-40 flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+          backdropFilter: "blur(40px) saturate(1.8)",
+          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+          border: "1px solid rgba(255,255,255,0.5)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+        }}
+      >
+        <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+      </button>
+
       {/* Header */}
       <div className="px-6 pt-6 pb-2">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center justify-between"
         >
-          <div>
-            <h1 className="font-serif text-2xl font-bold text-foreground">
-              My Plants
-            </h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">{plants.length} plants</p>
-          </div>
-          <button
-            onClick={() => setShowAdd(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-              backdropFilter: "blur(40px) saturate(1.8)",
-              WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-              border: "1px solid rgba(255,255,255,0.5)",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-            }}
-          >
-            <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-          </button>
+          <h1 className="font-serif text-2xl font-bold text-foreground">
+            My Plants
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">{plants.length} plants</p>
         </motion.div>
 
         {/* Info tabs */}
@@ -255,7 +254,7 @@ const WheelPicker = ({
               {/* Watering interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("watering")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-background p-4"
+                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary p-4"
               >
                 <div className="flex items-center gap-3">
                   <Droplets className="h-5 w-5 text-primary" />
@@ -269,7 +268,7 @@ const WheelPicker = ({
               {/* Replanting interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("replanting")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-background p-4"
+                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary p-4"
               >
                 <div className="flex items-center gap-3">
                   <RefreshCw className="h-5 w-5 text-primary" />
@@ -281,7 +280,7 @@ const WheelPicker = ({
               </button>
 
               {/* Next watering info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <Droplets className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next watering</span>
@@ -292,7 +291,7 @@ const WheelPicker = ({
               </div>
 
               {/* Next replanting info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <RefreshCw className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next replanting</span>
@@ -303,7 +302,7 @@ const WheelPicker = ({
               </div>
 
               {/* Auto schedule toggle */}
-              <div className="flex items-center justify-between rounded-2xl bg-background p-4">
+              <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Let app decide</span>
