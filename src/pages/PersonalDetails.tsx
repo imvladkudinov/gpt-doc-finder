@@ -91,11 +91,11 @@ const PersonalDetails = () => {
               className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
             >
               <div className="flex items-center gap-3">
-                <Crown className="h-4 w-4 shrink-0 text-accent" />
+                <Crown className="h-4 w-4 shrink-0 text-premium" fill="currentColor" />
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground">Premium Plan</p>
-                    <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
+                    <span className="rounded-lg bg-premium px-2 py-0.5 text-[10px] font-semibold text-white">
                       Active
                     </span>
                   </div>
@@ -223,7 +223,7 @@ const PersonalDetails = () => {
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <div className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 text-accent" />
+                  <Crown className="h-5 w-5 text-premium" fill="currentColor" />
                   <span className="text-sm font-medium text-foreground">Plan</span>
                 </div>
                 <span className="text-sm font-medium text-foreground">Premium</span>
@@ -231,7 +231,7 @@ const PersonalDetails = () => {
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
                 <span className="text-sm font-medium text-foreground">Status</span>
-                <span className="rounded-lg bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent">Active</span>
+                <span className="rounded-lg bg-premium px-2.5 py-1 text-xs font-semibold text-white">Active</span>
               </div>
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
@@ -244,14 +244,23 @@ const PersonalDetails = () => {
                 <span className="text-sm text-muted-foreground">€4.99 / month</span>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-sage-100 p-4">
-                <p className="text-sm font-medium text-primary mb-1">Premium includes</p>
+              <div className="mt-4 rounded-2xl bg-premium-light p-4">
+                <p className="text-sm font-medium text-premium mb-1">Premium includes</p>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                   <li>• Unlimited plants & smart reminders</li>
                   <li>• AI-powered care recommendations</li>
                   <li>• Calendar & service integrations</li>
                   <li>• Priority support</li>
                 </ul>
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <button className="w-full rounded-2xl bg-premium py-4 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]">
+                  Upgrade to yearly
+                </button>
+                <button className="w-full rounded-2xl py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
+                  Cancel subscription
+                </button>
               </div>
             </motion.div>
           </motion.div>
