@@ -34,7 +34,7 @@ const PlantCard = ({ plant, onClick, onOverdueClick, index }: PlantCardProps) =>
       )}
       <div className="text-4xl">{plant.emoji}</div>
       <div className="w-full">
-        <h3 className="font-serif text-[15px] font-semibold text-foreground leading-tight truncate">
+        <h3 className="font-serif text-[15px] font-semibold text-foreground leading-tight line-clamp-2">
           {plant.name}
         </h3>
         <span className="text-[10px] font-medium text-muted-foreground leading-none">
