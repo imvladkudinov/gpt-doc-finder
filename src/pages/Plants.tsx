@@ -5,7 +5,7 @@ import PageTransition from "@/components/PageTransition";
 import PlantCard from "@/components/PlantCard";
 import PlantDetail from "@/components/PlantDetail";
 import AddPlantDialog from "@/components/AddPlantDialog";
-import TabBar from "@/components/TabBar";
+
 import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
 
