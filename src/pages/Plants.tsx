@@ -442,6 +442,64 @@ const Plants = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Late watering modal */}
+      <AnimatePresence>
+        {lateWaterPlant && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[70] bg-black/40"
+              onClick={() => setLateWaterPlant(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ type: "spring", damping: 24, stiffness: 300 }}
+              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl p-6 text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%)",
+                backdropFilter: "blur(40px) saturate(1.6)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.6)",
+                border: "1px solid rgba(255,255,255,0.35)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+              }}
+            >
+              <p className="text-3xl mb-2">{lateWaterPlant.emoji}</p>
+              <p className="text-base font-semibold text-foreground mb-1">
+                {lateWaterPlant.name}
+              </p>
+              <p className="text-xs text-muted-foreground mb-5">
+                Did you forget to mark it, or was watering actually delayed?
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    handleWater(lateWaterPlant.id);
+                    setLateWaterPlant(null);
+                  }}
+                  className="w-full rounded-full bg-muted py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                >
+                  Forgot to mark
+                </button>
+                <button
+                  onClick={() => {
+                    handleWater(lateWaterPlant.id);
+                    setLateWaterPlant(null);
+                  }}
+                  className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                >
+                  Watering was delayed
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
 
     {/* Plant Info Bottom Sheet */}
