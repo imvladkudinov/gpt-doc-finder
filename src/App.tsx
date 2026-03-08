@@ -9,12 +9,13 @@ import Plants from "./pages/Plants";
 import ConnectedServices from "./pages/ConnectedServices";
 import CalendarPage from "./pages/Calendar";
 import Profile from "./pages/Profile";
+import NotificationPreferences from "./pages/NotificationPreferences";
 import NotFound from "./pages/NotFound";
 import TabBar from "./components/TabBar";
 
 const queryClient = new QueryClient();
 
-const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services"];
+const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services", "/notification-preferences"];
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const AnimatedRoutes = () => {
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/connected-services" element={<ConnectedServices />} />
+          <Route path="/notification-preferences" element={<NotificationPreferences />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
