@@ -64,6 +64,7 @@ const Plants = () => {
 
   return (
     <PageTransition>
+    <ScrollFadeLayout>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="px-6 pt-6 pb-4">
