@@ -48,13 +48,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <div className="mobile-frame-wrapper">
-        <div className="mobile-frame">
-          <BrowserRouter>
-            <AnimatedRoutes />
-          </BrowserRouter>
-        </div>
-      </div>
+      <BrowserRouter>
+        <AnimatedRoutes />
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
