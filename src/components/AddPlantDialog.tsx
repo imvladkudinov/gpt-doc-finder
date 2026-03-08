@@ -131,7 +131,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Replanting interval row */}
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-4 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-3">
               <RefreshCw className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Replanting interval</span>

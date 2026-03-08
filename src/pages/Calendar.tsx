@@ -303,7 +303,7 @@ const CalendarPage = () => {
                   : sheetRare.map((item, i) => (
                       <div
                         key={i}
-                        className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                        className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-xl bg-secondary p-3.5 text-left"
                       >
                         <div className="text-4xl">{item.emoji}</div>
                         <div className="w-full">
