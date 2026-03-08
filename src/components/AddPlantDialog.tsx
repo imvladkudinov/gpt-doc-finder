@@ -70,7 +70,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Photo identification banner */}
-          <div className="mb-5 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-5 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div>
               <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
               <p className="text-xs text-muted-foreground">We'll take care</p>
