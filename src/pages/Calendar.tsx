@@ -113,12 +113,12 @@ const CalendarPage = () => {
                 style={
                   activeTab === tab
                     ? {
-                        background: "linear-gradient(135deg, rgba(80,130,85,0.4) 0%, rgba(80,130,85,0.2) 100%)",
+                        background: "linear-gradient(135deg, rgba(70,120,75,0.5) 0%, rgba(70,120,75,0.25) 100%)",
                         backdropFilter: "blur(40px) saturate(1.8)",
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                        border: "1px solid rgba(80,130,85,0.45)",
-                        boxShadow: "0 4px 20px rgba(80,130,85,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
-                        color: "hsl(var(--sage-700))",
+                        border: "1px solid rgba(70,120,75,0.5)",
+                        boxShadow: "0 4px 20px rgba(70,120,75,0.18), inset 0 1px 0 rgba(255,255,255,0.3)",
+                        color: "hsl(var(--primary-foreground))",
                         fontWeight: 600,
                       }
                     : {
@@ -127,7 +127,7 @@ const CalendarPage = () => {
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
                         border: "1px solid rgba(255,255,255,0.5)",
                         boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                        color: "hsl(var(--muted-foreground))",
+                        color: "hsl(var(--foreground))",
                       }
                 }
               >
