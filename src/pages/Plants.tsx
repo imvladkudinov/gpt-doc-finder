@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Home, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
@@ -66,78 +66,67 @@ const Plants = () => {
 const ITEM_HEIGHT = 44;
 const VISIBLE_ITEMS = 5;
 
-const IosPicker = ({
-  values,
-  unit,
-  selected,
+const WheelPicker = ({
+  items,
+  value,
   onChange,
+  formatItem,
 }: {
-  values: number[];
-  unit: string;
-  selected: number;
-  onChange: (val: number) => void;
+  items: number[];
+  value: number;
+  onChange: (v: number) => void;
+  formatItem: (v: number) => string;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const initialIdx = values.indexOf(selected);
-  const [activeIdx, setActiveIdx] = useState(initialIdx >= 0 ? initialIdx : 0);
-
-  const scrollToIdx = useCallback((idx: number, smooth = true) => {
-    containerRef.current?.scrollTo({
-      top: idx * ITEM_HEIGHT,
-      behavior: smooth ? "smooth" : "auto",
-    });
-  }, []);
+  const isScrollingRef = useRef(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    scrollToIdx(activeIdx, false);
-  }, []); // eslint-disable-line
+    if (containerRef.current && !isScrollingRef.current) {
+      const idx = items.indexOf(value);
+      containerRef.current.scrollTop = idx * ITEM_HEIGHT;
+    }
+  }, [value, items]);
 
   const handleScroll = () => {
-    if (!containerRef.current) return;
-    const scrollTop = containerRef.current.scrollTop;
-    const idx = Math.round(scrollTop / ITEM_HEIGHT);
-    const clamped = Math.max(0, Math.min(idx, values.length - 1));
-    if (clamped !== activeIdx) {
-      setActiveIdx(clamped);
-      onChange(values[clamped]);
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    isScrollingRef.current = true;
+    timeoutRef.current = setTimeout(() => {
+      if (containerRef.current) {
+        const idx = Math.round(containerRef.current.scrollTop / ITEM_HEIGHT);
+        const clamped = Math.max(0, Math.min(idx, items.length - 1));
+        containerRef.current.scrollTo({ top: clamped * ITEM_HEIGHT, behavior: "smooth" });
+        onChange(items[clamped]);
+      }
+      isScrollingRef.current = false;
+    }, 80);
   };
 
   return (
-    <div className="relative" style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}>
-      {/* Selection highlight */}
+    <div className="relative flex-1" style={{ height: ITEM_HEIGHT * VISIBLE_ITEMS }}>
       <div
-        className="pointer-events-none absolute left-0 right-0 rounded-xl bg-background"
+        className="pointer-events-none absolute left-0 right-0 z-10 rounded-xl bg-sage-100"
         style={{ top: ITEM_HEIGHT * 2, height: ITEM_HEIGHT }}
       />
-      {/* Fade edges */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-card to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-card to-transparent" />
+      <div className="pointer-events-none absolute top-0 left-0 right-0 z-20 h-20 bg-gradient-to-b from-card to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-20 bg-gradient-to-t from-card to-transparent" />
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="h-full overflow-y-auto scrollbar-hide"
+        className="h-full overflow-y-auto scrollbar-none"
         style={{
           scrollSnapType: "y mandatory",
           paddingTop: ITEM_HEIGHT * 2,
           paddingBottom: ITEM_HEIGHT * 2,
         }}
       >
-        {values.map((val, i) => (
+        {items.map((item) => (
           <div
-            key={val}
-            className="flex items-center justify-center transition-all"
-            style={{
-              height: ITEM_HEIGHT,
-              scrollSnapAlign: "center",
-              opacity: i === activeIdx ? 1 : 0.3,
-              transform: i === activeIdx ? "scale(1)" : "scale(0.9)",
-              fontWeight: i === activeIdx ? 600 : 400,
-            }}
+            key={item}
+            className="flex items-center justify-center text-lg font-semibold text-foreground"
+            style={{ height: ITEM_HEIGHT, scrollSnapAlign: "start" }}
           >
-            <span className="text-lg text-foreground">
-              {val} {unit}
-            </span>
+            {formatItem(item)}
           </div>
         ))}
       </div>
@@ -325,7 +314,7 @@ const IosPicker = ({
                     setSelectedPlant(updated);
                     setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
                   }}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${selectedPlant.autoSchedule ? "bg-primary" : "bg-muted"}`}
+                  className={`relative h-7 w-12 rounded-full transition-colors ${selectedPlant.autoSchedule ? "bg-primary" : "bg-muted-foreground/30"}`}
                 >
                   <motion.div
                     layout
@@ -377,11 +366,10 @@ const IosPicker = ({
                 </button>
               </div>
 
-              {/* iOS wheel picker */}
-              <IosPicker
-                values={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
-                unit={carouselField === "watering" ? "days" : "months"}
-                selected={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
+              {/* Wheel picker */}
+              <WheelPicker
+                items={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
+                value={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
                 onChange={(val) => {
                   const updated = carouselField === "watering"
                     ? { ...selectedPlant, wateringInterval: val }
@@ -389,6 +377,7 @@ const IosPicker = ({
                   setSelectedPlant(updated);
                   setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
                 }}
+                formatItem={(v) => `${v} ${carouselField === "watering" ? "days" : "months"}`}
               />
             </motion.div>
           </motion.div>
