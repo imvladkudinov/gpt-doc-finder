@@ -42,11 +42,11 @@ const Profile = () => {
               <div
                 className="mt-1 flex items-center gap-1.5 rounded-full px-3 py-1"
                 style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                  background: "linear-gradient(135deg, rgba(168,130,255,0.2) 0%, rgba(168,130,255,0.08) 100%)",
                   backdropFilter: "blur(40px) saturate(1.8)",
                   WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                  border: "1px solid rgba(255,255,255,0.5)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  border: "1px solid rgba(168,130,255,0.25)",
+                  boxShadow: "0 4px 16px rgba(168,130,255,0.1), inset 0 1px 0 rgba(255,255,255,0.6)",
                 }}
               >
                 <Crown className="h-3 w-3 text-purple-500" fill="currentColor" />
