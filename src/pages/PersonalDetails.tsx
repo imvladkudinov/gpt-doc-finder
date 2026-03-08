@@ -59,7 +59,7 @@ const PersonalDetails = () => {
               </div>
 
               {/* Email (read-only) */}
-              <div className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4">
+              <div className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Email</span>
