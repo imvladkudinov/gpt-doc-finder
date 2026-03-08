@@ -63,9 +63,6 @@ const Plants = () => {
     setPlants((prev) => [...prev, newPlant]);
   };
 
-  const needsWater = plants.filter(
-    (p) => p.missedWatering || new Date(p.nextWatering) <= new Date()
-  );
 
   return (
     <PageTransition>
