@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ChevronDown } from "lucide-react";
+import { X, ChevronDown, Search } from "lucide-react";
 
 interface WikiTopic {
   title: string;
