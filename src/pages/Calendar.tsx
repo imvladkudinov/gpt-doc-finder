@@ -70,7 +70,6 @@ const CalendarPage = () => {
   const handleDayClick = (day: Date) => {
     if (!isSameMonth(day, currentMonth)) return;
     const dayNum = day.getDate();
-    setSelectedDay(day);
     if (!hasEvents(dayNum, activeTab)) return;
     setSheetDate(day);
   };
