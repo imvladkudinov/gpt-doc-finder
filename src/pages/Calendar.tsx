@@ -247,7 +247,7 @@ const CalendarPage = () => {
                   ? sheetPlants.map((plant) => (
                       <div
                         key={plant.id}
-                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
+                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
                       >
                         <div className="text-2xl">{plant.emoji}</div>
                         <div className="w-full">
