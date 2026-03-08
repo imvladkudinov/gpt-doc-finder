@@ -404,7 +404,8 @@ const Plants = () => {
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
               className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
             >
-              <p className="text-sm text-muted-foreground mb-5">
+              <p className="text-3xl mb-2">{overduePlant.emoji}</p>
+              <p className="text-base font-medium text-foreground mb-5">
                 Was it watered earlier and you forgot to mark it?
               </p>
               <div className="flex gap-3">
