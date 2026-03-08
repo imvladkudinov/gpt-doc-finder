@@ -98,7 +98,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
         </div>
 
         {/* Watering interval row */}
-        <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+        <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
           <div className="flex items-center gap-3">
             <Droplets className="h-5 w-5 text-primary" />
             <span className="text-sm font-medium text-foreground">Watering interval</span>
