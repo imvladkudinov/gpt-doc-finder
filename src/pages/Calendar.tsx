@@ -244,25 +244,33 @@ const CalendarPage = () => {
 
               <div className="grid grid-cols-3 gap-2.5">
                 {activeTab === "Plants"
-                  ? sheetPlants.map((plant) => (
-                      <div
-                        key={plant.id}
-                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
-                      >
-                        <div className="text-2xl">{plant.emoji}</div>
-                        <div className="w-full">
-                          <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
-                            {plant.name}
-                          </h3>
-                          <div className="mt-1.5 flex items-center gap-1">
-                            <Droplets className="h-3 w-3 text-primary" />
-                            <span className="text-[10px] font-medium text-muted-foreground">
-                              Water
+                  ? sheetPlants.map((plant) => {
+                      const fullPlant = mockPlants.find((p) => p.id === plant.id);
+                      const status = fullPlant ? getWateringStatus(fullPlant) : null;
+                      const isOverdue = status?.daysLeft === 0;
+                      return (
+                        <div
+                          key={plant.id}
+                          className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                        >
+                          {isOverdue && (
+                            <div
+                              className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full"
+                              style={{ background: "hsl(20 70% 60%)", boxShadow: "0 0 8px hsla(20,70%,60%,0.3)" }}
+                            />
+                          )}
+                          <div className="text-4xl">{plant.emoji}</div>
+                          <div className="w-full">
+                            <h3 className="font-serif text-[15px] font-semibold text-foreground leading-tight line-clamp-2">
+                              {plant.name}
+                            </h3>
+                            <span className="text-[10px] font-medium text-muted-foreground leading-none">
+                              {status ? (status.daysLeft === 0 ? "In 0 days" : status.label) : "Water"}
                             </span>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   : sheetRare.map((item, i) => (
                       <div
                         key={i}
