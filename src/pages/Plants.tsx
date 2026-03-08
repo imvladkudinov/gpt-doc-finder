@@ -262,7 +262,7 @@ const Plants = () => {
                   <Droplets className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next watering</span>
                 </div>
-                <span className="text-sm text-muted-foreground">
+                <span className="rounded-full px-3 py-1.5 text-xs font-semibold text-muted-foreground">
                   {formatWateringDate(selectedPlant.nextWatering)}
                 </span>
               </div>
