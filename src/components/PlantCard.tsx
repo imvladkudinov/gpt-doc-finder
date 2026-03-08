@@ -47,13 +47,12 @@ const PlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: PlantCard
       </div>
       {/* Watered button */}
       <div
-        className="mt-2 flex w-full items-center justify-center gap-1 rounded-xl bg-primary/10 py-1.5 text-primary transition-colors active:bg-primary/20"
+        className="mt-2 flex w-full items-center justify-center rounded-xl bg-primary/10 py-1.5 text-primary transition-colors active:bg-primary/20"
         onClick={(e) => {
           e.stopPropagation();
           onWater?.();
         }}
       >
-        <Droplets className="h-3 w-3" />
         <span className="text-[10px] font-semibold">Watered</span>
       </div>
     </motion.button>
