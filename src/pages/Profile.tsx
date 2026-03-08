@@ -1,4 +1,4 @@
-import { User, Bell, Shield, Link, ChevronRight } from "lucide-react";
+import { User, Bell, Shield, Link, ChevronRight, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
@@ -45,6 +45,16 @@ const Profile = () => {
                 <div className="flex items-center gap-3">
                   <Bell className="h-4 w-4 text-primary" />
                   Notification preferences
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+              <button
+                onClick={() => navigate("/plant-personalization")}
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+              >
+                <div className="flex items-center gap-3">
+                  <Leaf className="h-4 w-4 text-primary" />
+                  Plant personalization
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
