@@ -99,7 +99,7 @@ const Profile = () => {
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Shield className="h-5 w-5 shrink-0 text-primary" />
