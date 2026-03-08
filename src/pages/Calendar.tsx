@@ -131,6 +131,7 @@ const CalendarPage = () => {
             <button
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-card transition-colors active:bg-secondary"
+            >
               <ChevronLeft className="h-4 w-4 text-foreground" />
             </button>
             <h2 className="font-serif text-base font-semibold text-foreground">
