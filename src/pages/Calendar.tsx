@@ -1,4 +1,3 @@
-import TabBar from "@/components/TabBar";
 import { CalendarDays } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 
@@ -6,7 +5,7 @@ const CalendarPage = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background pb-24">
-        <div className="px-6 pt-12 pb-4">
+        <div className="px-6 pt-6 pb-4">
           <h1 className="font-serif text-2xl font-bold text-foreground">Calendar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Your watering schedule at a glance
@@ -21,7 +20,6 @@ const CalendarPage = () => {
             Calendar view with notification management is on its way. Your plants will thank you at the time you choose.
           </p>
         </div>
-        <TabBar />
       </div>
     </PageTransition>
   );

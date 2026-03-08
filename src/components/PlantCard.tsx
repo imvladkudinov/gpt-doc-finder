@@ -19,7 +19,7 @@ const PlantCard = ({ plant, onClick, index }: PlantCardProps) => {
       transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="glass flex flex-col items-start gap-3 rounded-3xl p-5 text-left transition-shadow hover:shadow-lg"
+      className="flex flex-col items-start gap-3 rounded-3xl bg-card p-5 text-left shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="text-4xl">{plant.emoji}</div>
       <div className="w-full">
