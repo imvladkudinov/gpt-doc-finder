@@ -44,22 +44,34 @@ const CalendarPage = () => {
           </div>
 
           {/* Tabs */}
-          <div className="px-6 mb-4">
-            <div className="flex gap-2 rounded-2xl bg-card p-1.5">
-              {TABS.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 rounded-xl py-2.5 text-sm font-medium transition-all ${
-                    activeTab === tab
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-2 px-6 mb-4">
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="rounded-full px-5 py-2.5 text-sm font-medium transition-all"
+                style={
+                  activeTab === tab
+                    ? {
+                        background: "linear-gradient(135deg, rgba(104,159,107,0.18) 0%, rgba(104,159,107,0.08) 100%)",
+                        backdropFilter: "blur(20px) saturate(1.5)",
+                        WebkitBackdropFilter: "blur(20px) saturate(1.5)",
+                        border: "1px solid rgba(104,159,107,0.25)",
+                        boxShadow: "0 2px 12px rgba(104,159,107,0.08)",
+                        color: "hsl(var(--sage-700))",
+                      }
+                    : {
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.2) 100%)",
+                        backdropFilter: "blur(20px) saturate(1.5)",
+                        WebkitBackdropFilter: "blur(20px) saturate(1.5)",
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        color: "hsl(var(--muted-foreground))",
+                      }
+                }
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
           {/* Month navigation */}
