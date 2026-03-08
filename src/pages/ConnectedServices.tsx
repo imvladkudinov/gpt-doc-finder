@@ -75,7 +75,7 @@ const ConnectedServices = () => {
                 </div>
               ))}
 
-              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-4 py-5 transition-colors hover:bg-secondary">
+              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-5 py-5 transition-colors hover:bg-secondary">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary">
                   <Plus className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
                 </div>
