@@ -140,7 +140,7 @@ const Plants = () => {
               border: "1px solid rgba(255,255,255,0.5)",
             }}
           >
-            <Home className="h-3 w-3 text-foreground fill-foreground" />
+            <span className="text-xs">🏠</span>
             <span className="text-xs font-medium text-foreground">22°C</span>
           </div>
         </div>
