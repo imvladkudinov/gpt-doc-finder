@@ -182,7 +182,7 @@ const IosPicker = ({
         {/* Info tabs */}
         <div className="mt-3 flex gap-2">
           <div
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+            className="flex items-center gap-1.5 rounded-full pl-1.5 pr-3 py-1.5"
             style={{
               background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
               backdropFilter: "blur(40px) saturate(1.8)",
