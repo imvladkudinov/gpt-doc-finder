@@ -107,7 +107,7 @@ const CalendarPage = () => {
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
                         border: "1px solid rgba(70,120,75,0.5)",
                         boxShadow: "0 4px 20px rgba(70,120,75,0.18), inset 0 1px 0 rgba(255,255,255,0.3)",
-                        color: "hsl(var(--primary-foreground))",
+                        color: "hsl(var(--foreground))",
                         fontWeight: 600,
                       }
                     : {

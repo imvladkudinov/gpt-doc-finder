@@ -46,7 +46,7 @@ const TabBar = () => {
               )}
               <Icon
                 className={`relative z-10 h-5 w-5 transition-all duration-200 ${
-                  active ? "text-primary" : "text-foreground/30"
+                  active ? "text-primary" : "text-foreground/45"
                 }`}
                 strokeWidth={active ? 2 : 1.6}
               />
