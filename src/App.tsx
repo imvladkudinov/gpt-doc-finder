@@ -23,6 +23,7 @@ const App = () => (
           <Route path="/plants" element={<Plants />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/connected-services" element={<ConnectedServices />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
