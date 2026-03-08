@@ -275,7 +275,7 @@ const WheelPicker = ({
                   <RefreshCw className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Replanting interval</span>
                 </div>
-                <span className={`text-xs font-medium text-muted-foreground ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
+                <span className={`rounded-xl px-2.5 py-1 text-xs font-semibold bg-primary/15 text-primary ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
                   {selectedPlant.replantingInterval} mo
                 </span>
               </button>
