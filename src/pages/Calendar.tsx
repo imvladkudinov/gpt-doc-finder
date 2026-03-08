@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import { mockPlants } from "@/data/mockPlants";
+import { getWateringStatus } from "@/lib/plant-utils";
 import {
   format,
   startOfMonth,

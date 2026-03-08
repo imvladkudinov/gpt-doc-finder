@@ -204,7 +204,7 @@ const NotificationPreferences = () => {
               </p>
               <button
                 onClick={openPicker}
-                className="w-full rounded-2xl bg-card px-5 py-5 text-left transition-colors hover:bg-secondary"
+                className="w-full rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

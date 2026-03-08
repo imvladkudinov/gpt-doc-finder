@@ -14,7 +14,7 @@ const PlantPersonalization = () => {
           </div>
 
           <div className="space-y-2 px-6 pt-20">
-            <button className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors hover:bg-secondary">
+            <button className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary">
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
                 <div>
