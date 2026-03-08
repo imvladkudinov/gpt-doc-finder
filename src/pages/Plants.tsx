@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Home, Droplets, X, Sparkles, RefreshCw, HelpCircle } from "lucide-react";
+import { Plus, Home, Droplets, X, Sparkles, RefreshCw, MessageCircleQuestion } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
@@ -10,12 +10,6 @@ import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
 import { getWateringStatus, formatWateringDate } from "@/lib/plant-utils";
 import { getPlantInfo } from "@/lib/plant-info";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 
 const Plants = () => {
   const [plants, setPlants] = useState<Plant[]>(mockPlants);
@@ -259,7 +253,7 @@ const WheelPicker = ({
                     }}
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/80 border border-border transition-all active:scale-95"
                   >
-                    <HelpCircle className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
+                    <MessageCircleQuestion className="h-[18px] w-[18px] text-foreground/70" strokeWidth={2.5} />
                   </button>
                   {/* Close button */}
                   <button
@@ -474,37 +468,69 @@ const WheelPicker = ({
       </AnimatePresence>
     </div>
 
-    {/* Plant Info Sheet */}
-    {selectedPlant && (
-      <Sheet open={showPlantInfo} onOpenChange={setShowPlantInfo}>
-        <SheetContent side="bottom" className="z-[60] rounded-t-3xl px-6 pb-10 pt-6">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="font-serif text-xl">
-              {selectedPlant.emoji} {selectedPlant.name}
-            </SheetTitle>
-          </SheetHeader>
-          {(() => {
-            const info = getPlantInfo(selectedPlant.name);
-            return (
-              <div className="space-y-5">
-                <div>
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.about.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{info.about.body}</p>
-                </div>
-                <div>
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.likes.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{info.likes.body}</p>
-                </div>
-                <div>
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.care.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{info.care.body}</p>
-                </div>
+    {/* Plant Info Bottom Sheet */}
+    <AnimatePresence>
+      {showPlantInfo && selectedPlant && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+          onClick={() => setShowPlantInfo(false)}
+        >
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 300 }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{selectedPlant.emoji}</span>
+                <h2 className="font-serif text-lg font-bold text-foreground">
+                  {selectedPlant.name}
+                </h2>
               </div>
-            );
-          })()}
-        </SheetContent>
-      </Sheet>
-    )}
+              <button
+                onClick={() => setShowPlantInfo(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                  backdropFilter: "blur(40px) saturate(1.8)",
+                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                  border: "1px solid rgba(255,255,255,0.5)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
+              >
+                <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              </button>
+            </div>
+
+            {(() => {
+              const info = getPlantInfo(selectedPlant.name);
+              return (
+                <div className="space-y-5">
+                  <div className="rounded-2xl bg-secondary p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.about.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{info.about.body}</p>
+                  </div>
+                  <div className="rounded-2xl bg-secondary p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.likes.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{info.likes.body}</p>
+                  </div>
+                  <div className="rounded-2xl bg-secondary p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.care.title}</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{info.care.body}</p>
+                  </div>
+                </div>
+              );
+            })()}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
 
     </ScrollFadeLayout>
     </PageTransition>
