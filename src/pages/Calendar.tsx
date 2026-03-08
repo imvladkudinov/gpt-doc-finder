@@ -186,9 +186,9 @@ const CalendarPage = () => {
                     <button
                       key={i}
                       onClick={() => inMonth && handleDayClick(day)}
-                      className={`relative flex h-10 w-full items-center justify-center rounded-full text-sm transition-all ${
+                      className={`relative flex h-10 w-10 mx-auto items-center justify-center rounded-full text-sm transition-all ${
                         today
-                          ? "font-semibold text-foreground"
+                          ? "font-semibold text-primary"
                           : inMonth && eventCount > 0
                           ? "text-foreground hover:bg-secondary cursor-pointer"
                           : inMonth
@@ -196,11 +196,9 @@ const CalendarPage = () => {
                           : "text-muted-foreground/30 cursor-default"
                       }`}
                       style={today ? {
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                        backdropFilter: "blur(40px) saturate(1.8)",
-                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                        border: "1px solid rgba(255,255,255,0.5)",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                        background: "linear-gradient(135deg, rgba(70,120,75,0.25) 0%, rgba(70,120,75,0.1) 100%)",
+                        border: "1.5px solid rgba(70,120,75,0.4)",
+                        boxShadow: "0 2px 12px rgba(70,120,75,0.15)",
                       } : undefined}
                       disabled={!inMonth}
                     >
