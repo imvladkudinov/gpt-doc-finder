@@ -15,7 +15,7 @@ const TabBar = () => {
   return (
     <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-6">
       <nav
-        className="flex items-center gap-1 rounded-[22px] px-2 py-2"
+        className="flex items-center gap-1 rounded-full px-2 py-2"
         style={{
           background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
           backdropFilter: "blur(40px) saturate(1.8)",
