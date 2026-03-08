@@ -221,7 +221,7 @@ const CalendarPage = () => {
 
           {/* Upcoming notification */}
           <div className="px-6 mt-4">
-            <div className="flex gap-3 rounded-2xl bg-card p-4">
+            <div className="flex gap-3 rounded-xl bg-card p-4">
               <span className="text-2xl shrink-0">🪴</span>
               <div>
                 <h3 className="text-sm font-semibold text-foreground">Monstera replanting on the 14th</h3>
