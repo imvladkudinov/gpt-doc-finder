@@ -420,7 +420,7 @@ const Plants = () => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-2xl bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                  className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
                 >
                   Water now
                 </button>

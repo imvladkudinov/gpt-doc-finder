@@ -279,7 +279,7 @@ const PersonalDetails = () => {
                 >
                   Upgrade to yearly
                 </button>
-                <button className="w-full rounded-2xl py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
+                <button className="w-full rounded-full py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
                   Cancel subscription
                 </button>
               </div>

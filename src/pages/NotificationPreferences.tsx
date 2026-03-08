@@ -206,7 +206,7 @@ const NotificationPreferences = () => {
 
               <button
                 onClick={applyTime}
-                className="mt-6 w-full rounded-2xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
+                className="mt-6 w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
               >
                 Apply
               </button>
