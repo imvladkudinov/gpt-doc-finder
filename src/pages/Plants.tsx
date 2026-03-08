@@ -199,13 +199,13 @@ const Plants = () => {
               {/* Watering interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("watering")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary p-4"
+                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary px-5 py-4"
               >
                 <div className="flex items-center gap-3">
-                  <Droplets className="h-5 w-5 text-primary" />
+                  <Droplets className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Watering interval</span>
                 </div>
-                <span className={`rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
+                <span className={`rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
                   {selectedPlant.wateringInterval} days
                 </span>
               </button>
@@ -213,43 +213,43 @@ const Plants = () => {
               {/* Replanting interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("replanting")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary p-4"
+                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary px-5 py-4"
               >
                 <div className="flex items-center gap-3">
-                  <RefreshCw className="h-5 w-5 text-primary" />
+                  <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Replanting interval</span>
                 </div>
-                <span className={`rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
+                <span className={`rounded-lg bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
                   {selectedPlant.replantingInterval} mo
                 </span>
               </button>
 
               {/* Next watering info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Droplets className="h-5 w-5 text-primary" />
+                  <Droplets className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next watering</span>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {formatWateringDate(selectedPlant.nextWatering)}
                 </span>
               </div>
 
               {/* Next replanting info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <RefreshCw className="h-5 w-5 text-primary" />
+                  <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next replanting</span>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {formatWateringDate(selectedPlant.nextReplanting)}
                 </span>
               </div>
 
               {/* Auto schedule toggle */}
-              <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
+              <div className="flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 text-primary" />
+                  <Sparkles className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Let us care</span>
                 </div>
                 <button
