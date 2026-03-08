@@ -130,8 +130,7 @@ const CalendarPage = () => {
           <div className="flex items-center justify-between px-6 mb-4">
             <button
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-card transition-colors hover:bg-secondary"
-            >
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-card transition-colors active:bg-secondary"
               <ChevronLeft className="h-4 w-4 text-foreground" />
             </button>
             <h2 className="font-serif text-base font-semibold text-foreground">
