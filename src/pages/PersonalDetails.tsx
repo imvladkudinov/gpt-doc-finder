@@ -91,11 +91,20 @@ const PersonalDetails = () => {
               className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
             >
               <div className="flex items-center gap-3">
-                <Crown className="h-5 w-5 shrink-0 text-premium" fill="currentColor" />
+                <Crown className="h-5 w-5 shrink-0 text-purple-500" fill="currentColor" />
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground">Premium Plan</p>
-                    <span className="rounded-lg bg-premium px-2 py-0.5 text-[10px] font-semibold text-white">
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold text-purple-500"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(255,255,255,0.5)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                      }}
+                    >
                       Active
                     </span>
                   </div>
@@ -222,12 +231,9 @@ const PersonalDetails = () => {
               </div>
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Crown className="h-5 w-5 shrink-0 text-premium" fill="currentColor" />
-                  <span className="text-sm font-medium text-foreground">Plan</span>
-                </div>
+                <span className="text-sm font-medium text-foreground">Plan</span>
                 <span
-                  className="rounded-full px-3 py-1 text-xs font-semibold text-foreground"
+                  className="rounded-full px-3 py-1 text-xs font-semibold text-purple-500"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                     backdropFilter: "blur(40px) saturate(1.8)",
@@ -241,11 +247,6 @@ const PersonalDetails = () => {
               </div>
 
               <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
-                <span className="text-sm font-medium text-foreground">Status</span>
-                <span className="rounded-lg bg-premium px-2.5 py-1 text-xs font-semibold text-white">Active</span>
-              </div>
-
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Next billing</span>
                 <span className="text-sm text-muted-foreground">March 15, 2027</span>
               </div>
@@ -255,8 +256,8 @@ const PersonalDetails = () => {
                 <span className="text-sm text-muted-foreground">€4.99 / month</span>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-premium-light p-4">
-                <p className="text-sm font-medium text-premium mb-1">Premium includes</p>
+              <div className="mt-4 rounded-2xl bg-purple-50 p-4">
+                <p className="text-sm font-medium text-purple-500 mb-1">Premium includes</p>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                   <li>• Unlimited plants & smart reminders</li>
                   <li>• AI-powered care recommendations</li>
@@ -266,7 +267,16 @@ const PersonalDetails = () => {
               </div>
 
               <div className="mt-4 space-y-2">
-                <button className="w-full rounded-2xl bg-premium py-4 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]">
+                <button
+                  className="w-full rounded-full py-4 text-sm font-semibold text-purple-500 transition-all hover:opacity-90 active:scale-[0.98]"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
                   Upgrade to yearly
                 </button>
                 <button className="w-full rounded-2xl py-4 text-sm font-medium text-muted-foreground transition-all hover:bg-secondary active:scale-[0.98]">
