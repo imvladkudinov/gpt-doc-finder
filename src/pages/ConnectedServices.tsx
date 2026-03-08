@@ -75,6 +75,14 @@ const ConnectedServices = () => {
     setDisconnectTarget(null);
   };
 
+  const handleConnect = (id: string) => {
+    setServices((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, connected: true, status: "Just connected" } : s
+      )
+    );
+  };
+
   return (
     <PageTransition>
       <ScrollFadeLayout>
