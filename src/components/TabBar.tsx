@@ -30,7 +30,7 @@ const TabBar = () => {
             <button
               key={path}
               onClick={() => navigate(path)}
-              className="relative flex h-12 w-14 items-center justify-center rounded-2xl transition-colors"
+              className="relative flex h-12 w-14 items-center justify-center rounded-full transition-colors"
             >
               {active && (
                 <motion.div
