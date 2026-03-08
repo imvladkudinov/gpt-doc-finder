@@ -74,20 +74,35 @@ const Plants = () => {
     <PageTransition>
     <ScrollFadeLayout>
     <div className="min-h-screen bg-background pb-24">
-      {/* Fixed + button */}
-      <button
-        onClick={() => setShowAdd(true)}
-        className="fixed top-6 right-6 z-40 flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-          backdropFilter: "blur(40px) saturate(1.8)",
-          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-          border: "1px solid rgba(255,255,255,0.5)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-        }}
-      >
-        <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-      </button>
+      {/* Fixed top-right buttons */}
+      <div className="fixed top-6 right-6 z-40 flex items-center gap-2">
+        <button
+          onClick={() => setShowWiki(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          <BookOpen className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+        </button>
+        <button
+          onClick={() => setShowAdd(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+        </button>
+      </div>
 
       {/* Header */}
       <div className="px-6 pt-6 pb-2">
