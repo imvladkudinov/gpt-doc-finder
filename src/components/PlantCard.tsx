@@ -16,24 +16,24 @@ const PlantCard = ({ plant, onClick, index }: PlantCardProps) => {
     <motion.button
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
+      transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="flex flex-col items-start gap-3 rounded-3xl bg-card p-5 text-left shadow-sm transition-shadow hover:shadow-md"
+      className="flex flex-col items-start gap-2 rounded-2xl bg-card p-3.5 text-left shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="text-4xl">{plant.emoji}</div>
+      <div className="text-2xl">{plant.emoji}</div>
       <div className="w-full">
-        <h3 className="font-serif text-base font-semibold text-foreground leading-tight">
+        <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
           {plant.name}
         </h3>
-        <div className="mt-2 flex items-center gap-1.5">
+        <div className="mt-1.5 flex items-center gap-1">
           <Droplets
-            className={`h-3.5 w-3.5 ${
+            className={`h-3 w-3 ${
               status.urgent ? "text-accent" : "text-primary"
             }`}
           />
           <span
-            className={`text-xs font-medium ${
+            className={`text-[10px] font-medium ${
               status.urgent ? "text-accent" : "text-muted-foreground"
             }`}
           >

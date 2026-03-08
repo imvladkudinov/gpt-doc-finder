@@ -13,7 +13,7 @@ const Profile = () => {
         </div>
 
         <div className="px-6">
-          <div className="glass mb-6 flex items-center gap-4 rounded-3xl p-5">
+          <div className="mb-6 flex items-center gap-4 rounded-3xl bg-card p-5">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-100">
               <User className="h-7 w-7 text-primary" />
             </div>
