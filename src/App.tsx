@@ -11,6 +11,7 @@ import CalendarPage from "./pages/Calendar";
 import Profile from "./pages/Profile";
 import NotificationPreferences from "./pages/NotificationPreferences";
 import PlantPersonalization from "./pages/PlantPersonalization";
+import PersonalDetails from "./pages/PersonalDetails";
 import NotFound from "./pages/NotFound";
 import TabBar from "./components/TabBar";
 
