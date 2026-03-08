@@ -266,7 +266,7 @@ const WheelPicker = ({
                   <Droplets className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-foreground">Watering interval</span>
                 </div>
-                <span className={`rounded-xl bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all ${selectedPlant.autoSchedule ? "opacity-50" : ""}`}>
+                <span className={`rounded-xl bg-sage-100 px-4 py-2 text-xs font-medium text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
                   {selectedPlant.wateringInterval} days
                 </span>
               </button>
