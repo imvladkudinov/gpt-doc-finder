@@ -35,11 +35,11 @@ const PlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: PlantCard
       )}
       <div>
         <div className="text-4xl">{plant.emoji}</div>
-        <div className="mt-1.5 w-full">
+        <div className="mt-1 w-full">
           <h3 className="font-serif text-[15px] font-semibold text-foreground leading-tight line-clamp-2">
             {plant.name}
           </h3>
-          <span className="text-[10px] font-medium text-muted-foreground leading-none">
+          <span className="mt-0.5 block text-[10px] font-medium text-muted-foreground leading-none">
             {status.daysLeft === 0 ? "In 0 days" : status.label}
           </span>
         </div>
