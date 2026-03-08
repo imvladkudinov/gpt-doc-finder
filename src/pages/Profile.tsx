@@ -38,7 +38,7 @@ const Profile = () => {
                 className="h-24 w-24 rounded-3xl object-cover"
               />
               <p className="mt-3 font-serif text-xl font-semibold text-foreground">Alejandra García</p>
-              <div className="mt-2 flex items-center gap-1.5 rounded-full bg-accent px-3 py-1">
+              <div className="mt-1 flex items-center gap-1.5 rounded-full bg-accent px-3 py-1">
                 <Crown className="h-3 w-3 text-white" />
                 <span className="text-xs font-semibold text-white">Premium</span>
               </div>

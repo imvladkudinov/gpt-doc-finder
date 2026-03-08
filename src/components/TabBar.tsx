@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const tabs = [
   { path: "/plants", matchPaths: ["/plants"], icon: Leaf },
   { path: "/calendar", matchPaths: ["/calendar"], icon: CalendarDays },
-  { path: "/profile", matchPaths: ["/profile", "/connected-services", "/notification-preferences", "/plant-personalization"], icon: User },
+  { path: "/profile", matchPaths: ["/profile", "/connected-services", "/notification-preferences", "/plant-personalization", "/personal-details"], icon: User },
 ];
 
 const TabBar = () => {
