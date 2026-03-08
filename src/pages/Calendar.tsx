@@ -197,7 +197,6 @@ const CalendarPage = () => {
                       }`}
                       style={today ? {
                         background: "linear-gradient(135deg, rgba(70,120,75,0.25) 0%, rgba(70,120,75,0.1) 100%)",
-                        border: "1.5px solid rgba(70,120,75,0.4)",
                         boxShadow: "0 2px 12px rgba(70,120,75,0.15)",
                       } : undefined}
                       disabled={!inMonth}
