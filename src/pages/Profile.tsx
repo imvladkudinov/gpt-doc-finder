@@ -22,7 +22,7 @@ const Profile = () => {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
-              <LogOut className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
             </button>
           </div>
 
