@@ -168,7 +168,7 @@ const Plants = () => {
             index={i}
             onClick={() => setSelectedPlant(plant)}
             onOverdueClick={() => setOverduePlant(plant)}
-            onWater={() => handleWater(plant.id)}
+            onWater={() => handleWaterWithCheck(plant.id)}
           />
         ))}
       </div>
