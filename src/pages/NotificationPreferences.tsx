@@ -15,7 +15,7 @@ interface ToggleRowProps {
 }
 
 const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowProps) => (
-  <div className="flex items-center justify-between rounded-2xl bg-card px-5 py-4">
+  <div className="flex items-center justify-between rounded-xl bg-card px-5 py-4">
     <div className="flex items-center gap-3 pr-4">
       {icon}
       <div>

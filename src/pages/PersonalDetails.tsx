@@ -256,7 +256,7 @@ const PersonalDetails = () => {
                 <span className="text-sm text-muted-foreground">€4.99 / month</span>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-purple-50 p-4">
+              <div className="mt-4 rounded-xl bg-purple-50 p-4">
                 <p className="text-sm font-medium text-purple-500 mb-1">Premium includes</p>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                   <li>• Unlimited plants & smart reminders</li>
