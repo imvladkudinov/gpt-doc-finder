@@ -37,8 +37,8 @@ const PlantCard = ({ plant, onClick, onOverdueClick, index }: PlantCardProps) =>
         <h3 className="font-serif text-sm font-semibold text-foreground leading-tight truncate">
           {plant.name}
         </h3>
-        <div className="mt-1 inline-block rounded-lg px-2 py-0.5" style={{ background: "hsl(var(--primary) / 0.12)" }}>
-          <span className="text-[10px] font-medium text-primary">
+        <div className="mt-0.5">
+          <span className="text-[10px] font-medium text-muted-foreground">
             {status.daysLeft === 0 ? "In 0 days" : status.label}
           </span>
         </div>
