@@ -53,10 +53,10 @@ const ConnectedServices = () => {
               {services.map(({ id, name, logo, connected, status }) => (
                 <div
                   key={id}
-                  className="flex items-center justify-between rounded-2xl bg-card px-5 py-5"
+                  className="flex items-center justify-between rounded-2xl bg-card px-5 py-4"
                 >
                   <div className="flex items-center gap-3">
-                    <img src={logo} alt={name} className="h-6 w-6" />
+                    <img src={logo} alt={name} className="h-5 w-5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-foreground">{name}</p>
                       <p className="text-xs text-muted-foreground">{status}</p>
@@ -64,7 +64,7 @@ const ConnectedServices = () => {
                   </div>
                   <button
                     onClick={() => connected && setDisconnectTarget(id)}
-                    className={`rounded-xl px-4 py-2 text-xs font-medium transition-all ${
+                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
                       connected
                         ? "bg-muted text-muted-foreground"
                         : "bg-primary text-primary-foreground hover:opacity-90"
@@ -75,7 +75,7 @@ const ConnectedServices = () => {
                 </div>
               ))}
 
-              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-5 py-5 transition-colors active:bg-secondary">
+              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-5 py-4 transition-colors active:bg-secondary">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary">
                   <Plus className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
                 </div>
