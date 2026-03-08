@@ -85,7 +85,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10 max-h-[85vh] overflow-y-auto"
+        className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10 max-h-[92vh] overflow-y-auto"
       >
         <div className="mb-5 flex items-start justify-between">
           <div>
@@ -114,7 +114,16 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
         </div>
 
         {/* Search */}
-        <div className="mb-4 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3">
+        <div
+          className="mb-4 flex items-center gap-2 rounded-2xl px-4 py-3"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
           <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             type="text"
