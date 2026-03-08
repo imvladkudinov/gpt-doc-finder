@@ -216,6 +216,7 @@ const CalendarPage = () => {
                 })}
               </div>
             </div>
+          </div>
 
           {/* Upcoming notification */}
           <div className="px-6 mt-4">
