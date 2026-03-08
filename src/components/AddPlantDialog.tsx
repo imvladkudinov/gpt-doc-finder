@@ -61,6 +61,17 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </button>
         </div>
 
+        {/* Photo identification banner */}
+        <div className="mb-5 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div>
+            <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
+            <p className="text-xs text-muted-foreground">We'll take care</p>
+          </div>
+          <button className="rounded-xl bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-all active:scale-95">
+            Photo
+          </button>
+        </div>
+
         {/* Emoji picker */}
         <div className="mb-4 flex flex-wrap gap-2">
           {PLANT_EMOJIS.map((e) => (

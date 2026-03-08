@@ -98,6 +98,13 @@ const Profile = () => {
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
+
+            <button
+              onClick={() => navigate("/")}
+              className="mt-4 w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
+            >
+              To onboard
+            </button>
           </div>
         </div>
       </ScrollFadeLayout>
