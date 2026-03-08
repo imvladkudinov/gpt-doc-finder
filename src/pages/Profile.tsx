@@ -22,7 +22,7 @@ const Profile = () => {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
-              <LogOut className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
             </button>
           </div>
 
@@ -39,7 +39,7 @@ const Profile = () => {
             <div className="space-y-2">
               <button
                 onClick={() => navigate("/connected-services")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Link className="h-4 w-4 text-primary" />
@@ -52,7 +52,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/notification-preferences")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Bell className="h-4 w-4 text-primary" />
@@ -62,7 +62,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/plant-personalization")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Leaf className="h-4 w-4 text-primary" />
@@ -71,7 +71,7 @@ const Profile = () => {
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Shield className="h-4 w-4 text-primary" />
