@@ -366,11 +366,10 @@ const WheelPicker = ({
                 </button>
               </div>
 
-              {/* iOS wheel picker */}
-              <IosPicker
-                values={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
-                unit={carouselField === "watering" ? "days" : "months"}
-                selected={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
+              {/* Wheel picker */}
+              <WheelPicker
+                items={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
+                value={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
                 onChange={(val) => {
                   const updated = carouselField === "watering"
                     ? { ...selectedPlant, wateringInterval: val }
@@ -378,6 +377,7 @@ const WheelPicker = ({
                   setSelectedPlant(updated);
                   setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
                 }}
+                formatItem={(v) => `${v} ${carouselField === "watering" ? "days" : "months"}`}
               />
             </motion.div>
           </motion.div>
