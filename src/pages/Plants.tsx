@@ -9,6 +9,13 @@ import AddPlantDialog from "@/components/AddPlantDialog";
 import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
 import { getWateringStatus, formatWateringDate } from "@/lib/plant-utils";
+import { getPlantInfo } from "@/lib/plant-info";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const Plants = () => {
   const [plants, setPlants] = useState<Plant[]>(mockPlants);
@@ -16,6 +23,7 @@ const Plants = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
   const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
+  const [showPlantInfo, setShowPlantInfo] = useState(false);
 
   const handleWater = (id: string) => {
     setPlants((prev) =>
