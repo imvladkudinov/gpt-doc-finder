@@ -35,7 +35,7 @@ const TabBar = () => {
               {active && (
                 <motion.div
                   layoutId="tab-active"
-                  className="absolute inset-0 rounded-2xl"
+                  className="absolute inset-0 rounded-full"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%)",
                     border: "1px solid rgba(255,255,255,0.55)",
