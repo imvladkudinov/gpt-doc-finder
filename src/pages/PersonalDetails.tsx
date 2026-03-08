@@ -91,11 +91,11 @@ const PersonalDetails = () => {
               className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-5 text-left transition-colors active:bg-secondary"
             >
               <div className="flex items-center gap-3">
-                <Crown className="h-4 w-4 shrink-0 text-accent" />
+                <Crown className="h-4 w-4 shrink-0 text-premium" fill="currentColor" />
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground">Premium Plan</p>
-                    <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-[10px] font-semibold text-accent">
+                    <span className="rounded-lg bg-premium px-2 py-0.5 text-[10px] font-semibold text-white">
                       Active
                     </span>
                   </div>
