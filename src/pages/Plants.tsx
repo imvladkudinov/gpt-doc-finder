@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import PageTransition from "@/components/PageTransition";
 import PlantCard from "@/components/PlantCard";
 import PlantDetail from "@/components/PlantDetail";
 import AddPlantDialog from "@/components/AddPlantDialog";
@@ -61,6 +62,7 @@ const Plants = () => {
   );
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="px-6 pt-12 pb-4">
@@ -135,6 +137,7 @@ const Plants = () => {
 
       <TabBar />
     </div>
+    </PageTransition>
   );
 };
 

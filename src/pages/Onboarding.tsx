@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 import { useNavigate } from "react-router-dom";
 import plantsHero from "@/assets/plants-hero.png";
 import { Leaf } from "lucide-react";
@@ -7,6 +8,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   return (
+    <PageTransition>
     <div className="flex min-h-screen flex-col items-center justify-between bg-background px-6 py-12">
       {/* Hero */}
       <motion.div
@@ -57,6 +59,7 @@ const Onboarding = () => {
         </p>
       </motion.div>
     </div>
+    </PageTransition>
   );
 };
 
