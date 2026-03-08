@@ -21,36 +21,49 @@ import {
 const TABS = ["Plants", "Rare activities"] as const;
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-// Map day numbers to plant subsets for demo
+// Each day maps to plant names — the count of names = number of dots
 const dayPlantMap: Record<number, string[]> = {
   1: ["Monstera", "Pothos"],
-  3: ["Boston Fern", "Peace Lily"],
-  5: ["Succulent", "Aloe Vera", "Orchid"],
-  7: ["Monstera", "ZZ Plant"],
-  8: ["Calathea", "Rubber Plant"],
+  3: ["Boston Fern", "Peace Lily", "Orchid"],
+  5: ["Succulent"],
+  7: ["Monstera", "ZZ Plant", "Calathea"],
+  8: ["Calathea"],
   10: ["Pothos", "Fiddle Leaf"],
-  12: ["Boston Fern", "Snake Plant"],
-  14: ["Monstera", "Peace Lily", "Orchid"],
+  12: ["Boston Fern", "Snake Plant", "Rubber Plant"],
+  14: ["Monstera"],
   16: ["Aloe Vera", "Calathea"],
-  17: ["Pothos", "Rubber Plant"],
-  19: ["Succulent", "ZZ Plant"],
-  21: ["Monstera", "Boston Fern", "Fiddle Leaf"],
-  23: ["Peace Lily", "Snake Plant"],
-  24: ["Calathea", "Orchid"],
-  26: ["Pothos", "Aloe Vera"],
-  28: ["Monstera", "Rubber Plant", "ZZ Plant"],
+  17: ["Pothos"],
+  19: ["Succulent", "ZZ Plant", "Fiddle Leaf"],
+  21: ["Monstera", "Boston Fern"],
+  23: ["Peace Lily"],
+  24: ["Calathea", "Orchid", "Aloe Vera"],
+  26: ["Pothos"],
+  28: ["Monstera", "Rubber Plant"],
   30: ["Boston Fern", "Succulent"],
 };
 
 const rareActivitiesMap: Record<number, { name: string; emoji: string; task: string }[]> = {
   2: [{ name: "Monstera", emoji: "🪴", task: "Repotting" }],
-  5: [{ name: "Orchid", emoji: "🌸", task: "Fertilizing" }],
+  5: [{ name: "Orchid", emoji: "🌸", task: "Fertilizing" }, { name: "Succulent", emoji: "🌵", task: "Pruning" }],
   9: [{ name: "Fiddle Leaf", emoji: "🌳", task: "Pruning" }],
-  15: [{ name: "Peace Lily", emoji: "🪷", task: "Fertilizing" }, { name: "Calathea", emoji: "🍃", task: "Repotting" }],
+  15: [
+    { name: "Peace Lily", emoji: "🪷", task: "Fertilizing" },
+    { name: "Calathea", emoji: "🍃", task: "Repotting" },
+    { name: "Snake Plant", emoji: "🐍", task: "Pruning" },
+  ],
   20: [{ name: "Snake Plant", emoji: "🐍", task: "Repotting" }],
-  25: [{ name: "Aloe Vera", emoji: "🪴", task: "Fertilizing" }],
+  25: [{ name: "Aloe Vera", emoji: "🪴", task: "Fertilizing" }, { name: "Rubber Plant", emoji: "🌱", task: "Repotting" }],
   28: [{ name: "Rubber Plant", emoji: "🌱", task: "Pruning" }],
 };
+
+function getEventCount(dayNum: number, tab: (typeof TABS)[number]): number {
+  if (tab === "Plants") return (dayPlantMap[dayNum] ?? []).length;
+  return (rareActivitiesMap[dayNum] ?? []).length;
+}
+
+function hasEvents(dayNum: number, tab: (typeof TABS)[number]): boolean {
+  return getEventCount(dayNum, tab) > 0;
+}
 
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Plants");
@@ -64,18 +77,14 @@ const CalendarPage = () => {
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: calStart, end: calEnd });
 
-  const wateringDays = Object.keys(dayPlantMap).map(Number);
-  const rareDays = Object.keys(rareActivitiesMap).map(Number);
-  const eventDays = activeTab === "Plants" ? wateringDays : rareDays;
-
   const handleDayClick = (day: Date) => {
+    if (!isSameMonth(day, currentMonth)) return;
+    const dayNum = day.getDate();
+    if (!hasEvents(dayNum, activeTab)) return;
     setSelectedDate(day);
-    if (isSameMonth(day, currentMonth)) {
-      setSheetDate(day);
-    }
+    setSheetDate(day);
   };
 
-  // Get plants for the sheet
   const sheetDayNum = sheetDate?.getDate() ?? 0;
   const sheetPlants =
     activeTab === "Plants"
@@ -85,7 +94,6 @@ const CalendarPage = () => {
         })
       : [];
   const sheetRare = activeTab === "Rare activities" ? (rareActivitiesMap[sheetDayNum] ?? []) : [];
-  const hasSheetContent = activeTab === "Plants" ? sheetPlants.length > 0 : sheetRare.length > 0;
 
   return (
     <PageTransition>
@@ -105,19 +113,20 @@ const CalendarPage = () => {
                 style={
                   activeTab === tab
                     ? {
-                        background: "linear-gradient(135deg, rgba(104,159,107,0.35) 0%, rgba(104,159,107,0.18) 100%)",
+                        background: "linear-gradient(135deg, rgba(80,130,85,0.4) 0%, rgba(80,130,85,0.2) 100%)",
                         backdropFilter: "blur(40px) saturate(1.8)",
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                        border: "1px solid rgba(104,159,107,0.4)",
-                        boxShadow: "0 4px 16px rgba(104,159,107,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                        border: "1px solid rgba(80,130,85,0.45)",
+                        boxShadow: "0 4px 20px rgba(80,130,85,0.15), inset 0 1px 0 rgba(255,255,255,0.25)",
                         color: "hsl(var(--sage-700))",
+                        fontWeight: 600,
                       }
                     : {
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                         backdropFilter: "blur(40px) saturate(1.8)",
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
                         border: "1px solid rgba(255,255,255,0.5)",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
                         color: "hsl(var(--muted-foreground))",
                       }
                 }
@@ -165,25 +174,38 @@ const CalendarPage = () => {
                   const inMonth = isSameMonth(day, currentMonth);
                   const today = isToday(day);
                   const selected = selectedDate && isSameDay(day, selectedDate);
-                  const hasEvent = inMonth && eventDays.includes(day.getDate());
+                  const dayNum = day.getDate();
+                  const eventCount = inMonth ? getEventCount(dayNum, activeTab) : 0;
+                  const clickable = inMonth && eventCount > 0;
+                  const dotCount = Math.min(eventCount, 3);
 
                   return (
                     <button
                       key={i}
-                      onClick={() => handleDayClick(day)}
+                      onClick={() => clickable && handleDayClick(day)}
                       className={`relative flex h-10 w-full items-center justify-center rounded-xl text-sm transition-all ${
                         selected
                           ? "bg-primary text-primary-foreground font-semibold"
                           : today
                           ? "bg-sage-100 text-primary font-semibold"
+                          : inMonth && clickable
+                          ? "text-foreground hover:bg-secondary cursor-pointer"
                           : inMonth
-                          ? "text-foreground hover:bg-secondary"
-                          : "text-muted-foreground/30"
+                          ? "text-foreground/50 cursor-default"
+                          : "text-muted-foreground/30 cursor-default"
                       }`}
+                      disabled={!clickable}
                     >
                       {day.getDate()}
-                      {hasEvent && !selected && (
-                        <span className="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
+                      {dotCount > 0 && !selected && (
+                        <span className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-0.5">
+                          {Array.from({ length: dotCount }).map((_, di) => (
+                            <span
+                              key={di}
+                              className="h-1 w-1 rounded-full bg-primary"
+                            />
+                          ))}
+                        </span>
                       )}
                     </button>
                   );
@@ -212,7 +234,6 @@ const CalendarPage = () => {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
             >
-              {/* Header */}
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="font-serif text-lg font-bold text-foreground">
                   {format(sheetDate, "EEEE, MMM d")}
@@ -232,53 +253,46 @@ const CalendarPage = () => {
                 </button>
               </div>
 
-              {/* Plant tiles */}
-              {hasSheetContent ? (
-                <div className="grid grid-cols-3 gap-2.5">
-                  {activeTab === "Plants"
-                    ? sheetPlants.map((plant) => (
-                        <div
-                          key={plant.id}
-                          className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
-                        >
-                          <div className="text-2xl">{plant.emoji}</div>
-                          <div className="w-full">
-                            <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
-                              {plant.name}
-                            </h3>
-                            <div className="mt-1.5 flex items-center gap-1">
-                              <Droplets className="h-3 w-3 text-primary" />
-                              <span className="text-[10px] font-medium text-muted-foreground">
-                                Water
-                              </span>
-                            </div>
+              <div className="grid grid-cols-3 gap-2.5">
+                {activeTab === "Plants"
+                  ? sheetPlants.map((plant) => (
+                      <div
+                        key={plant.id}
+                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
+                      >
+                        <div className="text-2xl">{plant.emoji}</div>
+                        <div className="w-full">
+                          <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+                            {plant.name}
+                          </h3>
+                          <div className="mt-1.5 flex items-center gap-1">
+                            <Droplets className="h-3 w-3 text-primary" />
+                            <span className="text-[10px] font-medium text-muted-foreground">
+                              Water
+                            </span>
                           </div>
                         </div>
-                      ))
-                    : sheetRare.map((item, i) => (
-                        <div
-                          key={i}
-                          className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
-                        >
-                          <div className="text-2xl">{item.emoji}</div>
-                          <div className="w-full">
-                            <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
-                              {item.name}
-                            </h3>
-                            <div className="mt-1.5">
-                              <span className="text-[10px] font-medium text-accent">
-                                {item.task}
-                              </span>
-                            </div>
+                      </div>
+                    ))
+                  : sheetRare.map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex min-h-[120px] flex-col items-start gap-2 rounded-2xl bg-background p-3.5 text-left"
+                      >
+                        <div className="text-2xl">{item.emoji}</div>
+                        <div className="w-full">
+                          <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
+                            {item.name}
+                          </h3>
+                          <div className="mt-1.5">
+                            <span className="text-[10px] font-medium text-accent">
+                              {item.task}
+                            </span>
                           </div>
                         </div>
-                      ))}
-                </div>
-              ) : (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No {activeTab === "Plants" ? "watering" : "activities"} scheduled
-                </p>
-              )}
+                      </div>
+                    ))}
+              </div>
             </motion.div>
           </motion.div>
         )}
