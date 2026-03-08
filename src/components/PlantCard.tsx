@@ -25,7 +25,7 @@ const PlantCard = ({ plant, onClick, onOverdueClick, index }: PlantCardProps) =>
       {status.daysLeft === 0 && (
         <div
           className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full"
-          style={{ background: "hsl(18 75% 45%)", boxShadow: "0 0 8px hsla(18,75%,45%,0.35)" }}
+          style={{ background: "hsl(20 70% 60%)", boxShadow: "0 0 8px hsla(20,70%,60%,0.3)" }}
           onClick={(e) => {
             e.stopPropagation();
             onOverdueClick?.();
