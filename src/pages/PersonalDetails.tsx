@@ -230,7 +230,7 @@ const PersonalDetails = () => {
                 </button>
               </div>
 
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <span className="text-sm font-medium text-foreground">Plan</span>
                 <span
                   className="rounded-full px-3 py-1 text-xs font-semibold text-purple-500"
