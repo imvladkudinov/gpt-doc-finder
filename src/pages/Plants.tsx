@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Home, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, BookOpen, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
 import AddPlantDialog from "@/components/AddPlantDialog";
 import WheelPicker from "@/components/WheelPicker";
+import PlantWikiSheet from "@/components/PlantWikiSheet";
 
 import { mockPlants } from "@/data/mockPlants";
 import { Plant } from "@/types/plant";
