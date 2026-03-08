@@ -85,7 +85,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10 max-h-[85vh] overflow-y-auto"
+        className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10 max-h-[92vh] overflow-y-auto"
       >
         <div className="mb-5 flex items-start justify-between">
           <div>
