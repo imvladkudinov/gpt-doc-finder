@@ -52,7 +52,7 @@ const ConnectedServices = () => {
                         : "bg-primary text-primary-foreground hover:opacity-90"
                     }`}
                   >
-                    {connected ? "Disconnect" : "Connect"}
+                    {connected ? "Connected" : "Connect"}
                   </button>
                 </div>
               ))}
