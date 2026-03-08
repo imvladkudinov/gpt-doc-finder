@@ -85,37 +85,39 @@ const ConnectedServices = () => {
           </div>
           <div className="px-6 pt-20">
             <div className="space-y-2">
-              {services.map(({ id, name, logo, connected, status }) => (
+              {services.map(({ id, name, logo, emoji, connected, status }) => (
                 <div
                   key={id}
                   className="flex items-center justify-between rounded-2xl bg-card px-5 py-4"
                 >
                   <div className="flex items-center gap-3">
-                    <img src={logo} alt={name} className="h-5 w-5 shrink-0" />
+                    {logo ? (
+                      <img src={logo} alt={name} className="h-5 w-5 shrink-0" />
+                    ) : (
+                      <span className="text-lg shrink-0">{emoji}</span>
+                    )}
                     <div>
                       <p className="text-sm font-medium text-foreground">{name}</p>
                       <p className="text-xs text-muted-foreground">{status}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => connected && setDisconnectTarget(id)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
-                      connected
-                        ? "bg-primary/15 text-primary"
-                        : "bg-primary text-primary-foreground hover:opacity-90"
-                    }`}
-                  >
-                    {connected ? "Connected" : "Connect"}
-                  </button>
+                  {connected ? (
+                    <button
+                      onClick={() => setDisconnectTarget(id)}
+                      className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all"
+                    >
+                      Connected
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleConnect(id)}
+                      className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90"
+                    >
+                      Connect
+                    </button>
+                  )}
                 </div>
               ))}
-
-              <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-card px-5 py-4 transition-colors active:bg-secondary">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary">
-                  <Plus className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
-                </div>
-                <span className="text-sm font-medium text-foreground">Add service</span>
-              </button>
             </div>
           </div>
         </div>
