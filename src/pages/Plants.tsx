@@ -74,7 +74,7 @@ const Plants = () => {
           transition={{ duration: 0.5 }}
         >
           <h1 className="font-serif text-2xl font-bold text-foreground">
-            My Plants 🌿
+            My Plants <span className="font-sans text-lg font-normal text-muted-foreground">{plants.length}</span>
           </h1>
           {needsWater.length > 0 && (
             <p className="mt-1 text-sm text-accent">

@@ -58,7 +58,7 @@ function hasEvents(dayNum: number, tab: (typeof TABS)[number]): boolean {
 const CalendarPage = () => {
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Plants");
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  
   const [sheetDate, setSheetDate] = useState<Date | null>(null);
 
   const monthStart = startOfMonth(currentMonth);
@@ -71,7 +71,6 @@ const CalendarPage = () => {
     if (!isSameMonth(day, currentMonth)) return;
     const dayNum = day.getDate();
     if (!hasEvents(dayNum, activeTab)) return;
-    setSelectedDate(day);
     setSheetDate(day);
   };
 
@@ -108,7 +107,7 @@ const CalendarPage = () => {
                         WebkitBackdropFilter: "blur(40px) saturate(1.8)",
                         border: "1px solid rgba(70,120,75,0.5)",
                         boxShadow: "0 4px 20px rgba(70,120,75,0.18), inset 0 1px 0 rgba(255,255,255,0.3)",
-                        color: "hsl(var(--primary-foreground))",
+                        color: "hsl(var(--foreground))",
                         fontWeight: 600,
                       }
                     : {
@@ -163,7 +162,7 @@ const CalendarPage = () => {
                 {days.map((day, i) => {
                   const inMonth = isSameMonth(day, currentMonth);
                   const today = isToday(day);
-                  const selected = selectedDate && isSameDay(day, selectedDate);
+                  const selected = false;
                   const dayNum = day.getDate();
                   const eventCount = inMonth ? getEventCount(dayNum, activeTab) : 0;
                   const clickable = inMonth && eventCount > 0;
