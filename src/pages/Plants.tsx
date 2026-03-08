@@ -402,14 +402,7 @@ const Plants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl p-6 text-center"
-              style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.2) 100%)",
-                backdropFilter: "blur(40px) saturate(1.6)",
-                WebkitBackdropFilter: "blur(40px) saturate(1.6)",
-                border: "1px solid rgba(255,255,255,0.35)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-              }}
+              className="fixed left-1/2 top-1/2 z-[70] w-[85%] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-card p-6 text-center shadow-xl"
             >
               <p className="text-3xl mb-2">{overduePlant.emoji}</p>
               <p className="text-base font-semibold text-foreground mb-1">
