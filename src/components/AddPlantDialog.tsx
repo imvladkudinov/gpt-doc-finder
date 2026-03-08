@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Plus, Droplets, RefreshCw } from "lucide-react";
+import { X, Plus, Droplets, RefreshCw, Pencil } from "lucide-react";
 
 interface AddPlantDialogProps {
   open: boolean;
@@ -84,8 +84,11 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
         </div>
 
         {/* Name row - list cell style */}
-        <div className="mb-2 flex items-center justify-between rounded-2xl bg-background px-4 py-3.5">
-          <span className="text-sm font-medium text-foreground">Name</span>
+        <div className="mb-2 flex items-center justify-between rounded-2xl bg-background p-4">
+          <div className="flex items-center gap-3">
+            <Pencil className="h-5 w-5 text-primary" />
+            <span className="text-sm font-medium text-foreground">Name</span>
+          </div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
