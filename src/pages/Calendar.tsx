@@ -43,17 +43,7 @@ const dayPlantMap: Record<number, string[]> = {
 };
 
 const rareActivitiesMap: Record<number, { name: string; emoji: string; task: string }[]> = {
-  2: [{ name: "Monstera", emoji: "🪴", task: "Repotting" }],
-  5: [{ name: "Orchid", emoji: "🌸", task: "Fertilizing" }, { name: "Succulent", emoji: "🌵", task: "Pruning" }],
-  9: [{ name: "Fiddle Leaf", emoji: "🌳", task: "Pruning" }],
-  15: [
-    { name: "Peace Lily", emoji: "🪷", task: "Fertilizing" },
-    { name: "Calathea", emoji: "🍃", task: "Repotting" },
-    { name: "Snake Plant", emoji: "🐍", task: "Pruning" },
-  ],
-  20: [{ name: "Snake Plant", emoji: "🐍", task: "Repotting" }],
-  25: [{ name: "Aloe Vera", emoji: "🪴", task: "Fertilizing" }, { name: "Rubber Plant", emoji: "🌱", task: "Repotting" }],
-  28: [{ name: "Rubber Plant", emoji: "🌱", task: "Pruning" }],
+  14: [{ name: "Monstera", emoji: "🪴", task: "Replanting" }],
 };
 
 function getEventCount(dayNum: number, tab: (typeof TABS)[number]): number {
@@ -284,9 +274,10 @@ const CalendarPage = () => {
                           <h3 className="font-serif text-xs font-semibold text-foreground leading-tight truncate">
                             {item.name}
                           </h3>
-                          <div className="mt-1.5">
-                            <span className="text-[10px] font-medium text-accent">
-                              {item.task}
+                          <div className="mt-1.5 flex items-center gap-1">
+                            <span className="text-sm">🔄</span>
+                            <span className="text-[10px] font-medium text-muted-foreground">
+                              Replant
                             </span>
                           </div>
                         </div>
