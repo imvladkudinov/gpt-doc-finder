@@ -473,6 +473,39 @@ const WheelPicker = ({
         )}
       </AnimatePresence>
     </div>
+
+    {/* Plant Info Sheet */}
+    {selectedPlant && (
+      <Sheet open={showPlantInfo} onOpenChange={setShowPlantInfo}>
+        <SheetContent side="bottom" className="z-[60] rounded-t-3xl px-6 pb-10 pt-6">
+          <SheetHeader className="mb-6">
+            <SheetTitle className="font-serif text-xl">
+              {selectedPlant.emoji} {selectedPlant.name}
+            </SheetTitle>
+          </SheetHeader>
+          {(() => {
+            const info = getPlantInfo(selectedPlant.name);
+            return (
+              <div className="space-y-5">
+                <div>
+                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.about.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{info.about.body}</p>
+                </div>
+                <div>
+                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.likes.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{info.likes.body}</p>
+                </div>
+                <div>
+                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">{info.care.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{info.care.body}</p>
+                </div>
+              </div>
+            );
+          })()}
+        </SheetContent>
+      </Sheet>
+    )}
+
     </ScrollFadeLayout>
     </PageTransition>
   );
