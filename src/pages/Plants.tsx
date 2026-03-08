@@ -81,19 +81,9 @@ const Plants = () => {
         >
           <div>
             <h1 className="font-serif text-2xl font-bold text-foreground">
-              My Plants <span className="font-sans text-lg font-normal text-muted-foreground">{plants.length}</span>
+              My Plants
             </h1>
-            {needsWater.length > 0 && (
-              <p className="mt-1 text-sm text-accent">
-                {needsWater.length} plant{needsWater.length > 1 ? "s" : ""} need
-                water
-              </p>
-            )}
-            {needsWater.length === 0 && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                All plants are happy! 🎉
-              </p>
-            )}
+            <p className="mt-0.5 text-sm text-muted-foreground">{plants.length} plants</p>
           </div>
           <button
             onClick={() => setShowAdd(true)}
