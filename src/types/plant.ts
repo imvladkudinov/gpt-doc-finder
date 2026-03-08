@@ -7,4 +7,7 @@ export interface Plant {
   lastWatered: Date;
   missedWatering: boolean;
   notes: string;
+  replantingInterval: number; // months
+  nextReplanting: Date;
+  autoSchedule: boolean;
 }
