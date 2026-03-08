@@ -64,6 +64,10 @@ export default {
         },
         cream: "hsl(var(--cream))",
         earth: "hsl(var(--earth))",
+        premium: {
+          DEFAULT: "hsl(var(--premium))",
+          light: "hsl(var(--premium-light))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
