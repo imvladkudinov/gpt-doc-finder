@@ -137,6 +137,7 @@ const Plants = () => {
             plant={plant}
             index={i}
             onClick={() => setSelectedPlant(plant)}
+            onOverdueClick={() => setOverduePlant(plant)}
           />
         ))}
       </div>
