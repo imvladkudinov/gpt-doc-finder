@@ -20,7 +20,7 @@ const PlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: PlantCard
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="relative flex min-h-[140px] flex-col items-start justify-between rounded-xl bg-card p-3.5 text-left shadow-sm transition-shadow hover:shadow-md"
+      className="relative flex min-h-[154px] flex-col items-start justify-between rounded-xl bg-card p-3.5 text-left shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Orange overdue indicator */}
       {status.daysLeft === 0 && (
