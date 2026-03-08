@@ -314,7 +314,7 @@ const WheelPicker = ({
                     setSelectedPlant(updated);
                     setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
                   }}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${selectedPlant.autoSchedule ? "bg-primary" : "bg-muted"}`}
+                  className={`relative h-7 w-12 rounded-full transition-colors ${selectedPlant.autoSchedule ? "bg-primary" : "bg-muted-foreground/30"}`}
                 >
                   <motion.div
                     layout
