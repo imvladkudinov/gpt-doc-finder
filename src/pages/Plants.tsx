@@ -452,7 +452,8 @@ const Plants = () => {
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
               className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
             >
-              <p className="text-sm text-muted-foreground mb-5">
+              <p className="text-3xl mb-2">{lateWaterPlant.emoji}</p>
+              <p className="text-base font-medium text-foreground mb-5">
                 Did you forget to mark it, or was watering actually delayed?
               </p>
               <div className="flex flex-col gap-2">
