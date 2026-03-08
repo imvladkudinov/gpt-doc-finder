@@ -38,9 +38,18 @@ const Profile = () => {
                 className="h-24 w-24 rounded-3xl object-cover"
               />
               <p className="mt-3 font-serif text-xl font-semibold text-foreground">Alejandra García</p>
-              <div className="mt-1 flex items-center gap-1.5 rounded-full bg-premium px-3 py-1">
-                <Crown className="h-3 w-3 text-white" fill="currentColor" />
-                <span className="text-xs font-semibold text-white">Premium</span>
+              <div
+                className="mt-1 flex items-center gap-1.5 rounded-full px-3 py-1"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                  backdropFilter: "blur(40px) saturate(1.8)",
+                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                  border: "1px solid rgba(255,255,255,0.5)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
+              >
+                <Crown className="h-3 w-3 text-foreground" fill="currentColor" />
+                <span className="text-xs font-semibold text-foreground">Premium</span>
               </div>
             </div>
 
