@@ -67,6 +67,7 @@ interface PlantWikiSheetProps {
 
 const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
 
   if (!open) return null;
 
