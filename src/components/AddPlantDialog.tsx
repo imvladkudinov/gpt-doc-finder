@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Plus, Droplets, RefreshCw } from "lucide-react";
+import { X, Plus, Droplets, RefreshCw, Pencil } from "lucide-react";
 
 interface AddPlantDialogProps {
   open: boolean;
