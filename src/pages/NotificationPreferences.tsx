@@ -116,45 +116,20 @@ const NotificationPreferences = () => {
             {/* Preferred time */}
             <div>
               <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Preferred time
+                Schedule
               </p>
-              <div className="rounded-2xl bg-card p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <p className="text-sm font-medium text-foreground">Notify me at</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {/* Hour */}
-                  <div className="flex-1">
-                    <label className="mb-1.5 block text-xs text-muted-foreground">Hour</label>
-                    <select
-                      value={hour}
-                      onChange={(e) => setHour(Number(e.target.value))}
-                      className="w-full appearance-none rounded-xl bg-secondary px-4 py-3 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      {HOURS.map((h) => (
-                        <option key={h} value={h}>
-                          {formatHour(h)}
-                        </option>
-                      ))}
-                    </select>
+              <div className="rounded-2xl bg-card px-5 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-4 w-4 shrink-0 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Preferred time</p>
+                      <p className="text-xs text-muted-foreground">When to send daily reminders</p>
+                    </div>
                   </div>
-                  <span className="mt-5 text-lg font-bold text-muted-foreground">:</span>
-                  {/* Minute */}
-                  <div className="flex-1">
-                    <label className="mb-1.5 block text-xs text-muted-foreground">Minute</label>
-                    <select
-                      value={minute}
-                      onChange={(e) => setMinute(Number(e.target.value))}
-                      className="w-full appearance-none rounded-xl bg-secondary px-4 py-3 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      {MINUTES.map((m) => (
-                        <option key={m} value={m}>
-                          {String(m).padStart(2, "0")}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatHour(hour)}:{String(minute).padStart(2, "0")}
+                  </span>
                 </div>
               </div>
             </div>
