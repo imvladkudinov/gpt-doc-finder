@@ -1,6 +1,6 @@
-import { ArrowLeft, MessageCircle, CalendarDays } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { MessageCircle, CalendarDays } from "lucide-react";
 import TabBar from "@/components/TabBar";
+import GlassBackButton from "@/components/GlassBackButton";
 
 const services = [
   {
@@ -20,17 +20,10 @@ const services = [
 ];
 
 const ConnectedServices = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="flex items-center gap-3 px-6 pt-12 pb-4">
-        <button
-          onClick={() => navigate("/profile")}
-          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-secondary"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+        <GlassBackButton to="/profile" />
         <h1 className="font-serif text-2xl font-bold text-foreground">Connected services</h1>
       </div>
 
