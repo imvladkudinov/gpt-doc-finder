@@ -1,7 +1,8 @@
-import { User, Bell, Shield, Link, ChevronRight, Leaf, LogOut } from "lucide-react";
+import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
+import avatarPlant from "@/assets/avatar-plant.png";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -27,14 +28,25 @@ const Profile = () => {
           </div>
 
           <div className="px-6">
-            <div className="mb-6 flex items-center gap-4 rounded-3xl bg-card p-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-100">
-                <User className="h-7 w-7 text-primary" />
+            {/* Profile info block */}
+            <button
+              onClick={() => navigate("/personal-details")}
+              className="mb-6 flex w-full items-center gap-4 rounded-3xl bg-card p-5 text-left transition-colors active:bg-secondary"
+            >
+              <img
+                src={avatarPlant}
+                alt="Profile avatar"
+                className="h-14 w-14 rounded-2xl bg-sage-100 object-cover"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="font-serif text-lg font-semibold text-foreground">Alejandra García</p>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <Crown className="h-3 w-3 text-accent" />
+                  <span className="text-xs font-medium text-accent">Premium</span>
+                </div>
               </div>
-              <div>
-                <p className="font-serif text-lg font-semibold text-foreground">Plant Parent</p>
-              </div>
-            </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </button>
 
             <div className="space-y-2">
               <button
