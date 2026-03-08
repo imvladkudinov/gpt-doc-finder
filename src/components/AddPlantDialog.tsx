@@ -98,7 +98,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
               </button>
             ))}
             <button
-              className="flex items-center justify-center rounded-xl p-2.5 text-muted-foreground hover:bg-secondary transition-all"
+              className="flex items-center justify-center rounded-xl bg-primary/15 p-2.5 text-primary transition-all hover:bg-primary/25"
             >
               <Plus className="h-6 w-6" strokeWidth={1.5} />
             </button>
