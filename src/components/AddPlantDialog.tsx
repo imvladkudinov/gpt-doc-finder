@@ -70,7 +70,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Photo identification banner */}
-          <div className="mb-5 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-5 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div>
               <p className="text-sm font-medium text-foreground">Don't know what that plant is?</p>
               <p className="text-xs text-muted-foreground">We'll take care</p>
@@ -103,7 +103,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Name row */}
-          <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-3">
               <Pencil className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Name</span>
@@ -117,7 +117,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Watering interval row */}
-          <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-3">
               <Droplets className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Watering interval</span>
@@ -131,7 +131,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Replanting interval row */}
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-secondary p-4">
+          <div className="mb-4 flex items-center justify-between rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-3">
               <RefreshCw className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Replanting interval</span>

@@ -22,42 +22,9 @@ const initialServices = [
     connected: true,
     status: "Syncing schedule",
   },
-  {
-    id: "apple-health",
-    name: "Apple Health",
-    emoji: "🍎",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "home-assistant",
-    name: "Home Assistant",
-    emoji: "🏠",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "alexa",
-    name: "Amazon Alexa",
-    emoji: "🔊",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "weather",
-    name: "Weather API",
-    emoji: "🌤️",
-    connected: false,
-    status: "Not connected",
-  },
-  {
-    id: "notion",
-    name: "Notion",
-    emoji: "📝",
-    connected: false,
-    status: "Not connected",
-  },
 ];
+
+const availableServiceEmojis = ["🍎", "🏠", "🔊", "🌤️", "📝"];
 
 const ConnectedServices = () => {
   const [services, setServices] = useState(initialServices);
@@ -93,39 +60,44 @@ const ConnectedServices = () => {
           </div>
           <div className="px-6 pt-20">
             <div className="space-y-2">
-              {services.map(({ id, name, logo, emoji, connected, status }) => (
+              {services.map(({ id, name, logo, connected, status }) => (
                 <div
                   key={id}
-                  className="flex items-center justify-between rounded-2xl bg-card px-5 py-4"
+                  className="flex items-center justify-between rounded-xl bg-card px-5 py-4"
                 >
                   <div className="flex items-center gap-3">
-                    {logo ? (
-                      <img src={logo} alt={name} className="h-5 w-5 shrink-0" />
-                    ) : (
-                      <span className="text-lg shrink-0">{emoji}</span>
-                    )}
+                    <img src={logo} alt={name} className="h-5 w-5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-foreground">{name}</p>
                       <p className="text-xs text-muted-foreground">{status}</p>
                     </div>
                   </div>
-                  {connected ? (
-                    <button
-                      onClick={() => setDisconnectTarget(id)}
-                      className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all"
-                    >
-                      Connected
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleConnect(id)}
-                      className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90"
-                    >
-                      Connect
-                    </button>
-                  )}
+                  <button
+                    onClick={() => connected && setDisconnectTarget(id)}
+                    className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all"
+                  >
+                    Connected
+                  </button>
                 </div>
               ))}
+
+              {/* Add service row */}
+              <div className="flex items-center justify-between rounded-xl bg-card px-5 py-4">
+                <div className="flex items-center">
+                  {availableServiceEmojis.map((emoji, i) => (
+                    <span
+                      key={i}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm border-2 border-card"
+                      style={{ marginLeft: i === 0 ? 0 : -8 }}
+                    >
+                      {emoji}
+                    </span>
+                  ))}
+                </div>
+                <button className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90">
+                  Connect
+                </button>
+              </div>
             </div>
           </div>
         </div>

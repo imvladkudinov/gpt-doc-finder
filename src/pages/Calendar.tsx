@@ -160,7 +160,7 @@ const CalendarPage = () => {
 
           {/* Calendar grid */}
           <div className="px-6">
-            <div className="rounded-2xl bg-card p-4">
+            <div className="rounded-xl bg-card p-4">
               <div className="grid grid-cols-7 mb-2">
                 {WEEKDAYS.map((day) => (
                   <div
@@ -221,7 +221,7 @@ const CalendarPage = () => {
 
           {/* Upcoming notification */}
           <div className="px-6 mt-4">
-            <div className="flex gap-3 rounded-2xl bg-card p-4">
+            <div className="flex gap-3 rounded-xl bg-card p-4">
               <span className="text-2xl shrink-0">🪴</span>
               <div>
                 <h3 className="text-sm font-semibold text-foreground">Monstera replanting on the 14th</h3>
@@ -280,7 +280,7 @@ const CalendarPage = () => {
                       return (
                         <div
                           key={plant.id}
-                          className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                          className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-xl bg-secondary p-3.5 text-left"
                         >
                           {isOverdue && (
                             <div
@@ -303,7 +303,7 @@ const CalendarPage = () => {
                   : sheetRare.map((item, i) => (
                       <div
                         key={i}
-                        className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                        className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-xl bg-secondary p-3.5 text-left"
                       >
                         <div className="text-4xl">{item.emoji}</div>
                         <div className="w-full">

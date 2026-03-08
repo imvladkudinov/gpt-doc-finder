@@ -231,7 +231,7 @@ const Plants = () => {
               {/* Watering interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("watering")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary px-5 py-4"
+                className="mb-2 flex w-full items-center justify-between rounded-xl bg-secondary px-5 py-4"
               >
                 <div className="flex items-center gap-3">
                   <Droplets className="h-5 w-5 shrink-0 text-primary" />
@@ -245,7 +245,7 @@ const Plants = () => {
               {/* Replanting interval row */}
               <button
                 onClick={() => !selectedPlant.autoSchedule && setCarouselField("replanting")}
-                className="mb-2 flex w-full items-center justify-between rounded-2xl bg-secondary px-5 py-4"
+                className="mb-2 flex w-full items-center justify-between rounded-xl bg-secondary px-5 py-4"
               >
                 <div className="flex items-center gap-3">
                   <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
@@ -257,7 +257,7 @@ const Plants = () => {
               </button>
 
               {/* Next watering info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Droplets className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next watering</span>
@@ -268,7 +268,7 @@ const Plants = () => {
               </div>
 
               {/* Next replanting info */}
-              <div className="mb-2 flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
                   <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Next replanting</span>
@@ -279,7 +279,7 @@ const Plants = () => {
               </div>
 
               {/* Auto schedule toggle */}
-              <div className="flex items-center justify-between rounded-2xl bg-secondary px-5 py-4">
+              <div className="flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
                 <div className="flex items-center gap-3">
                   <Sparkles className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Let us care</span>

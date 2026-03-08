@@ -141,7 +141,7 @@ const PlantWikiSheet = ({ open, onClose }: PlantWikiSheetProps) => {
           ).map((topic, i) => {
             const isExpanded = expandedIndex === i;
             return (
-              <div key={i} className="rounded-2xl bg-secondary overflow-hidden">
+              <div key={i} className="rounded-xl bg-secondary overflow-hidden">
                 <button
                   onClick={() => setExpandedIndex(isExpanded ? null : i)}
                   className="flex w-full items-center justify-between px-5 py-4 transition-colors active:bg-secondary/80"

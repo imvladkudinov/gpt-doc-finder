@@ -57,7 +57,7 @@ const Profile = () => {
             <div className="space-y-2">
               <button
                 onClick={() => navigate("/personal-details")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 shrink-0 text-primary" />
@@ -67,7 +67,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/connected-services")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Link className="h-5 w-5 shrink-0 text-primary" />
@@ -80,7 +80,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/notification-preferences")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Bell className="h-5 w-5 shrink-0 text-primary" />
@@ -90,7 +90,7 @@ const Profile = () => {
               </button>
               <button
                 onClick={() => navigate("/plant-personalization")}
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Leaf className="h-5 w-5 shrink-0 text-primary" />
@@ -99,7 +99,7 @@ const Profile = () => {
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
               <button
-                className="flex w-full items-center justify-between rounded-2xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
+                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
               >
                 <div className="flex items-center gap-3">
                   <Shield className="h-5 w-5 shrink-0 text-primary" />
