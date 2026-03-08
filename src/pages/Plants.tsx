@@ -22,6 +22,8 @@ const Plants = () => {
   const [showPlantInfo, setShowPlantInfo] = useState(false);
   const [showWiki, setShowWiki] = useState(false);
 
+  const [lateWaterPlant, setLateWaterPlant] = useState<Plant | null>(null);
+
   const handleWater = (id: string) => {
     setPlants((prev) =>
       prev.map((p) =>
@@ -49,6 +51,17 @@ const Plants = () => {
           }
         : prev
     );
+  };
+
+  const handleWaterWithCheck = (id: string) => {
+    const plant = plants.find((p) => p.id === id);
+    if (!plant) return;
+    const status = getWateringStatus(plant);
+    if (status.daysLeft === 0) {
+      setLateWaterPlant(plant);
+    } else {
+      handleWater(id);
+    }
   };
 
   const handleAddPlant = (name: string, emoji: string, interval: number) => {
