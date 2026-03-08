@@ -280,7 +280,7 @@ const CalendarPage = () => {
                       return (
                         <div
                           key={plant.id}
-                          className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-2xl bg-secondary p-3.5 text-left"
+                          className="relative flex min-h-[140px] flex-col items-start gap-2 rounded-xl bg-secondary p-3.5 text-left"
                         >
                           {isOverdue && (
                             <div
