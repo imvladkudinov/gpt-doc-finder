@@ -23,7 +23,7 @@ const PlantPersonalization = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Barcelona</span>
+                <span className="text-sm text-muted-foreground">Barcelona</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </button>
@@ -36,7 +36,7 @@ const PlantPersonalization = () => {
                   <p className="text-xs text-muted-foreground">Connect a smart thermometer</p>
                 </div>
               </div>
-              <button className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all">
+              <button className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all">
                 Connected
               </button>
             </div>

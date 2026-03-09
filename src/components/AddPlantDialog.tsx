@@ -70,7 +70,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Photo identification row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
             <div className="flex items-center gap-3">
               <Camera className="h-5 w-5 text-primary" />
               <div>
@@ -78,7 +78,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
                 <p className="text-xs text-muted-foreground">We'll take care</p>
               </div>
             </div>
-            <button className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground transition-all active:scale-95">
+            <button className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground transition-all active:scale-95">
               Photo
             </button>
           </div>
@@ -106,7 +106,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Name row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
             <div className="flex items-center gap-3">
               <Pencil className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Name</span>
@@ -120,28 +120,28 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Watering interval row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary p-4">
+          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
             <div className="flex items-center gap-3">
               <Droplets className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Watering interval</span>
             </div>
             <button
               onClick={() => setPickerField("watering")}
-              className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all active:scale-95"
+              className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all active:scale-95"
             >
               {wateringInterval} days
             </button>
           </div>
 
           {/* Replanting interval row */}
-          <div className="mb-4 flex items-center justify-between rounded-xl bg-secondary p-4">
+          <div className="mb-4 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
             <div className="flex items-center gap-3">
               <RefreshCw className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Replanting interval</span>
             </div>
             <button
               onClick={() => setPickerField("replanting")}
-              className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all active:scale-95"
+              className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all active:scale-95"
             >
               {replantingInterval} mo
             </button>
