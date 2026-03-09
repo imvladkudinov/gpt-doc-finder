@@ -23,7 +23,7 @@ const PlantPersonalization = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Barcelona</span>
+                <span className="text-sm text-muted-foreground">Barcelona</span>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </button>
