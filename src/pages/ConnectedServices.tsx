@@ -94,7 +94,7 @@ const ConnectedServices = () => {
                     </span>
                   ))}
                 </div>
-                <button className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:opacity-90">
+                <button className="rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90">
                   Connect
                 </button>
               </div>

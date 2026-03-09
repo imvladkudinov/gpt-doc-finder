@@ -36,7 +36,7 @@ const PlantPersonalization = () => {
                   <p className="text-xs text-muted-foreground">Connect a smart thermometer</p>
                 </div>
               </div>
-              <button className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all">
+              <button className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all">
                 Connected
               </button>
             </div>

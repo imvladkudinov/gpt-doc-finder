@@ -141,7 +141,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
             </div>
             <button
               onClick={() => setPickerField("replanting")}
-              className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary transition-all active:scale-95"
+              className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all active:scale-95"
             >
               {replantingInterval} mo
             </button>
