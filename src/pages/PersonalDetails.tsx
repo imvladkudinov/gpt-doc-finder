@@ -76,7 +76,7 @@ const PersonalDetails = () => {
                   <Lock className="h-5 w-5 shrink-0 text-primary" />
                   <span className="text-sm font-medium text-foreground">Password</span>
                 </div>
-                <span className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary">
+                <span className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
                   Change
                 </span>
               </button>
