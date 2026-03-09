@@ -78,7 +78,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
                 <p className="text-xs text-muted-foreground">We'll take care</p>
               </div>
             </div>
-            <button className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-primary-foreground transition-all active:scale-95">
+            <button className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground transition-all active:scale-95">
               Photo
             </button>
           </div>
