@@ -217,15 +217,15 @@ const PageUIPlayground = () => {
               <section className="mt-8 space-y-4">
                 <h2 className="text-lg font-semibold text-foreground">Examples</h2>
                 <div className="space-y-1">
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Chevron" right={{ type: "chevron" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Text" right={{ type: "text", value: "Value" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Chevron + text" right={{ type: "chevron-text", value: "Value" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Input" right={{ type: "input", value: listCellInput, onChange: setListCellInput, placeholder: "Type…" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Label" right={{ type: "label", label: "Action" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Button low" right={{ type: "button-low", label: "Save" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Disabled text" right={{ type: "disabled-text", value: "Unavailable" }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="Switch" right={{ type: "switch", checked: listCellSwitch, onCheckedChange: setListCellSwitch }} />
-                  <ListCell icon={<Square className="h-5 w-5 text-primary" />} title="With subtitle" subtitle="Sample subtitle text" right={{ type: "chevron" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Chevron" right={{ type: "chevron" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Text" right={{ type: "text", value: "Value" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Chevron + text" right={{ type: "chevron-text", value: "Value" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Input" right={{ type: "input", value: listCellInput, onChange: setListCellInput, placeholder: "Type…" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Label" right={{ type: "label", label: "Action" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Button low" right={{ type: "button-low", label: "Save" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Disabled text" right={{ type: "disabled-text", value: "Unavailable" }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Switch" right={{ type: "switch", checked: listCellSwitch, onCheckedChange: setListCellSwitch }} />
+                  <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="With subtitle" subtitle="Sample subtitle text" right={{ type: "chevron" }} />
                   <ListCell title="No icon" right={{ type: "text", value: "No icon" }} />
                   <ListCell title="No right slot" />
                 </div>

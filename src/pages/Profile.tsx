@@ -1,4 +1,5 @@
-import { LogOut, User, House, Bell } from "lucide-react";
+import { IconUserFilled, IconHomeFilled, IconBellFilled, IconMapPinFilled, IconFileSmileFilled } from "@tabler/icons-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PageTransition from "@/components/PageTransition";
@@ -77,7 +78,7 @@ const PageProfile = () => {
                 <img
                   src={avatarUrl || avatarPlant}
                   alt="Profile avatar"
-                  className="h-[100px] w-[100px] rounded-full object-cover"
+                  className="h-[96px] w-[96px] rounded-full object-cover"
                 />
                 <p className="mt-3 font-serif text-xl font-semibold text-foreground">{displayName}</p>
               </div>
@@ -85,22 +86,28 @@ const PageProfile = () => {
 
             <div className="space-y-1">
               <ListCell
-                icon={<User className="h-5 w-5 shrink-0 text-primary" />}
+                 icon={<IconUserFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Personal details"
                 right={{ type: "chevron" }}
                 onPress={() => navigate("/personal-details")}
               />
               <ListCell
-                icon={<House className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconMapPinFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Homes"
                 right={{ type: "chevron" }}
                 onPress={() => navigate("/homes")}
               />
               <ListCell
-                icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
+                 icon={<IconBellFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Notifications"
                 right={{ type: "chevron" }}
                 onPress={() => navigate("/notification-preferences")}
+              />
+              <ListCell
+                icon={<IconFileSmileFilled className="h-5 w-5 shrink-0 text-primary" />}
+                title="Legal stuff"
+                right={{ type: "chevron" }}
+                onPress={() => navigate("/legal")}
               />
             </div>
           </div>

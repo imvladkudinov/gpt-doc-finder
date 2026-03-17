@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+// ...existing code...
 import { ButtonLow } from "@/components/ui/ButtonLow";
 import { Label } from "@/components/ui/label";
 import type { LabelOption } from "@/components/ui/label";
@@ -50,7 +51,9 @@ type DisabledTextSlot = { type: "disabled-text"; value: string };
 /** Toggle switch. */
 type SwitchSlot = { type: "switch"; checked: boolean; onCheckedChange: (checked: boolean) => void };
 
-export type RightSlot =
+// ...existing code...
+
+type RightSlot =
   | ChevronSlot
   | TextSlot
   | ChevronTextSlot
@@ -108,6 +111,7 @@ const RightSlotRenderer = ({ slot }: { slot: RightSlot }) => {
       return <span className="text-sm text-muted-foreground opacity-50">{slot.value}</span>;
     case "switch":
       return <Switch checked={slot.checked} onCheckedChange={slot.onCheckedChange} />;
+    // ...existing code...
   }
 };
 
@@ -134,9 +138,9 @@ export const ListCell = (props: ListCellProps) => {
   const isRowPressEnabled = isChevronRow;
 
   const rootClasses = [
-    "flex w-full items-center justify-between rounded-[28px] bg-secondary px-5 py-4",
+    "flex w-full items-center justify-between rounded-[28px] bg-secondary px-6 py-4", // px-6 = 24px
     "min-h-[78px]",
-    "gap-4",
+    "gap-2", // gap-2 = 8px
     "transition-all",
     isRowPressEnabled ? "cursor-pointer" : "",
     className || "",
@@ -146,9 +150,16 @@ export const ListCell = (props: ListCellProps) => {
 
   return (
     <div className={rootClasses} onClick={isChevronRow ? onPress : undefined}>
-      <div className="flex min-w-0 items-center gap-4">
+      <div className="flex min-w-0 items-center gap-2">
         {icon ? (
-          <div className="flex h-5 w-5 items-center justify-center text-icon-primary [&_svg]:text-icon-primary">{icon}</div>
+          <div className="flex h-4 w-4 items-center justify-center text-icon-primary [&_svg]:text-icon-primary">
+            {React.isValidElement(icon)
+              ? React.cloneElement(icon, {
+                  style: { height: 16, width: 16 },
+                  className: cn(icon.props.className, "h-4 w-4"),
+                })
+              : icon}
+          </div>
         ) : null}
         <div className="min-w-0">
           <div className="text-base font-medium text-foreground line-clamp-2">

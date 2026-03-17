@@ -1,6 +1,11 @@
+import { IconHomeFilled, IconMailFilled, IconPlusFilled, IconUserFilled, IconXFilled } from "@tabler/icons-react";
+import { IconMapPinFilled } from "@tabler/icons-react";
+import { IconMoodNeutralFilled } from "@tabler/icons-react";
+import { IconKeyframesFilled } from "@tabler/icons-react";
+import { Share } from "lucide-react";
+import avatarPlant from "@/assets/avatar-plant.png";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { House, Mail, Plus, Upload, User, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
@@ -226,14 +231,14 @@ const PageHomeDetails = () => {
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
               style={glassAction}
             >
-              <Upload className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              <Share className="h-[20px] w-[20px] text-foreground" strokeWidth={2.2} />
             </button>
           </div>
 
           <div className="px-6 pt-20">
             <div className="space-y-1">
               <ListCell
-                icon={<House className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconMapPinFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Home name"
                 right={{ type: "input", value: homeName, onChange: handleHomeNameChange }}
               />
@@ -261,12 +266,16 @@ const PageHomeDetails = () => {
                         <img
                           src={displayAvatar}
                           alt="Member avatar"
-                          className="h-5 w-5 rounded-full object-cover"
+                          className="h-6 w-6 rounded-full object-cover"
                         />
                       ) : (
-                        <User className="h-5 w-5 shrink-0 text-primary" />
+                        <img
+                          src={avatarPlant}
+                          alt="Member avatar"
+                          className="h-6 w-6 rounded-full object-cover"
+                        />
                       )
-                    }
+                  }
                     title={displayName}
                   />
                 );
@@ -274,7 +283,7 @@ const PageHomeDetails = () => {
 
               {members.length === 1 ? (
                 <ListCell
-                  icon={<Plus className="h-5 w-5 shrink-0 text-primary" />}
+                  icon={<IconMoodNeutralFilled className="h-4 w-4 shrink-0 text-primary" />}
                   title="You are on your own"
                   right={{ type: "button-low", label: "Share", variant: "primary", onPress: () => {
                     setShowShareSheet(true);
@@ -323,7 +332,7 @@ const PageHomeDetails = () => {
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 28, stiffness: 300 }}
                 onClick={(e) => e.stopPropagation()}
-                className="mb-2 w-[calc(100%-16px)] rounded-[40px] p-6 pb-10"
+                className="mb-2 w-[calc(100%-16px)] rounded-[48px] p-6 pb-10"
                 style={{
                   background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                   backdropFilter: "blur(40px) saturate(1.8)",
@@ -339,13 +348,13 @@ const PageHomeDetails = () => {
                     className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
                     style={glassAction}
                   >
-                    <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                    <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                   </button>
                 </div>
 
                 <div className="space-y-1">
                   <ListCell
-                    icon={<Mail className="h-5 w-5 shrink-0 text-primary" />}
+                    icon={<IconMailFilled className="h-5 w-5 shrink-0 text-primary" />}
                     title="Email"
                     right={{
                       type: "input",
@@ -390,7 +399,7 @@ const PageHomeDetails = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-50 m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              className="fixed inset-0 z-50 m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[48px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",

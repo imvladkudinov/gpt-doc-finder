@@ -25,7 +25,7 @@ export const ButtonLow = React.forwardRef<HTMLButtonElement, ButtonLowProps>(
         )}
         {...props}
       >
-        <span className="truncate">{children}</span>
+        {children}
       </button>
     );
   },

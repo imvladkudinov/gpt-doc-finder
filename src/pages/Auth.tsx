@@ -89,56 +89,107 @@ const PageAuth = () => {
   };
 
   return (
-    <PageTransition>
+    <PageTransition key={mode}>
       <div className="flex min-h-screen items-center justify-center bg-background px-6 py-10">
         <div className="mx-auto w-full max-w-md space-y-6 text-center">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h1 className="font-serif text-3xl font-bold text-foreground">Welcome</h1>
             <p className="text-sm text-muted-foreground">Start treating your plants on another level</p>
           </div>
 
           <div className="space-y-3">
-            <Input
-              type="email"
-              placeholder="Email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <button
-              type="button"
-              onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
-              className="pt-2 text-sm font-bold text-primary transition-opacity hover:opacity-70"
-            >
-              {mode === "signin" ? "Sign up instead" : "Log in instead"}
-            </button>
+            {mode === "forgot" ? (
+              <>
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <ButtonLarge
+                  onClick={() => {
+                    if (!email.trim()) {
+                      appToast.error("Enter your email");
+                      return;
+                    }
+                    setLoading(true);
+                    supabase.auth.resetPasswordForEmail(email.trim()).then(({ error }) => {
+                      setLoading(false);
+                      if (error) {
+                        appToast.error("No account found for this email");
+                        return;
+                      }
+                      appToast.success("May god help you");
+                      setMode("signin");
+                    });
+                  }}
+                  disabled={loading}
+                  className="mt-6"
+                >
+                  Send email
+                </ButtonLarge>
+                <div className="fixed left-0 right-0 bottom-6 z-10 px-4">
+                  <button
+                    type="button"
+                    onClick={() => setMode("signin")}
+                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70 w-full"
+                  >
+                    Back
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <div className="flex flex-row justify-center gap-6 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setMode("forgot")}
+                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="space-y-3 pt-3">
-            <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
-              {mode === "signin" ? "Sign in" : "Sign up"}
-            </ButtonLarge>
-            <div className="mx-3 flex items-center gap-3 text-sm text-text-secondary opacity-50">
-              <div className="h-px flex-1 bg-icon-secondary" />
-              <span>or</span>
-              <div className="h-px flex-1 bg-icon-secondary" />
+          {mode !== "forgot" && (
+            <div className="space-y-3 pt-3">
+              <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
+                {mode === "signin" ? "Sign in" : "Sign up"}
+              </ButtonLarge>
             </div>
-            <ButtonLarge variant="secondary" onClick={handleGoogleAuth} disabled={loading}>
-              <span className="flex items-center gap-2">
-                <GoogleIcon />
-                <span>Continue with Google</span>
-              </span>
-            </ButtonLarge>
-          </div>
+          )}
+          {/* Remove button next to forgot password, do not render anything here */}
+          {mode !== "forgot" ? (
+            <div className="fixed left-0 right-0 bottom-6 z-10 px-4">
+              <button
+                type="button"
+                onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
+                className="text-sm font-bold text-primary transition-opacity hover:opacity-70 w-full"
+              >
+                {mode === "signin" ? "Sign up instead" : "Log in instead"}
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </PageTransition>

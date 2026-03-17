@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Droplets, X, Sparkles, RefreshCw, ChevronsUpDown } from "lucide-react";
+import {
+  IconPlusFilled,
+  IconXFilled,
+  IconDropletFilled,
+  IconSparklesFilled,
+  IconCalendarWeekFilled,
+  IconPencilFilled,
+} from "@tabler/icons-react";
+import { ChevronsUpDown } from "lucide-react";
+
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
@@ -363,7 +372,7 @@ const PagePlants = () => {
                 style={glassAction}
                 aria-label="Add plant"
               >
-                <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
               </button>
             </motion.div>
           ) : null}
@@ -427,7 +436,7 @@ const PagePlants = () => {
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg mb-2"
                 style={{ fontSize: 24 }}
               >
-                <Plus className="h-6 w-6" />
+                <IconPlusFilled className="h-6 w-6" />
               </button>
             </div>
           ) : plants.length > 0 ? (
@@ -461,7 +470,7 @@ const PagePlants = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[40px] p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[48px] p-6 pb-10"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -487,14 +496,14 @@ const PagePlants = () => {
                       boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
                     }}
                   >
-                    <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                    <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                   </button>
                 </div>
               </div>
 
               <ListCell
                 className="mb-1"
-                icon={<Sparkles className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconPencilFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Plant name"
                 right={{ type: "input", value: selectedPlant.name, onChange: handlePlantNameChange }}
               />
@@ -502,7 +511,7 @@ const PagePlants = () => {
               {/* Watering interval row */}
               <ListCell
                 className="mb-1"
-                icon={<Droplets className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconDropletFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Watering interval"
                 right={{
                   type: "select",
@@ -541,7 +550,7 @@ const PagePlants = () => {
                   return (
                     <ListCell
                       className="mb-1"
-                      icon={<RefreshCw className="h-5 w-5 shrink-0 text-primary" />}
+                      icon={<IconCalendarWeekFilled className="h-5 w-5 shrink-0 text-primary" />}
                       title="Replant in"
                       right={{ type: "button-low", label: "Replanted", variant: "primary", onPress: () => restartReplantCounter(selectedPlant.id) }}
                     />
@@ -551,7 +560,7 @@ const PagePlants = () => {
                 return (
                   <ListCell
                     className="mb-1"
-                    icon={<RefreshCw className="h-5 w-5 shrink-0 text-primary" />}
+                    icon={<IconCalendarWeekFilled className="h-6 w-6 shrink-0 text-primary" />}
                     title="Replant in"
                     right={{
                       type: "select",
@@ -660,7 +669,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[48px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { X, Droplets, RefreshCw, Pencil } from "lucide-react";
+import { IconXFilled, IconDropletFilled, IconKeyframesFilled, IconPencilFilled, IconCalendarWeekFilled } from "@tabler/icons-react";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { ListCell } from "@/components/ui/ListCell";
 import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
@@ -85,7 +85,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 28, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="mb-2 w-[calc(100%-16px)] rounded-[40px] p-6 pb-10"
+          className="mb-2 w-[calc(100%-16px)] rounded-[48px] p-6 pb-10"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
             backdropFilter: "blur(40px) saturate(1.8)",
@@ -101,7 +101,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
               style={glassClose}
             >
-              <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              <IconXFilled className="h-[18px] w-[18px] text-foreground" />
             </button>
           </div>
 
@@ -110,14 +110,14 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
           <div className="space-y-1">
             {/* Name row */}
             <ListCell
-              icon={<Pencil className="h-5 w-5 text-primary" />}
+              icon={<IconPencilFilled className="h-5 w-5 text-primary" />}
               title="Name"
               right={{ type: "input", value: name, onChange: (v) => setName(v), placeholder: "Write here" }}
             />
 
             {/* Watering interval row */}
             <ListCell
-              icon={<Droplets className="h-5 w-5 text-primary" />}
+              icon={<IconDropletFilled className="h-5 w-5 text-primary" />}
               title="Watering interval"
               right={{
                 type: "select",
@@ -130,7 +130,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
 
             {/* Replanting interval row */}
             <ListCell
-              icon={<RefreshCw className="h-5 w-5 text-primary" />}
+              icon={<IconCalendarWeekFilled className="h-5 w-5 text-primary" />}
               title="Replant in"
               right={{
                 type: "select",

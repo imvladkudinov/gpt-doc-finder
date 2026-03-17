@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pencil, Mail, Lock, X } from "lucide-react";
+import { IconPencilFilled, IconMailFilled, IconLockFilled, IconXFilled } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
@@ -115,8 +115,8 @@ const PagePersonalDetails = () => {
           <div className="px-6 pt-20">
             <div className="space-y-1">
               {/* Name — inline editable */}
-              <ListCell
-                icon={<Pencil className="h-5 w-5 shrink-0 text-primary" />}
+                <ListCell
+                  icon={<IconPencilFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Name"
                 right={{ type: "input", value: name, onChange: handleNameChange }}
                 rightContainerClassName={isDetailsResolved && isDetailsVisible ? "transition-opacity duration-300 opacity-100" : "opacity-0"}
@@ -124,7 +124,7 @@ const PagePersonalDetails = () => {
 
               {/* Email (read-only) */}
               <ListCell
-                icon={<Mail className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconMailFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Email"
                 right={{ type: "text", value: email }}
                 rightContainerClassName={isDetailsResolved && isDetailsVisible ? "transition-opacity duration-300 opacity-100" : "opacity-0"}
@@ -132,7 +132,7 @@ const PagePersonalDetails = () => {
 
               {/* Password */}
               <ListCell
-                icon={<Lock className="h-5 w-5 shrink-0 text-primary" />}
+                icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Password"
                 right={
                   isGoogleAuth
@@ -163,7 +163,7 @@ const PagePersonalDetails = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="mb-2 w-[calc(100%-16px)] rounded-[40px] p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] rounded-[48px] p-6 pb-10"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -179,13 +179,13 @@ const PagePersonalDetails = () => {
                   className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
                   style={glassClose}
                 >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                    <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
                 </button>
               </div>
 
               <div className="space-y-1">
                 <ListCell
-                  icon={<Lock className="h-5 w-5 shrink-0 text-primary" />}
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
                   title="New password"
                   right={{
                     type: "input",
@@ -196,7 +196,7 @@ const PagePersonalDetails = () => {
                 />
 
                 <ListCell
-                  icon={<Lock className="h-5 w-5 shrink-0 text-primary" />}
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
                   title="Confirm"
                   right={{
                     type: "input",

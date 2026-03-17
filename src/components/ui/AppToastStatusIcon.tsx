@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, Info } from "lucide-react";
+import { IconCircleCheckFilled, IconAlertCircleFilled, IconInfoCircleFilled } from "@tabler/icons-react";
 
 type AppToastStatusIconProps = {
   variant: "success" | "error" | "info";
@@ -6,14 +6,14 @@ type AppToastStatusIconProps = {
 
 const AppToastStatusIcon = ({ variant }: AppToastStatusIconProps) => {
   if (variant === "success") {
-    return <CircleCheck aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-primary" strokeWidth={2.5} />;
+    return <IconCircleCheckFilled aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-primary" />;
   }
 
   if (variant === "error") {
-    return <CircleAlert aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-error" strokeWidth={2.5} />;
+    return <IconAlertCircleFilled aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-error" />;
   }
 
-  return <Info aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-secondary" strokeWidth={2.5} />;
+  return <IconInfoCircleFilled aria-hidden="true" className="h-5 w-5 shrink-0 text-icon-secondary" />;
 };
 
 export default AppToastStatusIcon;

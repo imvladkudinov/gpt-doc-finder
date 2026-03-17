@@ -15,11 +15,15 @@ import HomeDetails from "./pages/HomeDetails";
 import UIPlayground from "./pages/UIPlayground";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Legal from "./pages/Legal";
+import LegalTerms from "./pages/LegalTerms";
+import LegalPolicy from "./pages/LegalPolicy";
 import TabBar from "./components/TabBar";
 import { supabase } from "@/integrations/supabase/client";
 import { clearStoredActiveHomeId, ensureActiveHomeForCurrentUser } from "@/lib/homes";
 import { syncCurrentUserProfile } from "@/lib/profiles";
 import { ensurePushSubscription } from "@/lib/device-notifications";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +59,10 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
             <Route path="/homes" element={<Homes />} />
             <Route path="/homes/:homeId" element={<HomeDetails />} />
             <Route path="/playground" element={<UIPlayground />} />
+            <Route path="/legal" element={<Legal />} />
+            <Route path="/legal/terms" element={<LegalTerms />} />
+            <Route path="/legal/policy" element={<LegalPolicy />} />
+            <Route path="/password-recovery" element={<require('@/pages/PasswordRecovery').default />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -113,9 +121,11 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner position="top-center" />
-        <BrowserRouter>
-          <AnimatedRoutes session={session} loading={loading} />
-        </BrowserRouter>
+        <ErrorBoundary>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AnimatedRoutes session={session} loading={loading} />
+          </BrowserRouter>
+        </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { House, Plus } from "lucide-react";
+import { IconMapPinFilled, IconPlusFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
@@ -141,27 +141,29 @@ const PageHomes = () => {
   const handleCreateHome = async () => {
     setIsBusy(true);
 
-    const nextName = getNextDefaultHomeName(homes);
-
-    const { data: homeData, error: homeError } = await supabase
-      .from("homes")
-      .insert({
-        name: nextName,
-      })
-      .select("id")
-      .single();
-
-    if (homeError || !homeData) {
-      appToast.error("Home creation failed");
+    // Ensure user is authenticated
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user) {
+      appToast.error("You must be logged in to create a home");
       setIsBusy(false);
       return;
     }
 
-    setActiveHomeId(homeData.id);
-    setActiveHomeIdState(homeData.id);
+    const nextName = getNextDefaultHomeName(homes);
+
+    // Use new RPC to always create a new home
+    const { data: rpcData, error: rpcError } = await supabase.rpc("create_new_home", {
+      home_name: nextName,
+    });
+    if (rpcError || !rpcData) {
+      appToast.error("Home creation failed");
+      setIsBusy(false);
+      return;
+    }
+    setActiveHomeId(rpcData);
+    setActiveHomeIdState(rpcData);
     await loadHomes();
     appToast.success("New home added");
-
     setIsBusy(false);
   };
 
@@ -181,7 +183,7 @@ const PageHomes = () => {
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95 disabled:opacity-60"
               style={glassAction}
             >
-              <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
             </button>
           </div>
 
@@ -197,7 +199,7 @@ const PageHomes = () => {
                   return (
                     <div key={home.id} className="space-y-1">
                       <ListCell
-                        icon={<House className="h-5 w-5 shrink-0 text-primary" />}
+                        icon={<IconMapPinFilled className="h-6 w-6 shrink-0 text-primary" style={{height:24,width:24}} />}
                         title={home.name}
                         right={{ type: "chevron" }}
                         onPress={() => navigate(`/homes/${home.id}`, { state: { homeName: home.name } })}

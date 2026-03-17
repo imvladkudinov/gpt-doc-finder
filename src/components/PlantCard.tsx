@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Leaf } from "lucide-react";
+import { IconLeafFilled } from "@tabler/icons-react";
 import { Plant } from "@/types/plant";
 import { getWateringStatus } from "@/lib/plant-utils";
 import { ButtonLow } from "@/components/ui/ButtonLow";
@@ -46,7 +46,7 @@ const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: 
       <div className="w-full">
         <div className="flex w-full items-center justify-center">
           <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[var(--background-main)]">
-            <Leaf className="h-5 w-5 text-icon-primary" strokeWidth={2.25} />
+            <IconLeafFilled className="h-5 w-5 text-icon-primary" />
           </div>
         </div>
         <div className="mt-3 w-full text-center">

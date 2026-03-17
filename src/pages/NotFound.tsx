@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { ButtonLow } from "@/components/ui/ButtonLow";
 
 const PageNotFound = () => {
   const location = useLocation();
@@ -9,14 +10,10 @@ const PageNotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:opacity-90">
-          Return to Home
-        </a>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
+      <h1 className="text-2xl font-bold mb-0">Page not found</h1>
+      <p className="text-body pb-[16px]">Try reload page or return home</p>
+      <ButtonLow variant="primary" onClick={() => window.location.href = "/"}>Return to Home</ButtonLow>
     </div>
   );
 };
