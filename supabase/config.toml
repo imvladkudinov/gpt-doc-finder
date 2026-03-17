@@ -1,1 +1,10 @@
-project_id = "csjlmahujfuhmxgklifw"
+project_id = "kadxijqeylpfayayqhxq"
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.notification-preferences]
+verify_jwt = false
+
+[functions.dispatch-plant-reminders]
+verify_jwt = false

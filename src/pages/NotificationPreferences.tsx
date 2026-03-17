@@ -1,84 +1,244 @@
-import { useState } from "react";
-import { Bell, CalendarPlus, MessageSquare, CheckCheck, Sparkles, Clock, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import GlassBackButton from "@/components/GlassBackButton";
+import { useEffect, useMemo, useState } from "react";
+import { Bell, Clock3 } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
-import WheelPicker from "@/components/WheelPicker";
+import GlassBackButton from "@/components/GlassBackButton";
+import { ListCell } from "@/components/ui/ListCell";
+import { ensurePushSubscription, disablePushSubscription } from "@/lib/device-notifications";
+import { appToast } from "@/lib/app-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-interface ToggleRowProps {
-  icon: React.ReactNode;
-  label: string;
-  description: string;
-  enabled: boolean;
-  onToggle: () => void;
-}
+const SLOT_TO_UTC_HOUR = {
+  Morning: 9,
+  Day: 14,
+  Evening: 20,
+} as const;
 
-const ToggleRow = ({ icon, label, description, enabled, onToggle }: ToggleRowProps) => (
-  <div className="flex items-center justify-between rounded-xl bg-card px-5 py-4">
-    <div className="flex items-center gap-3 pr-4">
-      {icon}
-      <div>
-        <p className="text-sm font-medium text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-    </div>
-    <button
-      onClick={onToggle}
-      className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
-        enabled ? "bg-primary" : "bg-muted-foreground/30"
-      }`}
-    >
-      <div
-        className={`absolute top-0.5 h-6 w-6 rounded-full bg-card shadow-sm transition-transform duration-200 ${
-          enabled ? "translate-x-[22px]" : "translate-x-0.5"
-        }`}
-      />
-    </button>
-  </div>
-);
+const SLOT_OPTIONS = [
+  { value: "Morning", label: "Morning (09:00)" },
+  { value: "Day", label: "Day (14:00)" },
+  { value: "Evening", label: "Evening (20:00)" },
+] as const;
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const MINUTES = Array.from({ length: 60 }, (_, i) => i);
+type NotificationSlot = keyof typeof SLOT_TO_UTC_HOUR;
 
-const glassClose = {
-  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-  backdropFilter: "blur(40px) saturate(1.8)",
-  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-  border: "1px solid rgba(255,255,255,0.5)",
-  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+const toFriendlyNotificationError = (raw: string) => {
+  const normalized = raw.toLowerCase();
+
+  if (normalized.includes("permission")) return "Please allow notifications";
+  if (normalized.includes("secure context") || normalized.includes("unsupported")) return "Push is unavailable";
+  if (normalized.includes("sign in") || normalized.includes("jwt") || normalized.includes("401")) return "Please sign in";
+  if (normalized.includes("configured") || normalized.includes("vapid")) return "Something went wrong";
+
+  return "Something went wrong";
 };
 
-const NotificationPreferences = () => {
-  const [settings, setSettings] = useState({
-    calendarEvents: true,
-    messages: true,
-    doubleCheck: false,
-    pushNotifications: true,
-    rareActivities: true,
-  });
-  const [hour, setHour] = useState(8);
-  const [minute, setMinute] = useState(0);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [tempHour, setTempHour] = useState(8);
-  const [tempMinute, setTempMinute] = useState(0);
+const PageNotificationPreferences = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
+  const [isSavingTime, setIsSavingTime] = useState(false);
 
-  const toggle = (key: keyof typeof settings) =>
-    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  const notificationsSupported = useMemo(
+    () => "serviceWorker" in navigator && "PushManager" in window,
+    [],
+  );
 
-  const openPicker = () => {
-    setTempHour(hour);
-    setTempMinute(minute);
-    setShowTimePicker(true);
+  const refreshSubscriptionState = async () => {
+    if (!notificationsSupported) {
+      setIsEnabled(false);
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.getRegistration();
+    const subscription = await registration?.pushManager.getSubscription();
+    setIsEnabled(Boolean(subscription));
   };
 
-  const applyTime = () => {
-    setHour(tempHour);
-    setMinute(tempMinute);
-    setShowTimePicker(false);
+  useEffect(() => {
+    refreshSubscriptionState();
+  }, [notificationsSupported]);
+
+  useEffect(() => {
+    const loadPreferences = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) return;
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-preferences`,
+          {
+            method: "GET",
+            headers: {
+              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          },
+        );
+
+        if (!response.ok) return;
+
+        const data = (await response.json()) as { preferredTimeLocal?: string };
+        const slot = data.preferredTimeLocal as NotificationSlot;
+        if (slot && slot in SLOT_TO_UTC_HOUR) {
+          setSelectedSlot(slot);
+        }
+      } catch {
+        // Keep default time if request fails.
+      }
+    };
+
+    loadPreferences();
+  }, []);
+
+  const savePreferredSlot = async (slot: NotificationSlot) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) return;
+
+    setIsSavingTime(true);
+    try {
+      const sendHourUtc = SLOT_TO_UTC_HOUR[slot];
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-preferences`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            preferredTimeLocal: slot,
+            sendHourUtc,
+            sendMinuteUtc: 0,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        appToast.error("Save time failed");
+        return;
+      }
+
+      appToast.success("Time saved");
+    } catch {
+      appToast.error("Save time failed");
+    } finally {
+      setIsSavingTime(false);
+    }
   };
 
-  const timeDisplay = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  const handleSendTimeChange = (value: string | number) => {
+    const next = String(value) as NotificationSlot;
+    if (!(next in SLOT_TO_UTC_HOUR) || next === selectedSlot || isSavingTime) return;
+    setSelectedSlot(next);
+    savePreferredSlot(next);
+  };
+
+  const handleEnable = async () => {
+    setIsLoading(true);
+
+    try {
+      await ensurePushSubscription();
+      appToast.success("Notifications turned on");
+      setIsEnabled(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not enable push notifications";
+      appToast.error(toFriendlyNotificationError(message));
+      setIsEnabled(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDisable = async () => {
+    setIsLoading(true);
+
+    try {
+      await disablePushSubscription();
+      appToast.success("Notifications turned off");
+      setIsEnabled(false);
+    } catch {
+      appToast.error("Turn off failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEnableSwitch = async (checked: boolean) => {
+    if (isLoading) return;
+    if (checked) {
+      await handleEnable();
+      return;
+    }
+    await handleDisable();
+  };
+
+  const handleTestNotification = async () => {
+    setIsTesting(true);
+
+    try {
+      await ensurePushSubscription();
+      await refreshSubscriptionState();
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-push-notification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          title: "Planty",
+          body: "Test notification delivered",
+          url: "/plants",
+        }),
+      });
+
+      let data: { sent?: number } = {};
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        const errorMessage =
+          typeof (data as { error?: unknown }).error === "string"
+            ? (data as { error: string }).error
+            : `Test notification failed (${response.status})`;
+        appToast.error(toFriendlyNotificationError(errorMessage));
+        return;
+      }
+
+      const sent = Number(data?.sent ?? 0);
+      if (sent > 0) {
+        appToast.success("Test alert sent");
+      } else {
+        appToast.info("No devices connected");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Test notification failed";
+      appToast.error(toFriendlyNotificationError(message));
+    } finally {
+      setIsTesting(false);
+    }
+  };
 
   return (
     <PageTransition>
@@ -86,136 +246,50 @@ const NotificationPreferences = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="fixed top-6 left-6 right-6 z-40 flex items-center gap-3">
             <GlassBackButton to="/profile" />
-            <h1 className="font-serif text-lg font-bold text-foreground">Notifications</h1>
+            <h1 className="font-serif text-[20px] font-bold text-foreground">Notifications</h1>
           </div>
 
-          <div className="space-y-6 px-6 pt-20">
-            <div>
-              <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Notification types
-              </p>
-              <div className="space-y-2">
-                <ToggleRow
-                  icon={<CalendarPlus className="h-5 w-5 shrink-0 text-primary" />}
-                  label="Add events to calendar"
-                  description="Auto-create watering events in your calendar"
-                  enabled={settings.calendarEvents}
-                  onToggle={() => toggle("calendarEvents")}
-                />
-                <ToggleRow
-                  icon={<MessageSquare className="h-5 w-5 shrink-0 text-primary" />}
-                  label="Send messages"
-                  description="Receive reminders via connected services"
-                  enabled={settings.messages}
-                  onToggle={() => toggle("messages")}
-                />
-                <ToggleRow
-                  icon={<CheckCheck className="h-5 w-5 shrink-0 text-primary" />}
-                  label="Double-check messages"
-                  description="Get a follow-up if you haven't marked as watered"
-                  enabled={settings.doubleCheck}
-                  onToggle={() => toggle("doubleCheck")}
-                />
-                <ToggleRow
-                  icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
-                  label="Push notifications"
-                  description="Direct notifications on your device"
-                  enabled={settings.pushNotifications}
-                  onToggle={() => toggle("pushNotifications")}
-                />
-                <ToggleRow
-                  icon={<Sparkles className="h-5 w-5 shrink-0 text-primary" />}
-                  label="Rare activities"
-                  description="Replanting, fertilizing, and seasonal tips"
-                  enabled={settings.rareActivities}
-                  onToggle={() => toggle("rareActivities")}
-                />
-              </div>
-            </div>
+          <div className="px-6 pt-20">
+            <div className="space-y-1">
+              <ListCell
+                icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
+                title="Notifications"
+                right={{
+                  type: "switch",
+                  checked: isEnabled,
+                  onCheckedChange: handleEnableSwitch,
+                }}
+              />
 
-            <div>
-              <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Schedule
-              </p>
-              <button
-                onClick={openPicker}
-                className="w-full rounded-xl bg-card px-5 py-4 text-left transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 shrink-0 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Preferred time</p>
-                      <p className="text-xs text-muted-foreground">When to send daily reminders</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary">
-                    {timeDisplay}
-                  </span>
-                </div>
-              </button>
+              <ListCell
+                icon={<Clock3 className="h-5 w-5 shrink-0 text-primary" />}
+                title="Send time"
+                subtitle="Sorry, UTC only due to cost efficiency"
+                right={{
+                  type: "select",
+                  options: SLOT_OPTIONS as unknown as Array<{ value: string | number; label: string }>,
+                  value: selectedSlot,
+                  displayValue: selectedSlot,
+                  onChange: handleSendTimeChange,
+                }}
+              />
+
+              <ListCell
+                icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
+                title="Send test notification"
+                right={{
+                  type: "button-low",
+                  label: isTesting ? "Working..." : "Send test",
+                  variant: "secondary",
+                  onPress: handleTestNotification,
+                }}
+              />
             </div>
           </div>
         </div>
       </ScrollFadeLayout>
-
-      {/* Time picker bottom sheet */}
-      <AnimatePresence>
-        {showTimePicker && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setShowTimePicker(false)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-            >
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="font-serif text-lg font-bold text-foreground">Set time</h2>
-                <button
-                  onClick={() => setShowTimePicker(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={glassClose}
-                >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <WheelPicker
-                  items={HOURS}
-                  value={tempHour}
-                  onChange={setTempHour}
-                  formatItem={(h) => String(h).padStart(2, "0")}
-                />
-                <span className="text-2xl font-bold text-muted-foreground">:</span>
-                <WheelPicker
-                  items={MINUTES}
-                  value={tempMinute}
-                  onChange={setTempMinute}
-                  formatItem={(m) => String(m).padStart(2, "0")}
-                />
-              </div>
-
-              <button
-                onClick={applyTime}
-                className="mt-6 w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.98]"
-              >
-                Apply
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </PageTransition>
   );
 };
 
-export default NotificationPreferences;
+export default PageNotificationPreferences;

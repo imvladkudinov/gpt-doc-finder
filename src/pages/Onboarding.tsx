@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import plantsHero from "@/assets/plants-hero.png";
 
 
-const Onboarding = () => {
+const PageOnboarding = () => {
   const navigate = useNavigate();
 
   return (
@@ -58,4 +58,4 @@ const Onboarding = () => {
   );
 };
 
-export default Onboarding;
+export default PageOnboarding;

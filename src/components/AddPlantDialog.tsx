@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Droplets, RefreshCw, Pencil, Camera } from "lucide-react";
-import WheelPicker from "@/components/WheelPicker";
+import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
+import { X, Droplets, RefreshCw, Pencil } from "lucide-react";
+import { ButtonLarge } from "@/components/ui/ButtonLarge";
+import { ListCell } from "@/components/ui/ListCell";
+import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
+import { appToast } from "@/lib/app-toast";
 
 interface AddPlantDialogProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (name: string, emoji: string, interval: number) => void;
+  onAdd: (name: string, interval: number) => void;
 }
 
-const PLANT_EMOJIS = ["🪴", "🌿", "🌵", "🌱", "🪷", "🌸", "🌻", "🍀", "🌾", "🌺"];
-
-const WATERING_OPTIONS = [1, 2, 3, 4, 5, 7, 10, 14, 21, 30];
-const REPLANTING_OPTIONS = [3, 6, 9, 12, 18, 24, 36];
 
 const glassClose = {
   background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
@@ -22,23 +22,52 @@ const glassClose = {
   boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
 };
 
-const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
+const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("🪴");
   const [wateringInterval, setWateringInterval] = useState(7);
   const [replantingInterval, setReplantingInterval] = useState(12);
-  const [pickerField, setPickerField] = useState<"watering" | "replanting" | null>(null);
+
+  // Watering interval options: 1-20 (step 1), then 24, 28, ..., 60 (step 4)
+  const WATERING_OPTIONS = [
+    ...Array.from({ length: 20 }, (_, i) => i + 1),
+    ...Array.from({ length: 10 }, (_, i) => 24 + i * 4)
+  ];
+  const REPLANTING_OPTIONS = Array.from({ length: 12 }, (_, i) => 3 + i * 3); // 3, 6, ..., 36
 
   if (!open) return null;
 
-  const handleSubmit = () => {
-    if (!name.trim()) return;
-    onAdd(name.trim(), emoji, wateringInterval);
+  const handleSubmit = async () => {
+    if (!name.trim()) {
+      appToast.error("Please add a name");
+      return;
+    }
+    const activeHomeId = await ensureActiveHomeForCurrentUser();
+    if (!activeHomeId) return;
+
+    // Insert plant into Supabase
+    const { error } = await supabase
+      .from("plants")
+      .insert([
+        {
+          home_id: activeHomeId,
+          name: name.trim(),
+          watering_interval: wateringInterval,
+          replanting_interval: replantingInterval,
+          last_watered: new Date().toISOString(),
+          last_replanted: new Date().toISOString(),
+        }
+      ]);
+    if (error) {
+      appToast.error("Something went wrong");
+      return;
+    }
+
+    onAdd(name.trim(), wateringInterval);
     setName("");
-    setEmoji("🪴");
     setWateringInterval(7);
     setReplantingInterval(12);
     onClose();
+    appToast.success("Plant added successfully");
   };
 
   return (
@@ -47,7 +76,7 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -56,13 +85,20 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 28, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+          className="mb-2 w-[calc(100%-16px)] rounded-[40px] p-6 pb-10"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+            backdropFilter: "blur(40px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
         >
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="font-serif text-lg font-bold text-foreground">Add a plant</h2>
+            <h2 className="font-serif text-[20px] font-bold text-foreground">Add a plant</h2>
             <button
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
               style={glassClose}
             >
               <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
@@ -70,142 +106,52 @@ const AddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) => {
           </div>
 
           {/* Photo identification row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-            <div className="flex items-center gap-3">
-              <Camera className="h-5 w-5 text-primary" />
-              <div>
-                <span className="text-sm font-medium text-foreground">Identify by photo</span>
-                <p className="text-xs text-muted-foreground">We'll take care</p>
-              </div>
-            </div>
-            <button className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground transition-all active:scale-95">
-              Photo
-            </button>
-          </div>
+          
+          <div className="space-y-1">
+            {/* Name row */}
+            <ListCell
+              icon={<Pencil className="h-5 w-5 text-primary" />}
+              title="Name"
+              right={{ type: "input", value: name, onChange: (v) => setName(v), placeholder: "Write here" }}
+            />
 
-          {/* Emoji picker */}
-          <div className="mb-4 flex flex-wrap gap-2">
-            {PLANT_EMOJIS.map((e) => (
-              <button
-                key={e}
-                onClick={() => setEmoji(e)}
-                className={`rounded-xl p-2.5 text-2xl transition-all ${
-                  emoji === e
-                    ? "bg-primary/10 ring-2 ring-primary"
-                    : "hover:bg-secondary"
-                }`}
-              >
-                {e}
-              </button>
-            ))}
-            <button
-              className="flex items-center justify-center rounded-xl bg-primary/15 p-2.5 text-primary transition-all hover:bg-primary/25"
-            >
-              <Plus className="h-6 w-6" strokeWidth={1.5} />
-            </button>
-          </div>
+            {/* Watering interval row */}
+            <ListCell
+              icon={<Droplets className="h-5 w-5 text-primary" />}
+              title="Watering interval"
+              right={{
+                type: "select",
+                options: WATERING_OPTIONS.map((opt) => ({ value: opt, label: `${opt} days` })),
+                value: wateringInterval,
+                displayValue: `${wateringInterval} days`,
+                onChange: (v) => setWateringInterval(Number(v)),
+              }}
+            />
 
-          {/* Name row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-            <div className="flex items-center gap-3">
-              <Pencil className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-foreground">Name</span>
-            </div>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Plant name"
-              className="w-1/2 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+            {/* Replanting interval row */}
+            <ListCell
+              icon={<RefreshCw className="h-5 w-5 text-primary" />}
+              title="Replant in"
+              right={{
+                type: "select",
+                options: REPLANTING_OPTIONS.map((opt) => ({ value: opt, label: `${opt} months` })),
+                value: replantingInterval,
+                displayValue: `${replantingInterval} months`,
+                onChange: (v) => setReplantingInterval(Number(v)),
+              }}
             />
           </div>
 
-          {/* Watering interval row */}
-          <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-            <div className="flex items-center gap-3">
-              <Droplets className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-foreground">Watering interval</span>
-            </div>
-            <button
-              onClick={() => setPickerField("watering")}
-              className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all active:scale-95"
-            >
-              {wateringInterval} days
-            </button>
+          <div className="mt-6">
+            <ButtonLarge onClick={handleSubmit}>
+              Add plant
+            </ButtonLarge>
           </div>
-
-          {/* Replanting interval row */}
-          <div className="mb-4 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-            <div className="flex items-center gap-3">
-              <RefreshCw className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-foreground">Replanting interval</span>
-            </div>
-            <button
-              onClick={() => setPickerField("replanting")}
-              className="rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all active:scale-95"
-            >
-              {replantingInterval} mo
-            </button>
-          </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={!name.trim()}
-            className="w-full rounded-3xl bg-primary py-4 text-sm font-medium text-primary-foreground transition-all hover:opacity-90 disabled:opacity-50"
-          >
-            Add plant
-          </button>
         </motion.div>
       </motion.div>
 
-      {/* WheelPicker bottom sheet */}
-      <AnimatePresence>
-        {pickerField && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setPickerField(null)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-serif text-lg font-bold text-foreground">
-                  {pickerField === "watering" ? "Watering interval" : "Replanting interval"}
-                </h2>
-                <button
-                  onClick={() => setPickerField(null)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={glassClose}
-                >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <WheelPicker
-                items={pickerField === "watering" ? WATERING_OPTIONS : REPLANTING_OPTIONS}
-                value={pickerField === "watering" ? wateringInterval : replantingInterval}
-                onChange={(val) => {
-                  if (pickerField === "watering") {
-                    setWateringInterval(val);
-                  } else {
-                    setReplantingInterval(val);
-                  }
-                }}
-                formatItem={(v) => `${v} ${pickerField === "watering" ? (v === 1 ? "day" : "days") : "months"}`}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };
 
-export default AddPlantDialog;
+export default ComponentAddPlantDialog;

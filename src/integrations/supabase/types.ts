@@ -14,13 +14,177 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      home_members: {
+        Row: {
+          home_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          home_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          home_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_members_home_id_fkey"
+            columns: ["home_id"]
+            isOneToOne: false
+            referencedRelation: "homes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homes: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      plants: {
+        Row: {
+          home_id: string | null
+          id: string
+          last_replanted: string
+          last_watered: string
+          name: string
+          replanting_interval: number
+          watering_interval: number
+        }
+        Insert: {
+          home_id?: string | null
+          id?: string
+          last_replanted: string
+          last_watered: string
+          name: string
+          replanting_interval: number
+          watering_interval: number
+        }
+        Update: {
+          home_id?: string | null
+          id?: string
+          last_replanted?: string
+          last_watered?: string
+          name?: string
+          replanting_interval?: number
+          watering_interval?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plants_home_id_fkey"
+            columns: ["home_id"]
+            isOneToOne: false
+            referencedRelation: "homes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh_key: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh_key: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh_key?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      ensure_current_user_home: {
+        Args: {
+          default_home_name?: string
+        }
+        Returns: string
+      }
+      get_current_user_plants_for_home: {
+        Args: {
+          default_home_name?: string
+          target_home_id?: string | null
+        }
+        Returns: {
+          id: string
+          last_replanted: string
+          last_watered: string
+          name: string
+          replanting_interval: number
+          watering_interval: number
+        }[]
+      }
+      invite_user_to_home_by_email: {
+        Args: {
+          target_email: string
+          target_home_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

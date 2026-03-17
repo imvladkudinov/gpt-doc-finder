@@ -1,186 +1,458 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, BookOpen, Droplets, X, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, Droplets, X, Sparkles, RefreshCw, ChevronsUpDown } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import PlantCard from "@/components/PlantCard";
 import AddPlantDialog from "@/components/AddPlantDialog";
-import WheelPicker from "@/components/WheelPicker";
-import PlantWikiSheet from "@/components/PlantWikiSheet";
+import { ListCell } from "@/components/ui/ListCell";
+import { ButtonLow } from "@/components/ui/ButtonLow";
 
-import { mockPlants } from "@/data/mockPlants";
+import { supabase } from "@/integrations/supabase/client";
 import { Plant } from "@/types/plant";
-import { getWateringStatus, formatWateringDate } from "@/lib/plant-utils";
+import { getReplantStatus, getWateringStatus } from "@/lib/plant-utils";
 import { getPlantInfo } from "@/lib/plant-info";
+import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
+import { appToast } from "@/lib/app-toast";
 
-const Plants = () => {
-  const [plants, setPlants] = useState<Plant[]>(mockPlants);
+type HomeRow = {
+  id: string;
+  name: string;
+};
+
+type MembershipRow = {
+  home_id: string;
+  homes: HomeRow | HomeRow[] | null;
+};
+
+interface PlantRow {
+  id: string;
+  name: string;
+  watering_interval: number;
+  last_watered: string;
+  replanting_interval: number;
+  last_replanted: string;
+}
+
+const mapPlantRow = (p: PlantRow): Plant => {
+  const lastWatered = new Date(p.last_watered);
+  const lastReplanted = new Date(p.last_replanted);
+  return {
+    id: p.id,
+    name: p.name,
+    emoji: "🌿",
+    wateringInterval: p.watering_interval,
+    lastWatered,
+    lastReplanted,
+    replantingInterval: p.replanting_interval,
+    nextWatering: new Date(lastWatered.getTime() + p.watering_interval * 24 * 60 * 60 * 1000),
+    nextReplanting: new Date(lastReplanted.getTime() + p.replanting_interval * 30 * 24 * 60 * 60 * 1000),
+    missedWatering: false,
+    notes: "",
+    autoSchedule: false,
+  };
+};
+
+const glassAction = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+  backdropFilter: "blur(40px) saturate(1.8)",
+  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+  border: "1px solid rgba(255,255,255,0.5)",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+};
+
+const PagePlants = () => {
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [isLoadingPlants, setIsLoadingPlants] = useState(true);
+  const [isTopBarVisible, setIsTopBarVisible] = useState(false);
+  const [homes, setHomes] = useState<HomeRow[]>([]);
+  const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
+  const hasTopBarAnimated = useRef(false);
+
+  const activeHomeName = homes.find((home) => home.id === activeHomeId)?.name ?? "";
+  const plantsCounterText = `${plants.length} plants`;
+
+  const loadHomes = async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData.user?.id;
+
+    if (!userId) {
+      setHomes([]);
+      setActiveHomeIdState(null);
+      return null;
+    }
+
+    let { data: membershipsData, error: membershipsError } = await supabase
+      .from("home_members")
+      .select("home_id,homes(id,name)")
+      .eq("user_id", userId)
+      .order("joined_at", { ascending: true });
+
+    if (!membershipsData || membershipsData.length === 0) {
+      const ensuredHomeId = await ensureActiveHomeForCurrentUser();
+      if (ensuredHomeId) {
+        const refetch = await supabase
+          .from("home_members")
+          .select("home_id,homes(id,name)")
+          .eq("user_id", userId)
+          .order("joined_at", { ascending: true });
+
+        membershipsData = refetch.data;
+        membershipsError = refetch.error;
+      }
+    }
+
+    if (membershipsError) {
+      setHomes([]);
+      setActiveHomeIdState(null);
+      return null;
+    }
+
+    const memberships = (membershipsData ?? []) as MembershipRow[];
+    const nextHomes = memberships
+      .map((item) => {
+        const relation = item.homes;
+        const home = Array.isArray(relation) ? relation[0] : relation;
+        return home ?? null;
+      })
+      .filter((home): home is HomeRow => Boolean(home));
+
+    setHomes(nextHomes);
+
+    if (nextHomes.length === 0) {
+      setActiveHomeIdState(null);
+      return null;
+    }
+
+    const stored = getActiveHomeId();
+    const resolvedActive = stored && nextHomes.some((home) => home.id === stored)
+      ? stored
+      : nextHomes[0].id;
+
+    setActiveHomeId(resolvedActive);
+    setActiveHomeIdState(resolvedActive);
+
+    return resolvedActive;
+  };
+
+  const loadPlantsForHome = async (
+    homeId: string,
+    { initial = false }: { initial?: boolean } = {},
+  ) => {
+    if (initial) {
+      setIsLoadingPlants(true);
+    }
+
+    const { data, error } = await supabase.rpc("get_current_user_plants_for_home", {
+      default_home_name: "My home",
+      target_home_id: homeId,
+    });
+
+    if (error) {
+      if (initial) {
+        setIsLoadingPlants(false);
+      }
+      return;
+    }
+
+    setPlants(((data ?? []) as PlantRow[]).map(mapPlantRow));
+    if (initial) {
+      setIsLoadingPlants(false);
+    }
+  };
+
+  // Fetch plants from Supabase on mount
+  useEffect(() => {
+    const bootstrap = async () => {
+      const resolvedHomeId = await loadHomes();
+      if (!resolvedHomeId) {
+        setIsLoadingPlants(false);
+        return;
+      }
+      await loadPlantsForHome(resolvedHomeId, { initial: true });
+    };
+
+    bootstrap();
+
+    return () => {
+      if (savePlantNameTimeout.current) {
+        window.clearTimeout(savePlantNameTimeout.current);
+      }
+    };
+  }, []);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [carouselField, setCarouselField] = useState<"watering" | "replanting" | null>(null);
   const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
   const [showPlantInfo, setShowPlantInfo] = useState(false);
-  const [showWiki, setShowWiki] = useState(false);
+  const [pendingReplantInterval, setPendingReplantInterval] = useState<number | null>(null);
+  const [showReplantChangeConfirm, setShowReplantChangeConfirm] = useState(false);
 
   const [lateWaterPlant, setLateWaterPlant] = useState<Plant | null>(null);
+  const savePlantNameTimeout = useRef<number | null>(null);
 
-  const handleWater = (id: string) => {
-    setPlants((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              lastWatered: new Date(),
-              nextWatering: new Date(
-                Date.now() + p.wateringInterval * 24 * 60 * 60 * 1000
-              ),
-              missedWatering: false,
-            }
-          : p
-      )
-    );
-    setSelectedPlant((prev) =>
-      prev?.id === id
-        ? {
-            ...prev,
-            lastWatered: new Date(),
-            nextWatering: new Date(
-              Date.now() + prev.wateringInterval * 24 * 60 * 60 * 1000
-            ),
-            missedWatering: false,
-          }
-        : prev
-    );
+  useEffect(() => {
+    if (isLoadingPlants || hasTopBarAnimated.current) return;
+
+    hasTopBarAnimated.current = true;
+    window.requestAnimationFrame(() => {
+      setIsTopBarVisible(true);
+    });
+  }, [isLoadingPlants]);
+
+  const handleWater = async (id: string) => {
+    // Update last_watered in Supabase
+    const { error } = await supabase
+      .from("plants")
+      .update({ last_watered: new Date().toISOString() })
+      .eq("id", id);
+    if (error) {
+      appToast.error("Water update failed");
+      return;
+    }
+    // Refetch plants
+    if (!activeHomeId) return;
+    await loadPlantsForHome(activeHomeId);
+    appToast.success("Watering marked done");
   };
 
   const handleWaterWithCheck = (id: string) => {
     const plant = plants.find((p) => p.id === id);
     if (!plant) return;
     const status = getWateringStatus(plant);
-    if (status.daysLeft === 0) {
+    if (status.urgent) {
       setLateWaterPlant(plant);
     } else {
       handleWater(id);
     }
   };
 
-  const handleAddPlant = (name: string, emoji: string, interval: number) => {
-    const newPlant: Plant = {
-      id: String(Date.now()),
-      name,
-      emoji,
-      wateringInterval: interval,
-      nextWatering: new Date(Date.now() + interval * 24 * 60 * 60 * 1000),
-      lastWatered: new Date(),
-      missedWatering: false,
-      notes: "",
-      replantingInterval: 12,
-      nextReplanting: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-      autoSchedule: false,
-    };
-    setPlants((prev) => [...prev, newPlant]);
+  const handleAddPlant = async (_name: string, _interval: number) => {
+    if (!activeHomeId) return;
+    await loadPlantsForHome(activeHomeId);
+    // Optionally handle error
+  };
+
+  const handlePlantNameChange = (nextName: string) => {
+    if (!selectedPlant) return;
+
+    const plantId = selectedPlant.id;
+    setSelectedPlant((prev) => (prev ? { ...prev, name: nextName } : prev));
+    setPlants((prev) => prev.map((plant) => (plant.id === plantId ? { ...plant, name: nextName } : plant)));
+
+    if (savePlantNameTimeout.current) {
+      window.clearTimeout(savePlantNameTimeout.current);
+    }
+
+    savePlantNameTimeout.current = window.setTimeout(async () => {
+      const trimmed = nextName.trim();
+      if (!trimmed) return;
+
+      await supabase.from("plants").update({ name: trimmed }).eq("id", plantId);
+
+      setSelectedPlant((prev) => (prev && prev.id === plantId ? { ...prev, name: trimmed } : prev));
+      setPlants((prev) => prev.map((plant) => (plant.id === plantId ? { ...plant, name: trimmed } : plant)));
+    }, 350);
+  };
+
+  const handleActiveHomeChange = async (nextHomeId: string) => {
+    setActiveHomeId(nextHomeId);
+    setActiveHomeIdState(nextHomeId);
+    setSelectedPlant(null);
+    setOverduePlant(null);
+    setLateWaterPlant(null);
+    await loadPlantsForHome(nextHomeId, { initial: true });
+  };
+
+  const REPLANTING_OPTIONS = Array.from({ length: 12 }, (_, i) => 3 + i * 3);
+
+  const restartReplantCounter = async (plantId: string) => {
+    const nowIso = new Date().toISOString();
+    const { error } = await supabase.from("plants").update({ last_replanted: nowIso }).eq("id", plantId);
+    if (error) {
+      appToast.error("Something went wrong");
+      return;
+    }
+
+    setSelectedPlant((prev) => {
+      if (!prev || prev.id !== plantId) return prev;
+      const now = new Date(nowIso);
+      return {
+        ...prev,
+        lastReplanted: now,
+        nextReplanting: new Date(now.getTime() + prev.replantingInterval * 30 * 24 * 60 * 60 * 1000),
+      };
+    });
+
+    setPlants((prev) =>
+      prev.map((plant) => {
+        if (plant.id !== plantId) return plant;
+        const now = new Date(nowIso);
+        return {
+          ...plant,
+          lastReplanted: now,
+          nextReplanting: new Date(now.getTime() + plant.replantingInterval * 30 * 24 * 60 * 60 * 1000),
+        };
+      }),
+    );
+
+    appToast.success("Update applied");
+  };
+
+  const confirmReplantIntervalChange = async () => {
+    if (!selectedPlant || pendingReplantInterval === null) {
+      setShowReplantChangeConfirm(false);
+      return;
+    }
+
+    const nowIso = new Date().toISOString();
+    const { error } = await supabase
+      .from("plants")
+      .update({ replanting_interval: pendingReplantInterval, last_replanted: nowIso })
+      .eq("id", selectedPlant.id);
+    if (error) {
+      appToast.error("Replant interval failed");
+      return;
+    }
+
+    setSelectedPlant((prev) => {
+      if (!prev) return prev;
+      const now = new Date(nowIso);
+      return {
+        ...prev,
+        replantingInterval: pendingReplantInterval,
+        lastReplanted: now,
+        nextReplanting: new Date(now.getTime() + pendingReplantInterval * 30 * 24 * 60 * 60 * 1000),
+      };
+    });
+
+    setPlants((prev) =>
+      prev.map((plant) => {
+        if (plant.id !== selectedPlant.id) return plant;
+        const now = new Date(nowIso);
+        return {
+          ...plant,
+          replantingInterval: pendingReplantInterval,
+          lastReplanted: now,
+          nextReplanting: new Date(now.getTime() + pendingReplantInterval * 30 * 24 * 60 * 60 * 1000),
+        };
+      }),
+    );
+
+    setPendingReplantInterval(null);
+    setShowReplantChangeConfirm(false);
+    appToast.success("Replant interval saved");
   };
 
 
 
   return (
     <PageTransition>
-    <ScrollFadeLayout>
-    <div className="min-h-screen bg-background pb-24">
-      {/* Fixed top-right buttons */}
-      <div className="fixed top-6 right-6 z-40 flex items-center gap-2">
-        <button
-          onClick={() => setShowWiki(true)}
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-          style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-            backdropFilter: "blur(40px) saturate(1.8)",
-            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-            border: "1px solid rgba(255,255,255,0.5)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        >
-          <BookOpen className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-        </button>
-        <button
-          onClick={() => setShowAdd(true)}
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-          style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-            backdropFilter: "blur(40px) saturate(1.8)",
-            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-            border: "1px solid rgba(255,255,255,0.5)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        >
-          <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-        </button>
-      </div>
+      <ScrollFadeLayout>
+        <div className="min-h-screen bg-background pb-24 flex flex-col">
+          {plants.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="fixed top-6 right-6 z-40"
+            >
+              <button
+                type="button"
+                onClick={() => setShowAdd(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                style={glassAction}
+                aria-label="Add plant"
+              >
+                <Plus className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+              </button>
+            </motion.div>
+          ) : null}
 
-      {/* Header */}
-      <div className="px-6 pt-6 pb-2">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="font-serif text-2xl font-bold text-foreground">
-            My Plants
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">{plants.length} plants</p>
-        </motion.div>
-
-        {/* Info tabs */}
-        <div className="mt-3 flex gap-2">
-          <div
-            className="flex items-center gap-1.5 rounded-full pl-1.5 pr-3 py-1.5"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-              backdropFilter: "blur(40px) saturate(1.8)",
-              WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-              border: "1px solid rgba(255,255,255,0.5)",
-            }}
-          >
-            <span className="text-xs">☀️</span>
-            <span className="text-xs font-medium text-foreground">Barcelona, ES</span>
+          {/* Header */}
+          <div className="pl-6 pr-[76px] pt-6 pb-2">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeHomeId ?? "no-home"}
+                initial={{ opacity: 0, y: 10 }}
+                animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                <div className="relative flex max-w-full items-center gap-1">
+                  <div className="flex min-w-0 items-center gap-1">
+                    {activeHomeName ? (
+                      <>
+                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[28px] font-bold text-foreground">
+                          {activeHomeName}
+                        </h1>
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      </>
+                    ) : null}
+                  </div>
+                  <select
+                    value={activeHomeId ?? ""}
+                    onChange={(e) => {
+                      const nextHomeId = e.target.value;
+                      if (!nextHomeId || nextHomeId === activeHomeId) return;
+                      handleActiveHomeChange(nextHomeId);
+                    }}
+                    className="absolute left-0 top-0 h-full w-full cursor-pointer opacity-0"
+                  >
+                    {homes.map((home) => (
+                      <option key={home.id} value={home.id}>
+                        {home.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-0 h-5 text-sm text-muted-foreground">
+                  <p className="text-sm leading-tight text-muted-foreground">{isLoadingPlants ? "" : plantsCounterText}</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+            {/* Info tabs */}
           </div>
-          <div
-            className="flex items-center gap-1.5 rounded-full pl-1.5 pr-3 py-1.5"
-            style={{
-              background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-              backdropFilter: "blur(40px) saturate(1.8)",
-              WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-              border: "1px solid rgba(255,255,255,0.5)",
-            }}
-          >
-            <span className="text-xs">🏠</span>
-            <span className="text-xs font-medium text-foreground">22°C</span>
-          </div>
-        </div>
-      </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-3 gap-2.5 px-6 mt-4">
-        {plants.map((plant, i) => (
-          <PlantCard
-            key={plant.id}
-            plant={plant}
-            index={i}
-            onClick={() => setSelectedPlant(plant)}
-            onOverdueClick={() => setOverduePlant(plant)}
-            onWater={() => handleWaterWithCheck(plant.id)}
-          />
-        ))}
-      </div>
+          {/* Empty state */}
+          {!isLoadingPlants && plants.length === 0 ? (
+            <div className="flex flex-col items-center justify-center flex-1">
+              <h2 className="font-serif text-xl font-bold text-foreground mb-2 text-center">
+                No plants added
+              </h2>
+              <p className="text-sm text-muted-foreground mb-3 text-center">
+                Add your first plant to track and let them live
+              </p>
+              <button
+                onClick={() => setShowAdd(true)}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg mb-2"
+                style={{ fontSize: 24 }}
+              >
+                <Plus className="h-6 w-6" />
+              </button>
+            </div>
+          ) : plants.length > 0 ? (
+            <div className="mt-4 grid grid-cols-3 gap-1 px-6">
+              {plants.map((plant, i) => (
+                <PlantCard
+                  key={plant.id}
+                  plant={plant}
+                  index={i}
+                  onClick={() => setSelectedPlant(plant)}
+                  onOverdueClick={() => setOverduePlant(plant)}
+                  onWater={() => handleWaterWithCheck(plant.id)}
+                />
+              ))}
+            </div>
+          ) : null}
 
       {/* Bottom sheet detail */}
       <AnimatePresence>
-        {selectedPlant && !carouselField && (
+        {selectedPlant && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
             onClick={() => setSelectedPlant(null)}
           >
             <motion.div
@@ -189,45 +461,24 @@ const Plants = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[40px] p-6 pb-10"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
             >
               <div className="mb-5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{selectedPlant.emoji}</span>
-                  <div>
-                    <h2 className="font-serif text-lg font-bold text-foreground">
-                      {selectedPlant.name}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">
-                      {(() => {
-                        const status = getWateringStatus(selectedPlant);
-                        return status.daysLeft === 0 ? "In 0 days" : status.label;
-                      })()}
-                    </p>
-                  </div>
-                </div>
+                <h2 className="font-serif text-[20px] font-bold text-foreground">
+                  {selectedPlant.name}
+                </h2>
                 <div className="flex items-center gap-2">
-                  {/* Help button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowPlantInfo(true);
-                    }}
-                    className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                      backdropFilter: "blur(40px) saturate(1.8)",
-                      WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                      border: "1px solid rgba(255,255,255,0.5)",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                    }}
-                  >
-                    <span className="text-base font-bold text-foreground">?</span>
-                  </button>
                   {/* Close button */}
                   <button
                     onClick={() => setSelectedPlant(null)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
                     style={{
                       background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                       backdropFilter: "blur(40px) saturate(1.8)",
@@ -241,133 +492,85 @@ const Plants = () => {
                 </div>
               </div>
 
+              <ListCell
+                className="mb-1"
+                icon={<Sparkles className="h-5 w-5 shrink-0 text-primary" />}
+                title="Plant name"
+                right={{ type: "input", value: selectedPlant.name, onChange: handlePlantNameChange }}
+              />
+
               {/* Watering interval row */}
-              <button
-                onClick={() => !selectedPlant.autoSchedule && setCarouselField("watering")}
-                className="mb-2 flex w-full items-center justify-between rounded-xl bg-secondary px-5 py-4"
-              >
-                <div className="flex items-center gap-3">
-                  <Droplets className="h-5 w-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Watering interval</span>
-                </div>
-                <span className={`rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
-                  {selectedPlant.wateringInterval} days
-                </span>
-              </button>
-
-              {/* Replanting interval row */}
-              <button
-                onClick={() => !selectedPlant.autoSchedule && setCarouselField("replanting")}
-                className="mb-2 flex w-full items-center justify-between rounded-xl bg-secondary px-5 py-4"
-              >
-                <div className="flex items-center gap-3">
-                  <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Replanting interval</span>
-                </div>
-                <span className={`rounded-full bg-primary/15 px-3 py-1.5 text-sm font-semibold text-primary transition-all ${selectedPlant.autoSchedule ? "opacity-60" : ""}`}>
-                  {selectedPlant.replantingInterval} mo
-                </span>
-              </button>
-
-              {/* Next watering info */}
-              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Droplets className="h-5 w-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Next watering</span>
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {formatWateringDate(selectedPlant.nextWatering)}
-                </span>
-              </div>
-
-              {/* Next replanting info */}
-              <div className="mb-2 flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <RefreshCw className="h-5 w-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Next replanting</span>
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {formatWateringDate(selectedPlant.nextReplanting)}
-                </span>
-              </div>
-
-              {/* Auto schedule toggle */}
-              <div className="flex items-center justify-between rounded-xl bg-secondary px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Let us care</span>
-                </div>
-                <button
-                  onClick={() => {
-                    const updated = { ...selectedPlant, autoSchedule: !selectedPlant.autoSchedule };
+              <ListCell
+                className="mb-1"
+                icon={<Droplets className="h-5 w-5 shrink-0 text-primary" />}
+                title="Watering interval"
+                right={{
+                  type: "select",
+                  options: [1, 2, 3, 4, 5, 7, 10, 14, 21, 30].map((v) => ({ value: v, label: `${v} days` })),
+                  value: selectedPlant.wateringInterval,
+                  displayValue: `${selectedPlant.wateringInterval} days`,
+                  onChange: async (v) => {
+                    const val = Number(v);
+                    const previous = selectedPlant.wateringInterval;
+                    const updated = { ...selectedPlant, wateringInterval: val };
                     setSelectedPlant(updated);
                     setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
-                  }}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${selectedPlant.autoSchedule ? "bg-primary" : "bg-muted-foreground/30"}`}
-                >
-                  <motion.div
-                    layout
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    className="absolute top-0.5 h-6 w-6 rounded-full bg-white shadow"
-                    style={{ left: selectedPlant.autoSchedule ? "calc(100% - 26px)" : "2px" }}
-                  />
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    const { error } = await supabase
+                      .from("plants")
+                      .update({ watering_interval: val })
+                      .eq("id", selectedPlant.id);
 
-      {/* iOS-style scroll picker bottom sheet */}
-      <AnimatePresence>
-        {selectedPlant && carouselField && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-            onClick={() => setCarouselField(null)}
-          >
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-serif text-lg font-bold text-foreground">
-                  {carouselField === "watering" ? "Watering interval" : "Replanting interval"}
-                </h2>
-                <button
-                  onClick={() => setCarouselField(null)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                    backdropFilter: "blur(40px) saturate(1.8)",
-                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  }}
-                >
-                  <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
-              </div>
+                    if (error) {
+                      const reverted = { ...selectedPlant, wateringInterval: previous };
+                      setSelectedPlant(reverted);
+                      setPlants((prev) => prev.map((p) => p.id === reverted.id ? reverted : p));
+                      appToast.error("Something went wrong");
+                      return;
+                    }
 
-              {/* Wheel picker */}
-              <WheelPicker
-                items={carouselField === "watering" ? [1,2,3,4,5,7,10,14,21,30] : [3,6,9,12,18,24,36]}
-                value={carouselField === "watering" ? selectedPlant.wateringInterval : selectedPlant.replantingInterval}
-                onChange={(val) => {
-                  const updated = carouselField === "watering"
-                    ? { ...selectedPlant, wateringInterval: val }
-                    : { ...selectedPlant, replantingInterval: val };
-                  setSelectedPlant(updated);
-                  setPlants((prev) => prev.map((p) => p.id === updated.id ? updated : p));
+                    appToast.success("Watering interval saved");
+                  },
                 }}
-                formatItem={(v) => `${v} ${carouselField === "watering" ? "days" : "months"}`}
               />
+
+              {/* Replant in row */}
+              {(() => {
+                const replant = getReplantStatus(selectedPlant);
+
+                if (replant.due) {
+                  return (
+                    <ListCell
+                      className="mb-1"
+                      icon={<RefreshCw className="h-5 w-5 shrink-0 text-primary" />}
+                      title="Replant in"
+                      right={{ type: "button-low", label: "Replanted", variant: "primary", onPress: () => restartReplantCounter(selectedPlant.id) }}
+                    />
+                  );
+                }
+
+                return (
+                  <ListCell
+                    className="mb-1"
+                    icon={<RefreshCw className="h-5 w-5 shrink-0 text-primary" />}
+                    title="Replant in"
+                    right={{
+                      type: "select",
+                      options: REPLANTING_OPTIONS.map((v) => ({ value: v, label: `${v} months` })),
+                      value: selectedPlant.replantingInterval,
+                      displayValue: replant.label,
+                      onChange: (v) => {
+                        const next = Number(v);
+                        if (next === selectedPlant.replantingInterval) return;
+                        setPendingReplantInterval(next);
+                        setShowReplantChangeConfirm(true);
+                      },
+                    }}
+                  />
+                );
+              })()}
+
+              {/* Auto schedule toggle */}
+        
             </motion.div>
           </motion.div>
         )}
@@ -402,31 +605,38 @@ const Plants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
             >
               <p className="text-3xl mb-2">{overduePlant.emoji}</p>
               <p className="text-base font-medium text-foreground mb-5">
                 Was it watered earlier and you forgot to mark it?
               </p>
-              <div className="flex gap-3">
-                <button
+              <div className="flex justify-start gap-2">
+                <ButtonLow
+                  variant="secondary"
                   onClick={() => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Already watered
-                </button>
-                <button
+                </ButtonLow>
+                <ButtonLow
+                  variant="secondary"
                   onClick={() => {
                     handleWater(overduePlant.id);
                     setOverduePlant(null);
                   }}
-                  className="flex-1 rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Water now
-                </button>
+                </ButtonLow>
               </div>
             </motion.div>
           </>
@@ -450,31 +660,92 @@ const Plants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-3xl bg-card p-6 text-center shadow-xl"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
             >
               <p className="text-3xl mb-2">{lateWaterPlant.emoji}</p>
               <p className="text-base font-medium text-foreground mb-5">
                 Did you forget to mark it, or was watering actually delayed?
               </p>
-              <div className="flex flex-col gap-2">
-                <button
+              <div className="flex flex-col items-start gap-2">
+                <ButtonLow
+                  variant="secondary"
                   onClick={() => {
                     handleWater(lateWaterPlant.id);
                     setLateWaterPlant(null);
                   }}
-                  className="w-full rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Forgot to mark
-                </button>
-                <button
+                </ButtonLow>
+                <ButtonLow
+                  variant="secondary"
                   onClick={() => {
                     handleWater(lateWaterPlant.id);
                     setLateWaterPlant(null);
                   }}
-                  className="w-full rounded-full bg-secondary py-3 text-sm font-medium text-foreground transition-colors"
                 >
                   Watering was delayed
-                </button>
+                </ButtonLow>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Replant change confirm modal */}
+      <AnimatePresence>
+        {showReplantChangeConfirm && selectedPlant && pendingReplantInterval !== null && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[70] bg-black/40"
+              onClick={() => {
+                setShowReplantChangeConfirm(false);
+                setPendingReplantInterval(null);
+              }}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ type: "spring", damping: 24, stiffness: 300 }}
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
+            >
+              <p className="text-base font-medium text-foreground mb-5">
+                Change value and restart counter from scratch?
+              </p>
+              <div className="flex justify-start gap-2">
+                <ButtonLow
+                  variant="secondary"
+                  onClick={() => {
+                    setShowReplantChangeConfirm(false);
+                    setPendingReplantInterval(null);
+                  }}
+                >
+                  Cancel
+                </ButtonLow>
+                <ButtonLow
+                  variant="primary"
+                  onClick={confirmReplantIntervalChange}
+                >
+                  Confirm
+                </ButtonLow>
               </div>
             </motion.div>
           </>
@@ -483,74 +754,14 @@ const Plants = () => {
     </div>
 
     {/* Plant Info Bottom Sheet */}
-    <AnimatePresence>
-      {showPlantInfo && selectedPlant && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-foreground/20 backdrop-blur-sm"
-          onClick={() => setShowPlantInfo(false)}
-        >
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-t-3xl bg-card p-6 pb-10"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-serif text-lg font-bold text-foreground">
-                {selectedPlant.name}
-              </h2>
-              <button
-                onClick={() => setShowPlantInfo(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                  backdropFilter: "blur(40px) saturate(1.8)",
-                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                  border: "1px solid rgba(255,255,255,0.5)",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                }}
-              >
-                <X className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-              </button>
-            </div>
-
-            {(() => {
-              const info = getPlantInfo(selectedPlant.name);
-              return (
-                <div className="space-y-5">
-                  <div>
-                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.about.title}</h3>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{info.about.body}</p>
-                  </div>
-                  <div>
-                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.likes.title}</h3>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{info.likes.body}</p>
-                  </div>
-                  <div>
-                    <h3 className="mb-2 text-base font-semibold text-foreground">{info.care.title}</h3>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{info.care.body}</p>
-                  </div>
-                </div>
-              );
-            })()}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    
 
     {/* Wiki Sheet */}
-    <AnimatePresence>
-      {showWiki && <PlantWikiSheet open={showWiki} onClose={() => setShowWiki(false)} />}
-    </AnimatePresence>
+    
 
     </ScrollFadeLayout>
     </PageTransition>
   );
 };
 
-export default Plants;
+export default PagePlants;

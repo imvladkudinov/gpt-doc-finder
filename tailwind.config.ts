@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -18,65 +19,64 @@ export default {
         serif: ["Fraunces", "serif"],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
         },
-        sage: {
-          50: "hsl(var(--sage-50))",
-          100: "hsl(var(--sage-100))",
-          200: "hsl(var(--sage-200))",
-          500: "hsl(var(--sage-500))",
-          700: "hsl(var(--sage-700))",
+        text: {
+          main: "var(--text-main)",
+          secondary: "var(--text-secondary)",
+          "primary-control": "var(--text-primary-control)",
+          "secondary-control": "var(--text-secondary-control)",
+          "control-error": "var(--text-control-error)",
+          warning: "var(--text-warning)",
+          error: "var(--text-error)",
         },
-        terracotta: {
-          DEFAULT: "hsl(var(--terracotta))",
-          light: "hsl(var(--terracotta-light))",
+        control: {
+          primary: "var(--control-primary)",
+          secondary: "var(--control-secondary)",
+          error: "var(--control-error)",
         },
-        cream: "hsl(var(--cream))",
-        earth: "hsl(var(--earth))",
-        premium: {
-          DEFAULT: "hsl(var(--premium))",
-          light: "hsl(var(--premium-light))",
+        icon: {
+          primary: "var(--icon-primary)",
+          main: "var(--icon-main)",
+          secondary: "var(--icon-secondary)",
+          warning: "var(--icon-warning)",
+          error: "var(--icon-error)",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        "background-group": {
+          main: "var(--background-main)",
+          modals: "var(--background-modals)",
+          secondary: "var(--background-secondary)",
         },
       },
       borderRadius: {
@@ -110,5 +110,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

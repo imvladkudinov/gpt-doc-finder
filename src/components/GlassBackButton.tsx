@@ -5,13 +5,13 @@ interface GlassBackButtonProps {
   to?: string;
 }
 
-const GlassBackButton = ({ to }: GlassBackButtonProps) => {
+const ComponentGlassBackButton = ({ to }: GlassBackButtonProps) => {
   const navigate = useNavigate();
 
   return (
     <button
       onClick={() => (to ? navigate(to) : navigate(-1))}
-      className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+      className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
       style={{
         background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
         backdropFilter: "blur(40px) saturate(1.8)",
@@ -25,4 +25,4 @@ const GlassBackButton = ({ to }: GlassBackButtonProps) => {
   );
 };
 
-export default GlassBackButton;
+export default ComponentGlassBackButton;

@@ -10,7 +10,7 @@ interface WheelPickerProps {
   formatItem: (v: number) => string;
 }
 
-const WheelPicker = ({ items, value, onChange, formatItem }: WheelPickerProps) => {
+const ComponentWheelPicker = ({ items, value, onChange, formatItem }: WheelPickerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -68,4 +68,4 @@ const WheelPicker = ({ items, value, onChange, formatItem }: WheelPickerProps) =
   );
 };
 
-export default WheelPicker;
+export default ComponentWheelPicker;

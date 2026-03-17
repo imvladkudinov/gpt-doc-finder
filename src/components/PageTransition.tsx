@@ -25,7 +25,7 @@ const pageTransition = {
   duration: 0.35,
 };
 
-const PageTransition = ({ children, className }: { children: ReactNode; className?: string }) => {
+const ComponentPageTransition = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
     <motion.div
       variants={pageVariants}
@@ -40,4 +40,4 @@ const PageTransition = ({ children, className }: { children: ReactNode; classNam
   );
 };
 
-export default PageTransition;
+export default ComponentPageTransition;

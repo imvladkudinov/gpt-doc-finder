@@ -5,6 +5,7 @@ export interface Plant {
   nextWatering: Date;
   wateringInterval: number; // days
   lastWatered: Date;
+  lastReplanted?: Date;
   missedWatering: boolean;
   notes: string;
   replantingInterval: number; // months

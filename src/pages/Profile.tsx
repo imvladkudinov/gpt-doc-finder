@@ -1,8 +1,11 @@
-import { Bell, Shield, Link, ChevronRight, Leaf, LogOut, Crown, User } from "lucide-react";
+import { LogOut, User, House, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
+import { ListCell } from "@/components/ui/ListCell";
 import avatarPlant from "@/assets/avatar-plant.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const glassStyle = {
   background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
@@ -12,18 +15,51 @@ const glassStyle = {
   boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
 };
 
-const Profile = () => {
+const PageProfile = () => {
   const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState("Plant lover");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isProfileResolved, setIsProfileResolved] = useState(false);
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!isMounted) return;
+
+      const metadata = data.user?.user_metadata ?? {};
+      const fullName = String(metadata.full_name ?? metadata.name ?? "").trim();
+      const avatar = String(metadata.avatar_url ?? metadata.picture ?? "").trim();
+
+      setDisplayName(fullName || "Plant lover");
+      setAvatarUrl(avatar || null);
+      setIsProfileResolved(true);
+
+      window.requestAnimationFrame(() => {
+        if (isMounted) setIsProfileVisible(true);
+      });
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth", { replace: true });
+  };
 
   return (
     <PageTransition>
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24">
           <div className="px-6 pt-6 pb-4 flex items-center justify-between">
-            <h1 className="font-serif text-2xl font-bold text-foreground">Profile</h1>
+            <h1 className="font-serif text-[28px] font-bold text-foreground">Profile</h1>
             <button
-              onClick={() => navigate("/")}
-              className="flex h-9 w-9 items-center justify-center rounded-full transition-all active:scale-95"
+              onClick={handleSignOut}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
               style={glassStyle}
             >
               <LogOut className="h-4 w-4 text-foreground" strokeWidth={2} />
@@ -31,90 +67,42 @@ const Profile = () => {
           </div>
 
           <div className="px-6">
-            {/* Centered avatar + name + premium label */}
-            <div className="mb-6 flex flex-col items-center">
-              <img
-                src={avatarPlant}
-                alt="Profile avatar"
-                className="h-24 w-24 rounded-3xl object-cover"
-              />
-              <p className="mt-3 font-serif text-xl font-semibold text-foreground">Alejandra García</p>
+            {/* Centered avatar + name */}
+            <div className="mb-6 pt-10 flex flex-col items-center">
               <div
-                className="mt-1 flex items-center gap-1.5 rounded-full px-3 py-1"
-                style={{
-                  background: "linear-gradient(135deg, rgba(168,130,255,0.2) 0%, rgba(168,130,255,0.08) 100%)",
-                  backdropFilter: "blur(40px) saturate(1.8)",
-                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                  border: "1px solid rgba(168,130,255,0.25)",
-                  boxShadow: "0 4px 16px rgba(168,130,255,0.1), inset 0 1px 0 rgba(255,255,255,0.6)",
-                }}
+                className={`flex flex-col items-center transition-opacity duration-300 ${
+                  isProfileResolved && isProfileVisible ? "opacity-100" : "opacity-0"
+                }`}
               >
-                <Crown className="h-3 w-3 text-purple-500" fill="currentColor" />
-                <span className="text-xs font-semibold text-purple-500">Premium</span>
+                <img
+                  src={avatarUrl || avatarPlant}
+                  alt="Profile avatar"
+                  className="h-[100px] w-[100px] rounded-full object-cover"
+                />
+                <p className="mt-3 font-serif text-xl font-semibold text-foreground">{displayName}</p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <button
-                onClick={() => navigate("/personal-details")}
-                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 shrink-0 text-primary" />
-                  Personal details
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
-              <button
-                onClick={() => navigate("/connected-services")}
-                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  <Link className="h-5 w-5 shrink-0 text-primary" />
-                  Connected services
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">2</span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </button>
-              <button
-                onClick={() => navigate("/notification-preferences")}
-                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  <Bell className="h-5 w-5 shrink-0 text-primary" />
-                  Notification preferences
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
-              <button
-                onClick={() => navigate("/plant-personalization")}
-                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  <Leaf className="h-5 w-5 shrink-0 text-primary" />
-                  Plant personalization
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
-              <button
-                className="flex w-full items-center justify-between rounded-xl bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors active:bg-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 shrink-0 text-primary" />
-                  Privacy & data
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
+            <div className="space-y-1">
+              <ListCell
+                icon={<User className="h-5 w-5 shrink-0 text-primary" />}
+                title="Personal details"
+                right={{ type: "chevron" }}
+                onPress={() => navigate("/personal-details")}
+              />
+              <ListCell
+                icon={<House className="h-5 w-5 shrink-0 text-primary" />}
+                title="Homes"
+                right={{ type: "chevron" }}
+                onPress={() => navigate("/homes")}
+              />
+              <ListCell
+                icon={<Bell className="h-5 w-5 shrink-0 text-primary" />}
+                title="Notifications"
+                right={{ type: "chevron" }}
+                onPress={() => navigate("/notification-preferences")}
+              />
             </div>
-
-            <button
-              onClick={() => navigate("/")}
-              className="mt-4 w-full text-center text-sm font-medium text-primary transition-colors hover:text-primary/80"
-            >
-              To onboard
-            </button>
           </div>
         </div>
       </ScrollFadeLayout>
@@ -122,4 +110,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default PageProfile;

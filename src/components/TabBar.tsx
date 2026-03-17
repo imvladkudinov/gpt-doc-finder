@@ -1,14 +1,13 @@
-import { Leaf, CalendarDays, User } from "lucide-react";
+import { Leaf, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const tabs = [
   { path: "/plants", matchPaths: ["/plants"], icon: Leaf },
-  { path: "/calendar", matchPaths: ["/calendar"], icon: CalendarDays },
-  { path: "/profile", matchPaths: ["/profile", "/connected-services", "/notification-preferences", "/plant-personalization", "/personal-details"], icon: User },
+  { path: "/profile", matchPaths: ["/profile", "/personal-details", "/homes"], icon: User },
 ];
 
-const TabBar = () => {
+const ComponentTabBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -46,7 +45,7 @@ const TabBar = () => {
               )}
               <Icon
                 className={`relative z-10 h-5 w-5 transition-all duration-200 ${
-                  active ? "text-primary" : "text-foreground/45"
+                  active ? "text-icon-primary" : "text-muted-foreground"
                 }`}
                 strokeWidth={active ? 2 : 1.6}
               />
@@ -58,4 +57,4 @@ const TabBar = () => {
   );
 };
 
-export default TabBar;
+export default ComponentTabBar;

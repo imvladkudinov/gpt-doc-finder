@@ -2,39 +2,60 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import Onboarding from "./pages/Onboarding";
+import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import Plants from "./pages/Plants";
-import ConnectedServices from "./pages/ConnectedServices";
-import CalendarPage from "./pages/Calendar";
 import Profile from "./pages/Profile";
-import NotificationPreferences from "./pages/NotificationPreferences";
-import PlantPersonalization from "./pages/PlantPersonalization";
 import PersonalDetails from "./pages/PersonalDetails";
+import NotificationPreferences from "./pages/NotificationPreferences";
+import Homes from "./pages/Homes";
+import HomeDetails from "./pages/HomeDetails";
+import UIPlayground from "./pages/UIPlayground";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import TabBar from "./components/TabBar";
+import { supabase } from "@/integrations/supabase/client";
+import { clearStoredActiveHomeId, ensureActiveHomeForCurrentUser } from "@/lib/homes";
+import { syncCurrentUserProfile } from "@/lib/profiles";
+import { ensurePushSubscription } from "@/lib/device-notifications";
 
 const queryClient = new QueryClient();
 
-const TAB_PATHS = ["/plants", "/calendar", "/profile", "/connected-services", "/notification-preferences", "/plant-personalization", "/personal-details"];
+const TAB_PATHS = ["/plants", "/profile", "/personal-details", "/homes"];
 
-const AnimatedRoutes = () => {
+const ProtectedRoute = ({ session }: { session: Session | null }) => {
+  if (!session) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <Outlet />;
+};
+
+const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading: boolean }) => {
   const location = useLocation();
-  const showTabBar = TAB_PATHS.some((p) => location.pathname.startsWith(p));
+  const showTabBar = Boolean(session) && TAB_PATHS.some((p) => location.pathname.startsWith(p));
+
+  if (loading) {
+    return <div className="min-h-screen bg-background" />;
+  }
 
   return (
     <>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Onboarding />} />
-          <Route path="/plants" element={<Plants />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/connected-services" element={<ConnectedServices />} />
-          <Route path="/notification-preferences" element={<NotificationPreferences />} />
-          <Route path="/plant-personalization" element={<PlantPersonalization />} />
-          <Route path="/personal-details" element={<PersonalDetails />} />
+          <Route path="/auth" element={session ? <Navigate to="/plants" replace /> : <Auth />} />
+          <Route element={<ProtectedRoute session={session} />}>
+            <Route path="/" element={<Navigate to="/plants" replace />} />
+            <Route path="/plants" element={<Plants />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/personal-details" element={<PersonalDetails />} />
+            <Route path="/notification-preferences" element={<NotificationPreferences />} />
+            <Route path="/homes" element={<Homes />} />
+            <Route path="/homes/:homeId" element={<HomeDetails />} />
+            <Route path="/playground" element={<UIPlayground />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
@@ -43,16 +64,61 @@ const AnimatedRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AnimatedRoutes />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return;
+      if (data.session) {
+        ensureActiveHomeForCurrentUser();
+        syncCurrentUserProfile();
+        ensurePushSubscription().catch(() => {
+          // Keep app startup resilient if push setup fails or permission is denied.
+        });
+      } else {
+        clearStoredActiveHomeId();
+      }
+      setSession(data.session);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (nextSession) {
+        ensureActiveHomeForCurrentUser();
+        syncCurrentUserProfile();
+        ensurePushSubscription().catch(() => {
+          // Keep auth flow resilient if push setup fails or permission is denied.
+        });
+      } else {
+        clearStoredActiveHomeId();
+      }
+      setSession(nextSession);
+      setLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-center" />
+        <BrowserRouter>
+          <AnimatedRoutes session={session} loading={loading} />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

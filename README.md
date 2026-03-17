@@ -36,6 +36,23 @@ npm i
 npm run dev
 ```
 
+## Push Notifications (MVP)
+
+1. Copy `.env.example` to `.env`.
+2. Fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+3. Add `VITE_VAPID_PUBLIC_KEY` (public key from your web-push VAPID keypair).
+4. Open Profile -> Notifications and tap Enable.
+
+### Push Sender Function
+
+1. Set Edge Function secrets:
+	- `supabase secrets set VAPID_PUBLIC_KEY=...`
+	- `supabase secrets set VAPID_PRIVATE_KEY=...`
+	- `supabase secrets set VAPID_SUBJECT=mailto:you@example.com`
+2. Deploy function:
+	- `supabase functions deploy send-push-notification --no-verify-jwt=false`
+3. In app, open Profile -> Notifications and tap Send test.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

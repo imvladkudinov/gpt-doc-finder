@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 
-const ScrollFadeLayout = ({ children }: { children: ReactNode }) => {
+const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,4 +24,4 @@ const ScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default ScrollFadeLayout;
+export default ComponentScrollFadeLayout;
