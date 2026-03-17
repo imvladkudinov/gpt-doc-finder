@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import LegalTerms from "./pages/LegalTerms";
 import LegalPolicy from "./pages/LegalPolicy";
+import PasswordRecovery from "./pages/PasswordRecovery";
 import TabBar from "./components/TabBar";
 import { supabase } from "@/integrations/supabase/client";
 import { clearStoredActiveHomeId, ensureActiveHomeForCurrentUser } from "@/lib/homes";
@@ -62,7 +63,7 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
             <Route path="/legal" element={<Legal />} />
             <Route path="/legal/terms" element={<LegalTerms />} />
             <Route path="/legal/policy" element={<LegalPolicy />} />
-            <Route path="/password-recovery" element={<require('@/pages/PasswordRecovery').default />} />
+            <Route path="/password-recovery" element={<PasswordRecovery />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -106,7 +106,7 @@ const PageAuth = () => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
                 />
                 <ButtonLarge
                   onClick={() => {
@@ -148,7 +148,7 @@ const PageAuth = () => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
                 />
                 <Input
                   type="password"
@@ -156,7 +156,7 @@ const PageAuth = () => {
                   autoComplete={mode === "signin" ? "current-password" : "new-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
                 />
                 <div className="flex flex-row justify-center gap-6 mt-1">
                   <button
@@ -175,6 +175,20 @@ const PageAuth = () => {
             <div className="space-y-3 pt-3">
               <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
                 {mode === "signin" ? "Sign in" : "Sign up"}
+              </ButtonLarge>
+              <div className="my-2 flex items-center justify-center gap-2">
+                <div className="flex-1 h-px bg-border opacity-70" />
+                <span className="text-xs text-muted-foreground font-semibold opacity-70">or</span>
+                <div className="flex-1 h-px bg-border opacity-70" />
+              </div>
+              <ButtonLarge
+                onClick={handleGoogleAuth}
+                disabled={loading}
+                variant="secondary"
+                className="mt-2 flex items-center justify-center gap-2"
+              >
+                <GoogleIcon />
+                Continue with Google
               </ButtonLarge>
             </div>
           )}
