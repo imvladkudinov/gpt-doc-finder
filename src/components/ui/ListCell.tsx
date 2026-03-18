@@ -84,7 +84,7 @@ const RightSlotRenderer = ({ slot }: { slot: RightSlot }) => {
           onChange={(e) => slot.onChange(e.target.value)}
           placeholder={slot.placeholder}
           className={cn(
-            "w-32 bg-transparent text-right text-sm text-foreground placeholder:text-muted-foreground placeholder:opacity-50 focus:outline-none",
+            "w-32 bg-transparent text-right text-[16px] text-foreground placeholder:text-muted-foreground placeholder:opacity-50 focus:outline-none",
             slot.inputClassName,
           )}
         />

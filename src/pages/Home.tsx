@@ -34,13 +34,13 @@ const PageHome = () => {
       </div>
       <div className="flex flex-row justify-center gap-8 mb-6">
         <button
-          className="text-[12px] font-body font-bold text-primary bg-transparent border-none p-0 opacity-50"
+          className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0 opacity-100"
           onClick={() => navigate("/legal/terms")}
         >
           Terms
         </button>
         <button
-          className="text-[12px] font-body font-bold text-primary bg-transparent border-none p-0 opacity-50"
+          className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0 opacity-100"
           onClick={() => navigate("/legal/policy")}
         >
           Policy
