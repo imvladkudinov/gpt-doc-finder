@@ -124,9 +124,14 @@ const App = () => {
         <Toaster />
         <Sonner position="top-center" />
         <ErrorBoundary>
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <AnimatedRoutes session={session} loading={loading} />
-          </BrowserRouter>
+          {/* Only render the router after session check is complete */}
+          {loading ? (
+            <div className="min-h-screen bg-background" />
+          ) : (
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <AnimatedRoutes session={session} loading={loading} />
+            </BrowserRouter>
+          )}
         </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>
