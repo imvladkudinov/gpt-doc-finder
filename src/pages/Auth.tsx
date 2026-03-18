@@ -1,3 +1,4 @@
+import ComponentGlassBackButton from "../components/GlassBackButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -29,10 +30,14 @@ const GoogleIcon = () => (
 
 const PageAuth = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  // Navbar title logic
+  let navbarTitle = "Sign in";
+  if (mode === "signup") navbarTitle = "Sign up";
+  if (mode === "forgot") navbarTitle = "Password recovery";
 
   const handleGoogleAuth = async () => {
     setLoading(true);
@@ -70,7 +75,8 @@ const PageAuth = () => {
         return;
       }
 
-      navigate("/plants", { replace: true });
+      // Wait for session update, then redirect
+      setTimeout(() => navigate("/plants", { replace: true }), 100);
       return;
     }
 
@@ -90,14 +96,38 @@ const PageAuth = () => {
 
   return (
     <PageTransition key={mode}>
-      <div className="flex min-h-screen items-center justify-center bg-background px-6 py-10">
-        <div className="mx-auto w-full max-w-md space-y-6 text-center">
-          <div className="space-y-1">
-            <h1 className="font-serif text-3xl font-bold text-foreground">Welcome</h1>
-            <p className="text-sm text-muted-foreground">Start treating your plants on another level</p>
+      <div className="min-h-screen bg-background px-6 py-10 flex flex-col">
+        <div className="fixed top-6 left-6 right-6 z-40 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {mode === "forgot" ? (
+                <ComponentGlassBackButton to={undefined} onClick={() => setMode("signin")} />
+            ) : (
+              <ComponentGlassBackButton />
+            )}
+            <h1 className="font-serif text-[20px] font-bold text-foreground">
+              {navbarTitle}
+            </h1>
           </div>
-
-          <div className="space-y-3">
+          {mode !== "forgot" && (
+            <button
+              type="button"
+              onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
+              className="flex items-center justify-center rounded-full px-4 h-10 font-bold text-primary text-sm transition-all active:scale-95"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                backdropFilter: "blur(40px) saturate(1.8)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+              }}
+            >
+              {mode === "signin" ? "Sign up" : "Sign in"}
+            </button>
+          )}
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="mx-auto w-full max-w-md space-y-6 text-center">
+            <div className="space-y-3">
             {mode === "forgot" ? (
               <>
                 <Input
@@ -130,15 +160,6 @@ const PageAuth = () => {
                 >
                   Send email
                 </ButtonLarge>
-                <div className="fixed left-0 right-0 bottom-6 z-10 px-4">
-                  <button
-                    type="button"
-                    onClick={() => setMode("signin")}
-                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70 w-full"
-                  >
-                    Back
-                  </button>
-                </div>
               </>
             ) : (
               <>
@@ -193,19 +214,10 @@ const PageAuth = () => {
             </div>
           )}
           {/* Remove button next to forgot password, do not render anything here */}
-          {mode !== "forgot" ? (
-            <div className="fixed left-0 right-0 bottom-6 z-10 px-4">
-              <button
-                type="button"
-                onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
-                className="text-sm font-bold text-primary transition-opacity hover:opacity-70 w-full"
-              >
-                {mode === "signin" ? "Sign up instead" : "Log in instead"}
-              </button>
-            </div>
-          ) : null}
+          {/* Removed: bottom sign up instead button */}
         </div>
       </div>
+    </div>
     </PageTransition>
   );
 };

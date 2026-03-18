@@ -19,6 +19,7 @@ import Legal from "./pages/Legal";
 import LegalTerms from "./pages/LegalTerms";
 import LegalPolicy from "./pages/LegalPolicy";
 import PasswordRecovery from "./pages/PasswordRecovery";
+import PageHome from "./pages/Home";
 import TabBar from "./components/TabBar";
 import { supabase } from "@/integrations/supabase/client";
 import { clearStoredActiveHomeId, ensureActiveHomeForCurrentUser } from "@/lib/homes";
@@ -50,9 +51,12 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
     <>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageHome />} />
           <Route path="/auth" element={session ? <Navigate to="/plants" replace /> : <Auth />} />
-          <Route element={<ProtectedRoute session={session} />}>
-            <Route path="/" element={<Navigate to="/plants" replace />} />
+          <Route path="/legal" element={<Legal />} />
+          <Route path="/legal/terms" element={<LegalTerms />} />
+          <Route path="/legal/policy" element={<LegalPolicy />} />
+          <Route element={<ProtectedRoute session={session} />}> 
             <Route path="/plants" element={<Plants />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/personal-details" element={<PersonalDetails />} />
@@ -60,9 +64,6 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
             <Route path="/homes" element={<Homes />} />
             <Route path="/homes/:homeId" element={<HomeDetails />} />
             <Route path="/playground" element={<UIPlayground />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="/legal/terms" element={<LegalTerms />} />
-            <Route path="/legal/policy" element={<LegalPolicy />} />
             <Route path="/password-recovery" element={<PasswordRecovery />} />
           </Route>
           <Route path="*" element={<NotFound />} />
