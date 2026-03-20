@@ -29,7 +29,16 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
-const TAB_PATHS = ["/plants", "/profile", "/personal-details", "/homes"];
+const TAB_PATHS = [
+  "/plants",
+  "/profile",
+  "/personal-details",
+  "/homes",
+  "/notification-preferences",
+  "/legal",
+  "/legal/terms",
+  "/legal/policy"
+];
 
 const ProtectedRoute = ({ session }: { session: Session | null }) => {
   if (!session) {
