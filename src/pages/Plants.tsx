@@ -356,103 +356,108 @@ const PagePlants = () => {
 
   return (
     <PageTransition>
-      <ScrollFadeLayout>
-        <div className="min-h-screen bg-background pb-24 flex flex-col">
-          {plants.length > 0 ? (
+      <div
+        className="min-h-screen bg-background px-6 py-10 flex flex-col"
+        style={{
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 44px)",
+          background: "var(--background-main)",
+        }}
+      >
+        {plants.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="fixed top-6 right-6 z-40"
+          >
+            <button
+              type="button"
+              onClick={() => setShowAdd(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+              style={glassAction}
+              aria-label="Add plant"
+            >
+              <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+            </button>
+          </motion.div>
+        ) : null}
+
+        {/* Header */}
+        <div className="pl-6 pr-[76px] pt-6 pb-2">
+          <AnimatePresence mode="wait">
             <motion.div
+              key={activeHomeId ?? "no-home"}
               initial={{ opacity: 0, y: 10 }}
               animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="fixed top-6 right-6 z-40"
             >
-              <button
-                type="button"
-                onClick={() => setShowAdd(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                style={glassAction}
-                aria-label="Add plant"
-              >
-                <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-              </button>
+              <div className="relative flex max-w-full items-center gap-1">
+                <div className="flex min-w-0 items-center gap-1">
+                  {activeHomeName ? (
+                    <>
+                      <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[28px] font-bold text-foreground">
+                        {activeHomeName}
+                      </h1>
+                      <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </>
+                  ) : null}
+                </div>
+                <select
+                  value={activeHomeId ?? ""}
+                  onChange={(e) => {
+                    const nextHomeId = e.target.value;
+                    if (!nextHomeId || nextHomeId === activeHomeId) return;
+                    handleActiveHomeChange(nextHomeId);
+                  }}
+                  className="absolute left-0 top-0 h-full w-full cursor-pointer opacity-0"
+                >
+                  {homes.map((home) => (
+                    <option key={home.id} value={home.id}>
+                      {home.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mt-0 h-5 text-sm text-muted-foreground">
+                <p className="text-sm leading-tight text-muted-foreground">{isLoadingPlants ? "" : plantsCounterText}</p>
+              </div>
             </motion.div>
-          ) : null}
+          </AnimatePresence>
+          {/* Info tabs */}
+        </div>
 
-          {/* Header */}
-          <div className="pl-6 pr-[76px] pt-6 pb-2">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeHomeId ?? "no-home"}
-                initial={{ opacity: 0, y: 10 }}
-                animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-              >
-                <div className="relative flex max-w-full items-center gap-1">
-                  <div className="flex min-w-0 items-center gap-1">
-                    {activeHomeName ? (
-                      <>
-                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[28px] font-bold text-foreground">
-                          {activeHomeName}
-                        </h1>
-                        <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      </>
-                    ) : null}
-                  </div>
-                  <select
-                    value={activeHomeId ?? ""}
-                    onChange={(e) => {
-                      const nextHomeId = e.target.value;
-                      if (!nextHomeId || nextHomeId === activeHomeId) return;
-                      handleActiveHomeChange(nextHomeId);
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-pointer opacity-0"
-                  >
-                    {homes.map((home) => (
-                      <option key={home.id} value={home.id}>
-                        {home.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mt-0 h-5 text-sm text-muted-foreground">
-                  <p className="text-sm leading-tight text-muted-foreground">{isLoadingPlants ? "" : plantsCounterText}</p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-            {/* Info tabs */}
+        {/* Empty state */}
+        {!isLoadingPlants && plants.length === 0 ? (
+          <div className="flex flex-col items-center justify-center flex-1">
+            <h2 className="font-serif text-xl font-bold text-foreground mb-2 text-center">
+              No plants added
+            </h2>
+            <p className="text-sm text-muted-foreground mb-3 text-center">
+              Add your first plant to track and let them live
+            </p>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg mb-2"
+              style={{ fontSize: 24 }}
+            >
+              <IconPlusFilled className="h-6 w-6" />
+            </button>
           </div>
-
-          {/* Empty state */}
-          {!isLoadingPlants && plants.length === 0 ? (
-            <div className="flex flex-col items-center justify-center flex-1">
-              <h2 className="font-serif text-xl font-bold text-foreground mb-2 text-center">
-                No plants added
-              </h2>
-              <p className="text-sm text-muted-foreground mb-3 text-center">
-                Add your first plant to track and let them live
-              </p>
-              <button
-                onClick={() => setShowAdd(true)}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg mb-2"
-                style={{ fontSize: 24 }}
-              >
-                <IconPlusFilled className="h-6 w-6" />
-              </button>
-            </div>
-          ) : plants.length > 0 ? (
-            <div className="mt-4 grid grid-cols-3 gap-1 px-6">
-              {plants.map((plant, i) => (
-                <PlantCard
-                  key={plant.id}
-                  plant={plant}
-                  index={i}
-                  onClick={() => setSelectedPlant(plant)}
-                  onOverdueClick={() => setOverduePlant(plant)}
-                  onWater={() => handleWaterWithCheck(plant.id)}
-                />
-              ))}
-            </div>
-          ) : null}
+        ) : plants.length > 0 ? (
+          <div className="mt-4 grid grid-cols-3 gap-1 px-6">
+            {plants.map((plant, i) => (
+              <PlantCard
+                key={plant.id}
+                plant={plant}
+                index={i}
+                onClick={() => setSelectedPlant(plant)}
+                onOverdueClick={() => setOverduePlant(plant)}
+                onWater={() => handleWaterWithCheck(plant.id)}
+              />
+            ))}
+          </div>
+        ) : null}
 
       {/* Bottom sheet detail */}
       <AnimatePresence>
@@ -461,7 +466,13 @@ const PagePlants = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
+            className="fixed left-0 right-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
+            style={{
+              top: 'calc(0px - env(safe-area-inset-top, 0px))',
+              height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+              paddingTop: 'env(safe-area-inset-top, 0px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+            }}
             onClick={() => setSelectedPlant(null)}
           >
             <motion.div
@@ -470,7 +481,7 @@ const PagePlants = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[48px] p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[60px] p-6 pb-10"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -606,7 +617,13 @@ const PagePlants = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[70] bg-black/40"
+              className="fixed left-0 right-0 z-[70] bg-black/40"
+              style={{
+                top: 'calc(0px - env(safe-area-inset-top, 0px))',
+                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                paddingTop: 'env(safe-area-inset-top, 0px)',
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+              }}
               onClick={() => setOverduePlant(null)}
             />
             <motion.div
@@ -614,7 +631,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[48px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -661,7 +678,13 @@ const PagePlants = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[70] bg-black/40"
+              className="fixed left-0 right-0 z-[70] bg-black/40"
+              style={{
+                top: 'calc(0px - env(safe-area-inset-top, 0px))',
+                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                paddingTop: 'env(safe-area-inset-top, 0px)',
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+              }}
               onClick={() => setLateWaterPlant(null)}
             />
             <motion.div
@@ -669,7 +692,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[48px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[56px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -716,7 +739,13 @@ const PagePlants = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[70] bg-black/40"
+              className="fixed left-0 right-0 z-[70] bg-black/40"
+              style={{
+                top: 'calc(0px - env(safe-area-inset-top, 0px))',
+                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                paddingTop: 'env(safe-area-inset-top, 0px)',
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+              }}
               onClick={() => {
                 setShowReplantChangeConfirm(false);
                 setPendingReplantInterval(null);
