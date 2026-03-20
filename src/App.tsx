@@ -133,6 +133,19 @@ const App = () => {
         <Toaster />
         <Sonner position="top-center" />
         <ErrorBoundary>
+          {/* Fixed safe area overlay for iOS Dynamic Island */}
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "calc(env(safe-area-inset-top, 0px) + 44px)",
+              background: "var(--background-main)",
+              zIndex: 1000,
+              pointerEvents: "none"
+            }}
+          />
           {/* Only render the router after session check is complete */}
           {loading ? (
             <div className="min-h-screen bg-background" />
