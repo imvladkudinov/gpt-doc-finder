@@ -104,6 +104,14 @@ const PageAuth = () => {
     setLoading(false);
   };
 
+  // Navbar title logic
+  const navbarTitle =
+    mode === "signup"
+      ? "Sign up"
+      : mode === "forgot"
+      ? "Password recovery"
+      : "Sign in";
+
   return (
     <PageTransition key={mode}>
       <div className="min-h-screen bg-background px-6 py-10 flex flex-col">
