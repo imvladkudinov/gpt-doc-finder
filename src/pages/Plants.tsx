@@ -790,15 +790,6 @@ const PagePlants = () => {
         )}
       </AnimatePresence>
     </div>
-
-    {/* Plant Info Bottom Sheet */}
-    
-
-    {/* Wiki Sheet */}
-    
-
-    </ScrollFadeLayout>
-    </PageTransition>
   );
 };
 
