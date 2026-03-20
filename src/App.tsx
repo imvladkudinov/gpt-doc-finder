@@ -140,7 +140,7 @@ const App = () => {
               top: 0,
               left: 0,
               right: 0,
-              height: "calc(env(safe-area-inset-top, 0px) + 44px)",
+              height: "1px",
               background: "var(--background-main)",
               zIndex: 1000,
               pointerEvents: "none"
