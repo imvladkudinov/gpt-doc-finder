@@ -4,7 +4,15 @@ import { motion } from "framer-motion";
 
 const tabs = [
   { path: "/plants", matchPaths: ["/plants"], icon: IconLeafFilled },
-  { path: "/profile", matchPaths: ["/profile", "/personal-details", "/homes"], icon: IconUserFilled },
+  { path: "/profile", matchPaths: [
+    "/profile",
+    "/personal-details",
+    "/homes",
+    "/notification-preferences",
+    "/legal",
+    "/legal/terms",
+    "/legal/policy"
+  ], icon: IconUserFilled },
 ];
 
 const ComponentTabBar = () => {

@@ -85,7 +85,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 28, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="mb-2 w-[calc(100%-16px)] rounded-[48px] p-6 pb-10"
+          className="mb-2 w-[calc(100%-16px)] rounded-[60px] p-6 pb-10"
           style={{
             background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
             backdropFilter: "blur(40px) saturate(1.8)",

@@ -79,23 +79,13 @@ const PagePersonalDetails = () => {
   };
 
   const handlePasswordChange = async () => {
-    if (newPassword.length < 6 || newPassword !== confirmPassword) {
-      appToast.error("Passwords must match");
-      return;
-    }
-
     setIsUpdatingPassword(true);
-
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
-      appToast.error("Password update failed");
+      appToast.error("Something went wrong");
       setIsUpdatingPassword(false);
       return;
     }
-
     appToast.success("Password now updated");
     setShowPasswordSheet(false);
     setNewPassword("");
@@ -154,7 +144,13 @@ const PagePersonalDetails = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
+            className="fixed left-0 right-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
+            style={{
+              top: 'calc(0px - env(safe-area-inset-top, 0px))',
+              height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+              paddingTop: 'env(safe-area-inset-top, 0px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+            }}
             onClick={() => setShowPasswordSheet(false)}
           >
             <motion.div
@@ -163,7 +159,7 @@ const PagePersonalDetails = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="mb-2 w-[calc(100%-16px)] rounded-[48px] p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] rounded-[60px] p-6 pb-10"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -183,9 +179,9 @@ const PagePersonalDetails = () => {
                 </button>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 pb-4">
                 <ListCell
-                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />} 
                   title="New password"
                   right={{
                     type: "input",
@@ -194,9 +190,8 @@ const PagePersonalDetails = () => {
                     placeholder: "Min 6 chars",
                   }}
                 />
-
                 <ListCell
-                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />} 
                   title="Confirm"
                   right={{
                     type: "input",
@@ -206,16 +201,11 @@ const PagePersonalDetails = () => {
                   }}
                 />
               </div>
-
-              {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                <p className="mb-2 text-xs text-accent px-1">Passwords don't match</p>
-              )}
-
               <ButtonLarge
                 variant="primary"
                 className="mt-4"
                 onClick={handlePasswordChange}
-                disabled={isUpdatingPassword || newPassword.length < 6 || newPassword !== confirmPassword}
+                disabled={isUpdatingPassword}
               >
                 {isUpdatingPassword ? "Updating..." : "Update password"}
               </ButtonLarge>

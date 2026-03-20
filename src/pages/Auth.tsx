@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 const GoogleIcon = () => (
   <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24">
@@ -34,10 +35,19 @@ const PageAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  // Navbar title logic
-  let navbarTitle = "Sign in";
-  if (mode === "signup") navbarTitle = "Sign up";
-  if (mode === "forgot") navbarTitle = "Password recovery";
+
+  // Autofill detection: auto-submit when both fields are filled
+  useEffect(() => {
+    if (
+      mode === "signin" &&
+      email.trim() &&
+      password.trim() &&
+      !loading
+    ) {
+      handleEmailAuth();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, password]);
 
   const handleGoogleAuth = async () => {
     setLoading(true);
