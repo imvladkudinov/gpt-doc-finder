@@ -1,5 +1,5 @@
 import ComponentGlassBackButton from "../components/GlassBackButton";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const GoogleIcon = () => (
   <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24">
@@ -31,23 +32,35 @@ const GoogleIcon = () => (
 
 const PageAuth = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgotSheet, setShowForgotSheet] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
 
-  // Autofill detection: auto-submit when both fields are filled
+  // Autofill detection: only auto-submit if both fields are filled instantly (not by typing)
+  const autofillTriggered = useRef(false);
   useEffect(() => {
+    if (mode !== "signin" || loading || autofillTriggered.current) return;
+    const emailInput = document.querySelector('input[type="email"]');
+    const passwordInput = document.querySelector('input[type="password"]');
+    if (!emailInput || !passwordInput) return;
     if (
-      mode === "signin" &&
       email.trim() &&
       password.trim() &&
-      !loading
+      document.activeElement !== emailInput &&
+      document.activeElement !== passwordInput
     ) {
-      handleEmailAuth();
+      autofillTriggered.current = true;
+      setLoading(true);
+      handleEmailAuth().finally(() => {
+        setTimeout(() => {
+          autofillTriggered.current = false;
+        }, 1000);
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email, password]);
+  }, [email, password, mode, loading]);
 
   const handleGoogleAuth = async () => {
     setLoading(true);
@@ -66,6 +79,7 @@ const PageAuth = () => {
   };
 
   const handleEmailAuth = async () => {
+    if (loading) return;
     if (!email.trim() || !password.trim()) {
       appToast.error("Enter email and password");
       return;
@@ -85,7 +99,6 @@ const PageAuth = () => {
         return;
       }
 
-      // Wait for session update, then redirect
       setTimeout(() => navigate("/plants", { replace: true }), 100);
       return;
     }
@@ -105,81 +118,36 @@ const PageAuth = () => {
   };
 
   // Navbar title logic
-  const navbarTitle =
-    mode === "signup"
-      ? "Sign up"
-      : mode === "forgot"
-      ? "Password recovery"
-      : "Sign in";
+  const navbarTitle = mode === "signup" ? "Sign up" : "Sign in";
 
   return (
     <PageTransition key={mode}>
       <div className="min-h-screen bg-background px-6 py-10 flex flex-col">
         <div className="fixed top-6 left-6 right-6 z-40 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {mode === "forgot" ? (
-                <ComponentGlassBackButton to={undefined} onClick={() => setMode("signin")} />
-            ) : (
-              <ComponentGlassBackButton />
-            )}
+            <ComponentGlassBackButton />
             <h1 className="font-serif text-[20px] font-bold text-foreground">
               {navbarTitle}
             </h1>
           </div>
-          {mode !== "forgot" && (
-            <button
-              type="button"
-              onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
-              className="flex items-center justify-center rounded-full px-4 h-10 font-bold text-primary text-sm transition-all active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                backdropFilter: "blur(40px) saturate(1.8)",
-                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-              }}
-            >
-              {mode === "signin" ? "Sign up" : "Sign in"}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setMode((prev) => (prev === "signin" ? "signup" : "signin"))}
+            className="flex items-center justify-center rounded-full px-4 h-10 font-bold text-primary text-sm transition-all active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+              backdropFilter: "blur(40px) saturate(1.8)",
+              WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+              border: "1px solid rgba(255,255,255,0.5)",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+            }}
+          >
+            {mode === "signin" ? "Sign up" : "Sign in"}
+          </button>
         </div>
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center">
           <div className="mx-auto w-full max-w-md space-y-6 text-center">
-            <div className="space-y-3">
-            {mode === "forgot" ? (
-              <>
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
-                />
-                <ButtonLarge
-                  onClick={() => {
-                    if (!email.trim()) {
-                      appToast.error("Enter your email");
-                      return;
-                    }
-                    setLoading(true);
-                    supabase.auth.resetPasswordForEmail(email.trim()).then(({ error }) => {
-                      setLoading(false);
-                      if (error) {
-                        appToast.error("No account found for this email");
-                        return;
-                      }
-                      appToast.success("May god help you");
-                      setMode("signin");
-                    });
-                  }}
-                  disabled={loading}
-                  className="mt-6"
-                >
-                  Send email
-                </ButtonLarge>
-              </>
-            ) : (
+            {mode === "signin" || mode === "signup" ? (
               <>
                 <Input
                   type="email"
@@ -197,25 +165,27 @@ const PageAuth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
                 />
-                <div className="flex flex-row justify-center gap-6 mt-1">
+                <div className="flex flex-row justify-center gap-6 mt-3" style={{marginTop: '12px'}}>
                   <button
                     type="button"
-                    onClick={() => setMode("forgot")}
-                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70"
+                    onClick={() => {
+                      setRecoveryEmail(email);
+                      setShowForgotSheet(true);
+                    }}
+                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70 mt-0 mb-6"
                   >
                     Forgot password?
                   </button>
                 </div>
               </>
-            )}
+            ) : null}
           </div>
 
-          {mode !== "forgot" && (
-            <div className="space-y-3 pt-3">
+            <div className="space-y-3 pt-3 flex flex-col w-full">
               <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
                 {mode === "signin" ? "Sign in" : "Sign up"}
               </ButtonLarge>
-              <div className="my-2 flex items-center justify-center gap-2">
+              <div className="my-2 flex flex-row items-center justify-center gap-2">
                 <div className="flex-1 h-px bg-border opacity-70" />
                 <span className="text-xs text-muted-foreground font-semibold opacity-70">or</span>
                 <div className="flex-1 h-px bg-border opacity-70" />
@@ -224,18 +194,97 @@ const PageAuth = () => {
                 onClick={handleGoogleAuth}
                 disabled={loading}
                 variant="secondary"
-                className="mt-2 flex items-center justify-center gap-2"
+                className="flex items-center justify-center gap-2"
               >
                 <GoogleIcon />
                 Continue with Google
               </ButtonLarge>
             </div>
-          )}
           {/* Remove button next to forgot password, do not render anything here */}
           {/* Removed: bottom sign up instead button */}
+          {/* Forgot password bottom sheet */}
+          <AnimatePresence>
+            {showForgotSheet && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed left-0 right-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
+                style={{
+                  top: 'calc(0px - env(safe-area-inset-top, 0px))',
+                  height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                  paddingTop: 'env(safe-area-inset-top, 0px)',
+                  paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+                }}
+                onClick={() => setShowForgotSheet(false)}
+              >
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="mb-2 w-[calc(100%-16px)] max-w-md rounded-b-[58px] rounded-t-[50px] p-6 pb-10"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <div className="mb-5 flex items-center justify-between">
+                    <h2 className="font-serif text-[20px] font-bold text-foreground">Password recovery</h2>
+                    <button
+                      onClick={() => setShowForgotSheet(false)}
+                      className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(255,255,255,0.5)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                      }}
+                    >
+                      <svg aria-hidden="true" className="h-[18px] w-[18px] text-foreground" viewBox="0 0 24 24"><path d="M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                    </button>
+                  </div>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    autoComplete="email"
+                    value={recoveryEmail}
+                    onChange={(e) => setRecoveryEmail(e.target.value)}
+                    className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
+                  />
+                  <ButtonLarge
+                    onClick={() => {
+                      if (!recoveryEmail.trim()) {
+                        appToast.error("Enter your email");
+                        return;
+                      }
+                      setLoading(true);
+                      supabase.auth.resetPasswordForEmail(recoveryEmail.trim()).then(({ error }) => {
+                        setLoading(false);
+                        if (error) {
+                          appToast.error("No account found for this email");
+                          return;
+                        }
+                        appToast.success("May god help you");
+                        setShowForgotSheet(false);
+                      });
+                    }}
+                    disabled={loading}
+                    className="mt-6"
+                  >
+                    Send email
+                  </ButtonLarge>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-    </div>
     </PageTransition>
   );
 };

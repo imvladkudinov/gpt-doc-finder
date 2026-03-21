@@ -60,7 +60,7 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
     <>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageHome />} />
+          <Route path="/" element={session ? <Navigate to="/plants" replace /> : <PageHome />} />
           <Route path="/auth" element={session ? <Navigate to="/plants" replace /> : <Auth />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/legal/terms" element={<LegalTerms />} />

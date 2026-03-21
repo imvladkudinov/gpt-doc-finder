@@ -12,13 +12,6 @@ const HomeIcon = () => (
 
 const PageHome = () => {
   const navigate = useNavigate();
-  React.useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        navigate("/plants", { replace: true });
-      }
-    });
-  }, [navigate]);
 
   return (
     <PageTransition>

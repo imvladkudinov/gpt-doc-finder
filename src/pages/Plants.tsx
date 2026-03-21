@@ -476,7 +476,7 @@ const PagePlants = () => {
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-[60px] p-6 pb-10"
+              className="mb-2 w-[calc(100%-16px)] max-w-md rounded-b-[58px] rounded-t-[50px] p-6 pb-10"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -626,7 +626,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[48px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-b-[46px] rounded-t-[38px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -687,7 +687,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[56px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-b-[54px] rounded-t-[46px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
@@ -751,7 +751,7 @@ const PagePlants = () => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-[40px] p-7"
+              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-b-[38px] rounded-t-[30px] p-7"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
                 backdropFilter: "blur(40px) saturate(1.8)",
