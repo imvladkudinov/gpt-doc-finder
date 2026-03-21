@@ -45,22 +45,47 @@ const toUtcParts = (date: Date) => ({
   date: date.toISOString().slice(0, 10),
 });
 
-const getMessage = (kind: "watering_due" | "replant_due" | "replant_week_before", names: string[]) => {
+const getNotificationContent = (kind: "watering_due" | "replant_due" | "replant_week_before", names: string[]) => {
   const count = names.length;
   const firstName = names[0] ?? "your plant";
 
   if (kind === "watering_due") {
-    if (count === 1) return `Time to water ${firstName}`;
-    return "Some plants should be watered today";
+    if (count === 1) {
+      return {
+        title: `${firstName} 🪴 is calling`,
+        body: "Time to water me",
+      };
+    }
+    return {
+      title: "Some plants 🪴 asked me to pass this message",
+      body: "Time to water us",
+    };
   }
 
   if (kind === "replant_due") {
-    if (count === 1) return `Time to replant ${firstName}`;
-    return "Some plants should be replanted today";
+    if (count === 1) {
+      return {
+        title: `${firstName} 🪴 is ready to be replanted`,
+        body: "Hope you got some soil",
+      };
+    }
+    return {
+      title: "Some plants 🪴 are ready to be replanted",
+      body: "Hope you got some soil",
+    };
   }
 
-  if (count === 1) return `Replant ${firstName} in one week`;
-  return "Some plants need replanting in one week";
+  // replant_week_before
+  if (count === 1) {
+    return {
+      title: `${firstName} 🪴 is due for replanting in 1 week`,
+      body: "Time to buy some soil",
+    };
+  }
+  return {
+    title: "Some plants 🪴 are due for replanting in 1 week",
+    body: "Time to buy some soil",
+  };
 };
 
 const fetchUserPlants = async (supabase: ReturnType<typeof createClient>, userId: string): Promise<UserPlant[]> => {
@@ -172,7 +197,7 @@ const markSent = async (
 const sendToUser = async (
   supabase: ReturnType<typeof createClient>,
   userId: string,
-  message: string,
+  notification: { title: string; body: string },
   vapidSubject: string,
   vapidPublicKey: string,
   vapidPrivateKey: string,
@@ -189,8 +214,8 @@ const sendToUser = async (
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 
   const payload = JSON.stringify({
-    title: "Planty",
-    body: message,
+    title: notification.title,
+    body: notification.body,
     url: "/plants",
   });
 
@@ -336,13 +361,13 @@ Deno.serve(async (request) => {
       const names = await selectPlantNames(supabase, slot.user_id, kind);
       if (!names.length) continue;
 
-      const message = getMessage(kind, names);
+      const notification = getNotificationContent(kind, names);
       notificationsAttempted += 1;
 
       const result = await sendToUser(
         supabase,
         slot.user_id,
-        message,
+        notification,
         vapidSubject,
         vapidPublicKey,
         vapidPrivateKey,

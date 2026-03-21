@@ -156,7 +156,8 @@
   [data-sonner-toaster] [data-sonner-toast] {
     background: var(--control-secondary) !important;
     color: var(--text-main) !important;
-    border-color: var(--icon-secondary) !important;
+    border: none !important;
+    box-shadow: none !important;
     opacity: 1 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;

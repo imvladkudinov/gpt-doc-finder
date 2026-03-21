@@ -521,7 +521,7 @@ const PagePlants = () => {
                 title="Watering interval"
                 right={{
                   type: "select",
-                  options: [1, 2, 3, 4, 5, 7, 10, 14, 21, 30].map((v) => ({ value: v, label: `${v} days` })),
+                  options: [1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,32,36,40,48,56,64].map((v) => ({ value: v, label: `${v} days` })),
                   value: selectedPlant.wateringInterval,
                   displayValue: `${selectedPlant.wateringInterval} days`,
                   onChange: async (v) => {

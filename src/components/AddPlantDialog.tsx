@@ -27,11 +27,8 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
   const [wateringInterval, setWateringInterval] = useState(7);
   const [replantingInterval, setReplantingInterval] = useState(12);
 
-  // Watering interval options: 1-20 (step 1), then 24, 28, ..., 60 (step 4)
-  const WATERING_OPTIONS = [
-    ...Array.from({ length: 20 }, (_, i) => i + 1),
-    ...Array.from({ length: 10 }, (_, i) => 24 + i * 4)
-  ];
+  // Watering interval options: 1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,32,36,40,48,56,64
+  const WATERING_OPTIONS = [1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,32,36,40,48,56,64];
   const REPLANTING_OPTIONS = Array.from({ length: 12 }, (_, i) => 3 + i * 3); // 3, 6, ..., 36
 
   if (!open) return null;
