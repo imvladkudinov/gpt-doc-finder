@@ -37,6 +37,7 @@ const PageNotificationPreferences = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [isSwitchReady, setIsSwitchReady] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
   const [isSavingTime, setIsSavingTime] = useState(false);
 
@@ -48,12 +49,14 @@ const PageNotificationPreferences = () => {
   const refreshSubscriptionState = async () => {
     if (!notificationsSupported) {
       setIsEnabled(false);
+      setIsSwitchReady(true);
       return;
     }
 
     const registration = await navigator.serviceWorker.getRegistration();
     const subscription = await registration?.pushManager.getSubscription();
     setIsEnabled(Boolean(subscription));
+    setIsSwitchReady(true);
   };
 
   useEffect(() => {
@@ -179,15 +182,17 @@ const PageNotificationPreferences = () => {
 
           <div className="px-6 pt-20">
             <div className="space-y-1">
-              <ListCell
-                icon={<IconBellFilled className="h-6 w-6 shrink-0 text-primary" />}
-                title="Notifications"
-                right={{
-                  type: "switch",
-                  checked: isEnabled,
-                  onCheckedChange: handleEnableSwitch,
-                }}
-              />
+              {isSwitchReady && (
+                <ListCell
+                  icon={<IconBellFilled className="h-6 w-6 shrink-0 text-primary" />}
+                  title="Notifications"
+                  right={{
+                    type: "switch",
+                    checked: isEnabled,
+                    onCheckedChange: handleEnableSwitch,
+                  }}
+                />
+              )}
 
               <ListCell
                 icon={<IconClockFilled className="h-6 w-6 shrink-0 text-primary" />}
