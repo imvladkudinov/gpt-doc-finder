@@ -221,7 +221,7 @@ const PagePlants = () => {
     // Refetch plants
     if (!activeHomeId) return;
     await loadPlantsForHome(activeHomeId);
-    appToast.success("Watering marked done");
+    appToast.success("Watered");
   };
 
   const handleWaterWithCheck = (id: string) => {
