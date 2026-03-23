@@ -9,6 +9,9 @@ export interface ButtonLowProps extends React.ButtonHTMLAttributes<HTMLButtonEle
 
 export const ButtonLow = React.forwardRef<HTMLButtonElement, ButtonLowProps>(
   ({ className, variant = "primary", children, ...props }, ref) => {
+    const { style, ...rest } = props as any;
+    const mergedStyle = { ...(style || {}), letterSpacing: '2%' };
+
     return (
       <button
         ref={ref}
@@ -23,7 +26,8 @@ export const ButtonLow = React.forwardRef<HTMLButtonElement, ButtonLowProps>(
             : "bg-control-secondary text-text-secondary-control",
           className,
         )}
-        {...props}
+        style={mergedStyle}
+        {...rest}
       >
         {children}
       </button>

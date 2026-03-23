@@ -57,7 +57,7 @@ const PageProfile = () => {
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24">
           <div className="px-6 pt-6 pb-4 flex items-center justify-between">
-            <h1 className="font-serif text-[28px] font-bold text-foreground">Profile</h1>
+            <h1 className="font-serif text-[30px] font-bold text-foreground">Profile</h1>
             <button
               onClick={handleSignOut}
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"

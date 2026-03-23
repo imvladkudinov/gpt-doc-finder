@@ -104,7 +104,7 @@ const PageUIPlayground = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="px-6 pt-6 pb-2">
             <div className="flex items-start justify-between gap-4">
-              <h1 className="font-serif text-2xl font-bold text-foreground">UI Playground</h1>
+              <h1 className="font-serif text-[26px] font-bold text-foreground">UI Playground</h1>
               {isDirty ? <ButtonLow onClick={handleSave}>Save</ButtonLow> : null}
             </div>
             <p className="mt-2 text-sm text-muted-foreground">A sandbox for shared UI pieces.</p>
@@ -131,7 +131,7 @@ const PageUIPlayground = () => {
               <section className="mt-8 space-y-5">
                 {tokenGroups.map((group) => (
                   <div key={group.title} className="space-y-2">
-                    <h2 className="text-base font-semibold text-foreground">{group.title}</h2>
+                    <h2 className="text-[18px] font-semibold text-foreground">{group.title}</h2>
                     <div className="rounded-xl bg-secondary p-3">
                       <table className="w-full table-fixed text-left text-xs">
                         <colgroup>
@@ -187,7 +187,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "label" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="flex flex-wrap gap-2">
                   <Label>Default label</Label>
                   <Label disabled>Disabled label</Label>
@@ -200,7 +200,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "tab" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="overflow-x-auto">
                   <div className="flex w-max gap-1">
                     <Tab selected>Selected</Tab>
@@ -215,7 +215,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "list-cell" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="space-y-1">
                   <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Chevron" right={{ type: "chevron" }} />
                   <ListCell icon={<Square className="h-6 w-6 text-primary" />} title="Text" right={{ type: "text", value: "Value" }} />
@@ -237,7 +237,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "low-button" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="flex flex-wrap gap-3">
                   <ButtonLow>Primary</ButtonLow>
                   <ButtonLow variant="secondary">Secondary</ButtonLow>
@@ -252,7 +252,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "large-button" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="space-y-3">
                   <ButtonLarge>Primary</ButtonLarge>
                   <ButtonLarge variant="secondary">Secondary</ButtonLarge>
@@ -267,7 +267,7 @@ const PageUIPlayground = () => {
 
             {activeSection === "switch" ? (
               <section className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+                <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
                 <div className="flex items-center gap-3">
                   <Switch checked={toggleOn} onCheckedChange={setToggleOn} />
                 </div>

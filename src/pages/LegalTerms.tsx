@@ -20,7 +20,7 @@ const LegalTerms = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="fixed top-6 left-6 right-6 z-40 flex items-center gap-3">
             <GlassBackButton onPress={handleBack} />
-            <h1 className="font-serif text-[20px] font-bold text-foreground">Terms of service</h1>
+            <h1 className="font-serif text-[22px] font-bold text-foreground">Terms of service</h1>
           </div>
           <div className="px-6 pt-20 space-y-4">
             <p className="text-[12px] font-mono uppercase tracking-wider text-muted-foreground">LAST UPDATED: MARCH 2026</p>

@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Input } from "@/components/ui/input";
+import { IconMail, IconLock } from "@tabler/icons-react";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -126,7 +127,7 @@ const PageAuth = () => {
         <div className="fixed top-6 left-6 right-6 z-40 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <ComponentGlassBackButton />
-            <h1 className="font-serif text-[20px] font-bold text-foreground">
+            <h1 className="font-serif text-[22px] font-bold text-foreground">
               {navbarTitle}
             </h1>
           </div>
@@ -146,55 +147,72 @@ const PageAuth = () => {
           </button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="mx-auto w-full max-w-md space-y-6 text-center">
+          <div className="mx-auto w-full max-w-md space-y-2 mb-6">
             {mode === "signin" || mode === "signup" ? (
               <>
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
-                />
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
-                />
-                <div className="flex flex-row justify-center gap-6 mt-3" style={{marginTop: '12px'}}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRecoveryEmail(email);
-                      setShowForgotSheet(true);
-                    }}
-                    className="text-sm font-bold text-primary transition-opacity hover:opacity-70 mt-0 mb-6"
-                  >
-                    Forgot password?
-                  </button>
+                <div className="w-full">
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--control-primary)]">
+                      <IconMail className="h-5 w-5" />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal"
+                    />
+                  </div>
+
+                  <div className="relative mt-2">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--control-primary)]">
+                      <IconLock className="h-5 w-5" />
+                    </div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal"
+                    />
+                  </div>
+
+                  <div className="w-full">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRecoveryEmail(email);
+                        setShowForgotSheet(true);
+                      }}
+                      className="mt-2 text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0 opacity-100"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                 </div>
               </>
             ) : null}
           </div>
 
-            <div className="space-y-3 pt-3 flex flex-col w-full">
+            <div className="space-y-2 pt-1 flex flex-col w-full">
               <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
                 {mode === "signin" ? "Sign in" : "Sign up"}
               </ButtonLarge>
-              <div className="my-2 flex flex-row items-center justify-center gap-2">
-                <div className="flex-1 h-px bg-border opacity-70" />
-                <span className="text-xs text-muted-foreground font-semibold opacity-70">or</span>
-                <div className="flex-1 h-px bg-border opacity-70" />
-              </div>
+              {/* divider removed per request */}
               <ButtonLarge
                 onClick={handleGoogleAuth}
                 disabled={loading}
                 variant="secondary"
                 className="flex items-center justify-center gap-2"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                  backdropFilter: "blur(40px) saturate(1.8)",
+                  WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                  border: "1px solid rgba(255,255,255,0.5)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
               >
                 <GoogleIcon />
                 Continue with Google
@@ -234,7 +252,7 @@ const PageAuth = () => {
                   }}
                 >
                   <div className="mb-5 flex items-center justify-between">
-                    <h2 className="font-serif text-[20px] font-bold text-foreground">Password recovery</h2>
+                    <h2 className="font-serif text-[22px] font-bold text-foreground">Password recovery</h2>
                     <button
                       onClick={() => setShowForgotSheet(false)}
                       className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
@@ -255,7 +273,7 @@ const PageAuth = () => {
                     autoComplete="email"
                     value={recoveryEmail}
                     onChange={(e) => setRecoveryEmail(e.target.value)}
-                    className="h-[52px] rounded-none border-0 border-b border-icon-secondary bg-transparent px-0 text-left shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 opacity-70"
+                        className="h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white px-4 text-base text-center text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal"
                   />
                   <ButtonLarge
                     onClick={() => {
@@ -283,6 +301,9 @@ const PageAuth = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          
+
         </div>
       </div>
     </PageTransition>

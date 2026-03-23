@@ -179,6 +179,37 @@
   }
 }
 
+@layer base {
+  /* Remove default browser focus outline/stroke on inputs and replace with controlled styling */
+  input,
+  textarea,
+  select {
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Address autofill background/outline in WebKit browsers */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--background) inset;
+    box-shadow: 0 0 0px 1000px var(--background) inset;
+    -webkit-text-fill-color: var(--foreground) !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+}
+
 /* Hide scrollbar for wheel picker */
 .scrollbar-none {
   -ms-overflow-style: none;

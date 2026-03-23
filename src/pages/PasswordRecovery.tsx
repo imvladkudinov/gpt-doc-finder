@@ -34,7 +34,7 @@ const PasswordRecovery = () => {
         <div className="mx-auto w-full max-w-md space-y-6 text-center">
           <div className="flex items-center gap-3 mb-6">
             <GlassBackButton to="/auth" />
-            <h1 className="font-serif text-2xl font-bold text-foreground">Password recovery</h1>
+            <h1 className="font-serif text-[26px] font-bold text-foreground">Password recovery</h1>
           </div>
           <Input
             type="email"

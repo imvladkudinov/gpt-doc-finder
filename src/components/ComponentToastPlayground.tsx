@@ -3,7 +3,7 @@ import { appToast } from "@/lib/app-toast";
 const ComponentToastPlayground = () => {
   return (
     <section className="mt-8 space-y-4">
-      <h2 className="text-lg font-semibold text-foreground">Examples</h2>
+      <h2 className="text-[20px] font-semibold text-foreground">Examples</h2>
 
       <div className="flex flex-wrap gap-2">
         <button

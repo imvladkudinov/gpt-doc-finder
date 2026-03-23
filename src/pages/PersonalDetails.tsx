@@ -99,7 +99,7 @@ const PagePersonalDetails = () => {
         <div className="min-h-screen bg-background pb-24">
           <div className="fixed top-6 left-6 right-6 z-40 flex items-center gap-3">
             <GlassBackButton to="/profile" />
-            <h1 className="font-serif text-[20px] font-bold text-foreground">Personal details</h1>
+            <h1 className="font-serif text-[22px] font-bold text-foreground">Personal details</h1>
           </div>
 
           <div className="px-6 pt-20">
@@ -169,7 +169,7 @@ const PagePersonalDetails = () => {
               }}
             >
               <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-serif text-[20px] font-bold text-foreground">Change password</h2>
+                <h2 className="font-serif text-[22px] font-bold text-foreground">Change password</h2>
                 <button
                   onClick={() => setShowPasswordSheet(false)}
                   className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
@@ -180,26 +180,37 @@ const PagePersonalDetails = () => {
               </div>
 
               <div className="space-y-1 pb-4">
-                <ListCell
-                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />} 
-                  title="New password"
-                  right={{
-                    type: "input",
-                    value: newPassword,
-                    onChange: setNewPassword,
-                    placeholder: "Min 6 chars",
-                  }}
-                />
-                <ListCell
-                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />} 
-                  title="Confirm"
-                  right={{
-                    type: "input",
-                    value: confirmPassword,
-                    onChange: setConfirmPassword,
-                    placeholder: "Repeat",
-                  }}
-                />
+                <div>
+                  <label className="sr-only">New password</label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary">
+                      <IconLockFilled className="h-5 w-5" />
+                    </div>
+                    <input
+                      type="password"
+                      placeholder="Min 6 chars"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className={`h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="sr-only">Confirm password</label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary">
+                      <IconLockFilled className="h-5 w-5" />
+                    </div>
+                    <input
+                      type="password"
+                      placeholder="Repeat"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal`}
+                    />
+                  </div>
+                </div>
               </div>
               <ButtonLarge
                 variant="primary"

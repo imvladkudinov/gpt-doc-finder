@@ -9,18 +9,21 @@ export interface ButtonLargeProps extends React.ButtonHTMLAttributes<HTMLButtonE
 
 export const ButtonLarge = React.forwardRef<HTMLButtonElement, ButtonLargeProps>(
   ({ className, variant = "primary", children, ...props }, ref) => {
+    const { style, ...rest } = props as any;
+    const mergedStyle = { ...(style || {}), letterSpacing: '2%' };
     return (
       <button
         ref={ref}
         className={cn(
-          "inline-flex h-[52px] w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition-colors",
+          "inline-flex h-[52px] w-full items-center justify-center rounded-full px-5 text-[15px] font-semibold transition-colors",
           "disabled:cursor-not-allowed disabled:opacity-60",
           variant === "primary"
             ? "bg-control-primary text-text-primary-control hover:opacity-90"
             : "bg-control-secondary text-text-secondary-control hover:opacity-90",
           className,
         )}
-        {...props}
+        style={mergedStyle}
+        {...rest}
       >
         {children}
       </button>

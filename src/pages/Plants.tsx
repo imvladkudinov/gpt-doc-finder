@@ -391,7 +391,7 @@ const PagePlants = () => {
                   <div className="flex min-w-0 items-center gap-1">
                     {activeHomeName ? (
                       <>
-                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[28px] font-bold text-foreground">
+                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[30px] font-bold text-foreground">
                           {activeHomeName}
                         </h1>
                         <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -425,7 +425,7 @@ const PagePlants = () => {
           {/* Empty state */}
           {!isLoadingPlants && plants.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1">
-              <h2 className="font-serif text-xl font-bold text-foreground mb-2 text-center">
+              <h2 className="font-serif text-[22px] font-bold text-foreground mb-2 text-center">
                 No plants added
               </h2>
               <p className="text-sm text-muted-foreground mb-3 text-center">
@@ -486,7 +486,7 @@ const PagePlants = () => {
               }}
             >
               <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-serif text-[20px] font-bold text-foreground">
+                <h2 className="font-serif text-[22px] font-bold text-foreground">
                   {selectedPlant.name}
                 </h2>
                 <div className="flex items-center gap-2">

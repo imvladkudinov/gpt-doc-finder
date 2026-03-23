@@ -218,7 +218,7 @@ const PageHomeDetails = () => {
             <div className="flex items-center gap-3">
               <GlassBackButton to="/homes" />
               {isHomeTitleVisible && (
-                <h1 className="font-serif text-[20px] font-bold text-foreground transition-opacity duration-300 opacity-100">
+                <h1 className="font-serif text-[22px] font-bold text-foreground transition-opacity duration-300 opacity-100">
                   {homeName}
                 </h1>
               )}
@@ -348,7 +348,7 @@ const PageHomeDetails = () => {
                 }}
               >
                 <div className="mb-5 flex items-center justify-between">
-                  <h2 className="font-serif text-[20px] font-bold text-foreground">Share home</h2>
+                  <h2 className="font-serif text-[22px] font-bold text-foreground">Share home</h2>
                   <button
                     onClick={() => setShowShareSheet(false)}
                     className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
@@ -420,7 +420,7 @@ const PageHomeDetails = () => {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
-              <h2 className="font-serif text-lg font-semibold text-foreground">
+              <h2 className="font-serif text-[22px] font-semibold text-foreground">
                 {confirmAction === "leave"
                   ? "Leave this home?"
                   : "Delete this home?"}

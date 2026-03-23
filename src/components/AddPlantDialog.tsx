@@ -92,7 +92,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
           }}
         >
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="font-serif text-[20px] font-bold text-foreground">Add a plant</h2>
+            <h2 className="font-serif text-[22px] font-bold text-foreground">Add a plant</h2>
             <button
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
