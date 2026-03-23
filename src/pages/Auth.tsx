@@ -64,14 +64,14 @@ const PageAuth = () => {
 
   const handleGoogleAuth = async () => {
     setLoading(true);
-
+    // Debug: log the current origin before redirect
+    console.log("[Google OAuth] window.location.origin:", window.location.origin);
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/plants`,
       },
     });
-
     if (authError) {
       appToast.error("Login failed");
       setLoading(false);
