@@ -110,9 +110,15 @@ export const ensurePushSubscription = async () => {
     const p256dhKey = arrayBufferToBase64(subscription.getKey("p256dh"));
     const authKey = arrayBufferToBase64(subscription.getKey("auth"));
 
+    // Always get the authenticated user from Supabase Auth
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
     const { error: upsertError } = await supabase.from("push_subscriptions").upsert(
       {
-        user_id: user.id,
+        user_id: user.id, // Ensure this is always set to the authenticated user's ID
         endpoint: subscription.endpoint,
         p256dh_key: p256dhKey,
         auth_key: authKey,
