@@ -196,7 +196,7 @@ const PagePlants = () => {
   const [pendingReplantInterval, setPendingReplantInterval] = useState<number | null>(null);
   const [showReplantChangeConfirm, setShowReplantChangeConfirm] = useState(false);
 
-  const [lateWaterPlant, setLateWaterPlant] = useState<Plant | null>(null);
+  // Removed lateWaterPlant logic
   const savePlantNameTimeout = useRef<number | null>(null);
 
   useEffect(() => {
@@ -224,15 +224,9 @@ const PagePlants = () => {
     appToast.success("Watered");
   };
 
+  // Always water on click, no modal or urgent check
   const handleWaterWithCheck = (id: string) => {
-    const plant = plants.find((p) => p.id === id);
-    if (!plant) return;
-    const status = getWateringStatus(plant);
-    if (status.urgent) {
-      setLateWaterPlant(plant);
-    } else {
-      handleWater(id);
-    }
+    handleWater(id);
   };
 
   const handleAddPlant = async (_name: string, _interval: number) => {
@@ -664,66 +658,7 @@ const PagePlants = () => {
         )}
       </AnimatePresence>
 
-      {/* Late watering modal */}
-      <AnimatePresence>
-        {lateWaterPlant && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed left-0 right-0 z-[70] bg-black/40"
-              style={{
-                top: 'calc(0px - env(safe-area-inset-top, 0px))',
-                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
-                paddingTop: 'env(safe-area-inset-top, 0px)',
-                paddingBottom: 'env(safe-area-inset-bottom, 0px)'
-              }}
-              onClick={() => setLateWaterPlant(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.92 }}
-              transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-b-[54px] rounded-t-[46px] p-7"
-              style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                backdropFilter: "blur(40px) saturate(1.8)",
-                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-              }}
-            >
-              <p className="text-3xl mb-2">{lateWaterPlant.emoji}</p>
-              <p className="text-base font-medium text-foreground mb-5">
-                Did you forget to mark it, or was watering actually delayed?
-              </p>
-              <div className="flex flex-col items-start gap-2">
-                <ButtonLow
-                  variant="secondary"
-                  onClick={() => {
-                    handleWater(lateWaterPlant.id);
-                    setLateWaterPlant(null);
-                  }}
-                >
-                  Forgot to mark
-                </ButtonLow>
-                <ButtonLow
-                  variant="secondary"
-                  onClick={() => {
-                    handleWater(lateWaterPlant.id);
-                    setLateWaterPlant(null);
-                  }}
-                >
-                  Watering was delayed
-                </ButtonLow>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Late watering modal removed: always water and show toast */}
 
       {/* Replant change confirm modal */}
       <AnimatePresence>

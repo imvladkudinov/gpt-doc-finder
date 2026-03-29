@@ -207,7 +207,27 @@ const PageNotificationPreferences = () => {
                 }}
               />
 
-              
+              {/* Invisible test notification button */}
+              <button
+                style={{
+                  width: 200,
+                  height: 50,
+                  opacity: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  position: 'relative',
+                  marginTop: 0,
+                  marginBottom: 0,
+                  padding: 0,
+                  zIndex: 1,
+                  cursor: 'pointer',
+                  display: 'block',
+                }}
+                tabIndex={-1}
+                aria-hidden="true"
+                onClick={handleTestNotification}
+                disabled={isTesting}
+              />
             </div>
           </div>
         </div>
