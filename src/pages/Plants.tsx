@@ -435,16 +435,33 @@ const PagePlants = () => {
             </div>
           ) : plants.length > 0 ? (
             <div className="mt-4 grid grid-cols-3 gap-1 px-6">
-              {plants.map((plant, i) => (
-                <PlantCard
-                  key={plant.id}
-                  plant={plant}
-                  index={i}
-                  onClick={() => setSelectedPlant(plant)}
-                  onOverdueClick={() => setOverduePlant(plant)}
-                  onWater={() => handleWaterWithCheck(plant.id)}
-                />
-              ))}
+              {plants
+                .slice()
+                .sort((a, b) => {
+                  const aStatus = getWateringStatus(a);
+                  const bStatus = getWateringStatus(b);
+                  // 1. Due plants (urgent or today) on top
+                  const aDue = aStatus.urgent || aStatus.daysLeft === 0;
+                  const bDue = bStatus.urgent || bStatus.daysLeft === 0;
+                  if (aDue && !bDue) return -1;
+                  if (!aDue && bDue) return 1;
+                  // 2. By days left (soonest first)
+                  if (aStatus.daysLeft !== bStatus.daysLeft) {
+                    return aStatus.daysLeft - bStatus.daysLeft;
+                  }
+                  // 3. Alphabetically
+                  return a.name.localeCompare(b.name);
+                })
+                .map((plant, i) => (
+                  <PlantCard
+                    key={plant.id}
+                    plant={plant}
+                    index={i}
+                    onClick={() => setSelectedPlant(plant)}
+                    onOverdueClick={() => setOverduePlant(plant)}
+                    onWater={() => handleWaterWithCheck(plant.id)}
+                  />
+                ))}
             </div>
           ) : null}
 
