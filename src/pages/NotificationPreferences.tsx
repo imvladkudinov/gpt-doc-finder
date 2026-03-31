@@ -240,7 +240,7 @@ const PageNotificationPreferences = () => {
               <ListCell
                 icon={<IconClockFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Send time"
-                subtitle="Sorry, UTC only due to cost efficiency"
+                subtitle="Sorry, UTC only"
                 right={{
                   type: "select",
                   options: SLOT_OPTIONS.map((o) => ({ value: o.value, label: o.label })),

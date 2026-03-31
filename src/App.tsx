@@ -108,8 +108,7 @@ const App = () => {
             <AnimatedRoutes session={session} loading={loading} />
           </ErrorBoundary>
         </BrowserRouter>
-        <Toaster />
-        <Sonner />
+        <Sonner position="top-center" />
       </TooltipProvider>
     </QueryClientProvider>
   );
