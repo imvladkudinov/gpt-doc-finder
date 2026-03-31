@@ -25,7 +25,7 @@ const PasswordRecovery = () => {
       return;
     }
     appToast.success("Recovery email sent");
-    navigate("/auth", { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (

@@ -49,7 +49,7 @@ const PageProfile = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth", { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (

@@ -67,17 +67,60 @@ const PageNotificationPreferences = () => {
     // ...existing code...
   }, []);
 
-  const handleSendTimeChange = (value: string | number) => {
+  const handleSendTimeChange = async (value: string | number) => {
     const next = String(value) as NotificationSlot;
     if (!(next in SLOT_TO_UTC_HOUR) || next === selectedSlot || isSavingTime) return;
-    setSelectedSlot(next);
+    setIsSavingTime(true);
+    try {
+      setSelectedSlot(next);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-preferences`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          sendHourUtc: SLOT_TO_UTC_HOUR[next],
+          sendMinuteUtc: 0,
+          preferredTimeLocal: next,
+        }),
+      });
+      if (!response.ok) {
+        appToast.error("Failed to save notification time");
+      }
+    } finally {
+      setIsSavingTime(false);
+    }
   };
 
   const handleEnable = async () => {
     setIsLoading(true);
-
     try {
       await ensurePushSubscription();
+      // Save notification preferences on enable
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-preferences`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            sendHourUtc: SLOT_TO_UTC_HOUR[selectedSlot],
+            sendMinuteUtc: 0,
+            preferredTimeLocal: selectedSlot,
+          }),
+        });
+      }
       appToast.success("Notifications turned on");
       setIsEnabled(true);
     } catch (error) {

@@ -13,7 +13,7 @@ import NotificationPreferences from "./pages/NotificationPreferences";
 import Homes from "./pages/Homes";
 import HomeDetails from "./pages/HomeDetails";
 import UIPlayground from "./pages/UIPlayground";
-import Auth from "./pages/Auth";
+// import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import LegalTerms from "./pages/LegalTerms";
@@ -40,12 +40,13 @@ const TAB_PATHS = [
   "/legal/policy"
 ];
 
-const ProtectedRoute = ({ session }: { session: Session | null }) => {
-  if (!session) {
-    return <Navigate to="/auth" replace />;
-  }
+// No longer need ProtectedRoute, all users go to Home
 
-  return <Outlet />;
+const ProtectedRoute = ({ session, children }: { session: Session | null, children: React.ReactNode }) => {
+  if (!session) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
 };
 
 const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading: boolean }) => {
@@ -61,20 +62,17 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageHome />} />
-          <Route path="/auth" element={session ? <Navigate to="/plants" replace /> : <Auth />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/legal/policy" element={<LegalPolicy />} />
-          <Route element={<ProtectedRoute session={session} />}> 
-            <Route path="/plants" element={<Plants />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/personal-details" element={<PersonalDetails />} />
-            <Route path="/notification-preferences" element={<NotificationPreferences />} />
-            <Route path="/homes" element={<Homes />} />
-            <Route path="/homes/:homeId" element={<HomeDetails />} />
-            <Route path="/playground" element={<UIPlayground />} />
-            <Route path="/password-recovery" element={<PasswordRecovery />} />
-          </Route>
+          <Route path="/plants" element={<ProtectedRoute session={session}><Plants /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute session={session}><Profile /></ProtectedRoute>} />
+          <Route path="/personal-details" element={<ProtectedRoute session={session}><PersonalDetails /></ProtectedRoute>} />
+          <Route path="/notification-preferences" element={<ProtectedRoute session={session}><NotificationPreferences /></ProtectedRoute>} />
+          <Route path="/homes" element={<ProtectedRoute session={session}><Homes /></ProtectedRoute>} />
+          <Route path="/homes/:homeId" element={<ProtectedRoute session={session}><HomeDetails /></ProtectedRoute>} />
+          <Route path="/playground" element={<ProtectedRoute session={session}><UIPlayground /></ProtectedRoute>} />
+          <Route path="/password-recovery" element={<PasswordRecovery />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
@@ -82,45 +80,20 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
     </>
   );
 };
-
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
-
     supabase.auth.getSession().then(({ data }) => {
       if (!isMounted) return;
-      if (data.session) {
-        ensureActiveHomeForCurrentUser();
-        syncCurrentUserProfile();
-        ensurePushSubscription().catch(() => {
-          // Keep app startup resilient if push setup fails or permission is denied.
-        });
-      } else {
-        clearStoredActiveHomeId();
-      }
       setSession(data.session);
       setLoading(false);
     });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (nextSession) {
-        ensureActiveHomeForCurrentUser();
-        syncCurrentUserProfile();
-        ensurePushSubscription().catch(() => {
-          // Keep auth flow resilient if push setup fails or permission is denied.
-        });
-      } else {
-        clearStoredActiveHomeId();
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
-      setLoading(false);
     });
-
     return () => {
       isMounted = false;
       subscription.unsubscribe();
@@ -130,18 +103,13 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <AnimatedRoutes session={session} loading={loading} />
+          </ErrorBoundary>
+        </BrowserRouter>
         <Toaster />
-        <Sonner position="top-center" />
-        <ErrorBoundary>
-          {/* Only render the router after session check is complete */}
-          {loading ? (
-            <div className="min-h-screen bg-background" />
-          ) : (
-            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-              <AnimatedRoutes session={session} loading={loading} />
-            </BrowserRouter>
-          )}
-        </ErrorBoundary>
+        <Sonner />
       </TooltipProvider>
     </QueryClientProvider>
   );
