@@ -23,6 +23,7 @@ const GoogleIcon = () => (
 );
 
 const PageHome = () => {
+
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -30,6 +31,16 @@ const PageHome = () => {
   const [loading, setLoading] = useState(false);
   const [showForgotSheet, setShowForgotSheet] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate("/plants", { replace: true });
+      }
+    });
+    // ...existing code...
+  }, []);
 
   const autofillTriggered = useRef(false);
   useEffect(() => {
