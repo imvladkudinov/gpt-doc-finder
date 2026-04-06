@@ -59,13 +59,31 @@ const PageNotificationPreferences = () => {
     setIsSwitchReady(true);
   };
 
+  // On mount, fetch notification preferences and subscription state
   useEffect(() => {
-    refreshSubscriptionState();
+    let mounted = true;
+    (async () => {
+      await refreshSubscriptionState();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) return;
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-preferences`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+        if (!response.ok) return;
+        const prefs = await response.json();
+        if (prefs?.preferredTimeLocal && prefs.preferredTimeLocal in SLOT_TO_UTC_HOUR) {
+          if (mounted) setSelectedSlot(prefs.preferredTimeLocal);
+        }
+      } catch {}
+    })();
+    return () => { mounted = false; };
   }, [notificationsSupported]);
-
-  useEffect(() => {
-    // ...existing code...
-  }, []);
 
   const handleSendTimeChange = async (value: string | number) => {
     const next = String(value) as NotificationSlot;

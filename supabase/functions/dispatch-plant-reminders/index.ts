@@ -280,7 +280,7 @@ Deno.serve(async (request) => {
   const { hour, minute, date } = toUtcParts(utcNow);
 
   const slotHours = new Set([9, 14, 20]);
-  const driftMinutes = Number(Deno.env.get("CRON_DRIFT_MINS") ?? "1");
+  const driftMinutes = Number(Deno.env.get("CRON_DRIFT_MINS") ?? "3");
   if (!slotHours.has(hour) || minute > driftMinutes) {
     console.log(`Skipping dispatch: hour=${hour} minute=${minute} drift=${driftMinutes}`);
     return json({
