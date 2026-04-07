@@ -57,7 +57,7 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
     <>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageHome />} />
+          <Route path="/" element={session ? <Navigate to="/plants" replace /> : <PageHome />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/legal/policy" element={<LegalPolicy />} />
@@ -82,6 +82,13 @@ const App = () => {
 
   useEffect(() => {
     let isMounted = true;
+    let initialResolved = false;
+
+    const markInitialResolved = () => {
+      if (initialResolved || !isMounted) return;
+      initialResolved = true;
+      setLoading(false);
+    };
 
     const applySessionWithVerification = async (nextSession: Session | null) => {
       if (!nextSession) {
@@ -106,15 +113,25 @@ const App = () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const currentSession = sessionData.session;
 
+      if (!currentSession) {
+        // Give auth state listener a short chance to restore session in PWA context.
+        window.setTimeout(() => {
+          markInitialResolved();
+        }, 250);
+        return;
+      }
+
       await applySessionWithVerification(currentSession);
-      if (!isMounted) return;
-      setLoading(false);
+      markInitialResolved();
     };
 
     hydrateAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      void applySessionWithVerification(nextSession);
+      void (async () => {
+        await applySessionWithVerification(nextSession);
+        markInitialResolved();
+      })();
     });
     return () => {
       isMounted = false;
