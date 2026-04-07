@@ -59,39 +59,39 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
   if (kind === "watering_due") {
     if (count === 1) {
       return {
-        title: `${firstName} 🪴 is calling`,
-        body: "Time to water me",
+        title: "",
+        body: `${firstName} 🪴: time to water me`,
       };
     }
     return {
-      title: "Some plants 🪴 asked me to pass this message",
-      body: "Time to water us",
+      title: "",
+      body: "Some plants 🪴: time to water us",
     };
   }
 
   if (kind === "replant_due") {
     if (count === 1) {
       return {
-        title: `${firstName} 🪴 is ready to be replanted`,
-        body: "Hope you got some soil",
+        title: "",
+        body: `${firstName} 🪴: ready for replanting`,
       };
     }
     return {
-      title: "Some plants 🪴 are ready to be replanted",
-      body: "Hope you got some soil",
+      title: "",
+      body: "Some plants 🪴: ready for replanting",
     };
   }
 
   // replant_week_before
   if (count === 1) {
     return {
-      title: `${firstName} 🪴 is due for replanting in 1 week`,
-      body: "Time to buy some soil",
+      title: "",
+      body: `${firstName} 🪴: replanting due in 1 week`,
     };
   }
   return {
-    title: "Some plants 🪴 are due for replanting in 1 week",
-    body: "Time to buy some soil",
+    title: "",
+    body: "Some plants 🪴: replanting due in 1 week",
   };
 };
 
