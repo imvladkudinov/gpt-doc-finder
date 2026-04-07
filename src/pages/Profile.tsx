@@ -26,8 +26,14 @@ const PageProfile = () => {
   useEffect(() => {
     let isMounted = true;
 
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data, error }) => {
       if (!isMounted) return;
+
+      if (error || !data.user) {
+        await supabase.auth.signOut({ scope: "local" });
+        navigate("/", { replace: true });
+        return;
+      }
 
       const metadata = data.user?.user_metadata ?? {};
       const fullName = String(metadata.full_name ?? metadata.name ?? "").trim();
@@ -45,7 +51,7 @@ const PageProfile = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

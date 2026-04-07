@@ -82,11 +82,34 @@ const App = () => {
 
   useEffect(() => {
     let isMounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+
+    const hydrateAuth = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentSession = sessionData.session;
+
+      if (!currentSession) {
+        if (!isMounted) return;
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        await supabase.auth.signOut({ scope: "local" });
+        if (!isMounted) return;
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
       if (!isMounted) return;
-      setSession(data.session);
+      setSession(currentSession);
       setLoading(false);
-    });
+    };
+
+    hydrateAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
     });

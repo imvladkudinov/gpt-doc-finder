@@ -1,5 +1,5 @@
-const CACHE_NAME = "planty-static-v1";
-const STATIC_ASSETS = ["/", "/index.html", "/manifest.webmanifest"];
+const CACHE_NAME = "planty-static-v2";
+const STATIC_ASSETS = ["/index.html", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)));
@@ -21,7 +21,19 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match("/index.html")));
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put("/index.html", responseClone).catch(() => {
+              // Ignore cache put failures to keep navigation resilient.
+            });
+          });
+          return response;
+        })
+        .catch(() => caches.match("/index.html")),
+    );
     return;
   }
 
