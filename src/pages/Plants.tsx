@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   IconPlusFilled,
   IconXFilled,
   IconDropletFilled,
-  IconSparklesFilled,
   IconCalendarWeekFilled,
   IconPencilFilled,
 } from "@tabler/icons-react";
@@ -20,7 +19,6 @@ import { ButtonLow } from "@/components/ui/ButtonLow";
 import { supabase } from "@/integrations/supabase/client";
 import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus } from "@/lib/plant-utils";
-import { getPlantInfo } from "@/lib/plant-info";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
 
@@ -70,6 +68,8 @@ const glassAction = {
   boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
 };
 
+const REPLANTING_OPTIONS = Array.from({ length: 12 }, (_, i) => 3 + i * 3);
+
 const PagePlants = () => {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [isLoadingPlants, setIsLoadingPlants] = useState(true);
@@ -80,6 +80,34 @@ const PagePlants = () => {
 
   const activeHomeName = homes.find((home) => home.id === activeHomeId)?.name ?? "";
   const plantsCounterText = `${plants.length} plants`;
+
+  const sortedPlants = useMemo(() => {
+    const scored = plants.map((plant) => {
+      const status = getWateringStatus(plant);
+      return {
+        plant,
+        due: status.urgent || status.daysLeft === 0,
+        daysLeft: status.daysLeft,
+      };
+    });
+
+    scored.sort((a, b) => {
+      if (a.due && !b.due) return -1;
+      if (!a.due && b.due) return 1;
+
+      if (a.daysLeft !== b.daysLeft) {
+        return a.daysLeft - b.daysLeft;
+      }
+
+      return a.plant.name.localeCompare(b.plant.name);
+    });
+
+    return scored.map((item) => item.plant);
+  }, [plants]);
+
+  const plantById = useMemo(() => {
+    return new Map(plants.map((plant) => [plant.id, plant]));
+  }, [plants]);
 
   const loadHomes = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -144,7 +172,7 @@ const PagePlants = () => {
     return resolvedActive;
   };
 
-  const loadPlantsForHome = async (
+  const loadPlantsForHome = useCallback(async (
     homeId: string,
     { initial = false }: { initial?: boolean } = {},
   ) => {
@@ -168,7 +196,7 @@ const PagePlants = () => {
     if (initial) {
       setIsLoadingPlants(false);
     }
-  };
+  }, []);
 
   // Fetch plants from Supabase on mount
   useEffect(() => {
@@ -208,7 +236,7 @@ const PagePlants = () => {
     });
   }, [isLoadingPlants]);
 
-  const handleWater = async (id: string) => {
+  const handleWater = useCallback(async (id: string) => {
     // Update last_watered in Supabase
     const { error } = await supabase
       .from("plants")
@@ -222,12 +250,24 @@ const PagePlants = () => {
     if (!activeHomeId) return;
     await loadPlantsForHome(activeHomeId);
     appToast.success("Watered");
-  };
+  }, [activeHomeId, loadPlantsForHome]);
 
   // Always water on click, no modal or urgent check
-  const handleWaterWithCheck = (id: string) => {
+  const handleWaterWithCheck = useCallback((id: string) => {
     handleWater(id);
-  };
+  }, [handleWater]);
+
+  const handleOpenPlant = useCallback((plantId: string) => {
+    const plant = plantById.get(plantId);
+    if (!plant) return;
+    setSelectedPlant(plant);
+  }, [plantById]);
+
+  const handleOpenOverdue = useCallback((plantId: string) => {
+    const plant = plantById.get(plantId);
+    if (!plant) return;
+    setOverduePlant(plant);
+  }, [plantById]);
 
   const handleAddPlant = async (_name: string, _interval: number) => {
     if (!activeHomeId) return;
@@ -262,11 +302,8 @@ const PagePlants = () => {
     setActiveHomeIdState(nextHomeId);
     setSelectedPlant(null);
     setOverduePlant(null);
-    setLateWaterPlant(null);
     await loadPlantsForHome(nextHomeId, { initial: true });
   };
-
-  const REPLANTING_OPTIONS = Array.from({ length: 12 }, (_, i) => 3 + i * 3);
 
   const restartReplantCounter = async (plantId: string) => {
     const nowIso = new Date().toISOString();
@@ -435,31 +472,14 @@ const PagePlants = () => {
             </div>
           ) : plants.length > 0 ? (
             <div className="mt-4 grid grid-cols-3 gap-1 px-6">
-              {plants
-                .slice()
-                .sort((a, b) => {
-                  const aStatus = getWateringStatus(a);
-                  const bStatus = getWateringStatus(b);
-                  // 1. Due plants (urgent or today) on top
-                  const aDue = aStatus.urgent || aStatus.daysLeft === 0;
-                  const bDue = bStatus.urgent || bStatus.daysLeft === 0;
-                  if (aDue && !bDue) return -1;
-                  if (!aDue && bDue) return 1;
-                  // 2. By days left (soonest first)
-                  if (aStatus.daysLeft !== bStatus.daysLeft) {
-                    return aStatus.daysLeft - bStatus.daysLeft;
-                  }
-                  // 3. Alphabetically
-                  return a.name.localeCompare(b.name);
-                })
-                .map((plant, i) => (
+              {sortedPlants.map((plant, i) => (
                   <PlantCard
                     key={plant.id}
                     plant={plant}
                     index={i}
-                    onClick={() => setSelectedPlant(plant)}
-                    onOverdueClick={() => setOverduePlant(plant)}
-                    onWater={() => handleWaterWithCheck(plant.id)}
+                    onOpenPlant={handleOpenPlant}
+                    onOpenOverdue={handleOpenOverdue}
+                    onWater={handleWaterWithCheck}
                   />
                 ))}
             </div>

@@ -9,10 +9,15 @@ type UserSlot = {
 };
 
 type PushRow = {
+  user_id?: string;
   endpoint: string;
   p256dh_key: string;
   auth_key: string;
 };
+
+type NotificationKind = "watering_due" | "replant_due" | "replant_week_before";
+
+type DueNamesByKind = Record<NotificationKind, string[]>;
 
 type UserPlant = {
   name: string;
@@ -45,7 +50,9 @@ const toUtcParts = (date: Date) => ({
   date: date.toISOString().slice(0, 10),
 });
 
-const getNotificationContent = (kind: "watering_due" | "replant_due" | "replant_week_before", names: string[]) => {
+const toMinutesOfDay = (hour: number, minute: number) => (hour * 60) + minute;
+
+const getNotificationContent = (kind: NotificationKind, names: string[]) => {
   const count = names.length;
   const firstName = names[0] ?? "your plant";
 
@@ -114,77 +121,56 @@ const fetchUserPlants = async (supabase: ReturnType<typeof createClient>, userId
   return plants;
 };
 
-const selectPlantNames = async (
-  supabase: ReturnType<typeof createClient>,
-  userId: string,
-  mode: "watering_due" | "replant_due" | "replant_week_before",
-) => {
-  const plants = await fetchUserPlants(supabase, userId);
-  if (!plants.length) return [] as string[];
+const getDuePlantNamesByKind = (plants: UserPlant[], todayIso: string): DueNamesByKind => {
+  const namesByKind: DueNamesByKind = {
+    watering_due: [],
+    replant_due: [],
+    replant_week_before: [],
+  };
 
-  const todayIso = new Date().toISOString().slice(0, 10);
-
-  const names: string[] = [];
   for (const plant of plants) {
     if (!plant?.name) continue;
 
-    if (mode === "watering_due") {
-      if (!plant.last_watered || !plant.watering_interval) continue;
+    if (plant.last_watered && plant.watering_interval) {
       const lastWatered = new Date(plant.last_watered);
-      const due = new Date(Date.UTC(lastWatered.getUTCFullYear(), lastWatered.getUTCMonth(), lastWatered.getUTCDate()));
-      due.setUTCDate(due.getUTCDate() + Number(plant.watering_interval));
-      if (due.toISOString().slice(0, 10) === todayIso) {
-        names.push(plant.name);
+      const wateringDue = new Date(Date.UTC(
+        lastWatered.getUTCFullYear(),
+        lastWatered.getUTCMonth(),
+        lastWatered.getUTCDate(),
+      ));
+      wateringDue.setUTCDate(wateringDue.getUTCDate() + Number(plant.watering_interval));
+      if (wateringDue.toISOString().slice(0, 10) === todayIso) {
+        namesByKind.watering_due.push(plant.name);
       }
-      continue;
     }
 
-    if (!plant.last_replanted || !plant.replanting_interval) continue;
+    if (plant.last_replanted && plant.replanting_interval) {
+      const last = new Date(plant.last_replanted);
+      const replantDue = new Date(Date.UTC(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate()));
+      replantDue.setUTCMonth(replantDue.getUTCMonth() + Number(plant.replanting_interval));
 
-    const last = new Date(plant.last_replanted);
-    const due = new Date(Date.UTC(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate()));
-    due.setUTCMonth(due.getUTCMonth() + Number(plant.replanting_interval));
+      const dueIso = replantDue.toISOString().slice(0, 10);
+      const weekBefore = new Date(replantDue);
+      weekBefore.setUTCDate(weekBefore.getUTCDate() - 7);
+      const weekBeforeIso = weekBefore.toISOString().slice(0, 10);
 
-    const dueIso = due.toISOString().slice(0, 10);
-    const weekBefore = new Date(due);
-    weekBefore.setUTCDate(weekBefore.getUTCDate() - 7);
-    const weekBeforeIso = weekBefore.toISOString().slice(0, 10);
+      if (dueIso === todayIso) {
+        namesByKind.replant_due.push(plant.name);
+      }
 
-    if (mode === "replant_due" && dueIso === todayIso) {
-      names.push(plant.name);
-    }
-
-    if (mode === "replant_week_before" && weekBeforeIso === todayIso) {
-      names.push(plant.name);
+      if (weekBeforeIso === todayIso) {
+        namesByKind.replant_week_before.push(plant.name);
+      }
     }
   }
 
-  return names;
-};
-
-const hasBeenSent = async (
-  supabase: ReturnType<typeof createClient>,
-  userId: string,
-  kind: "watering_due" | "replant_due" | "replant_week_before",
-  dispatchDate: string,
-) => {
-  const { data, error } = await supabase
-    .from("notification_dispatch_log")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("kind", kind)
-    .eq("dispatch_date", dispatchDate)
-    .limit(1)
-    .maybeSingle();
-
-  if (error) return false;
-  return Boolean(data?.id);
+  return namesByKind;
 };
 
 const markSent = async (
   supabase: ReturnType<typeof createClient>,
   userId: string,
-  kind: "watering_due" | "replant_due" | "replant_week_before",
+  kind: NotificationKind,
   dispatchDate: string,
 ) => {
   await supabase.from("notification_dispatch_log").insert({
@@ -197,18 +183,14 @@ const markSent = async (
 const sendToUser = async (
   supabase: ReturnType<typeof createClient>,
   userId: string,
+  subscriptions: PushRow[],
   notification: { title: string; body: string },
   vapidSubject: string,
   vapidPublicKey: string,
   vapidPrivateKey: string,
 ) => {
-  const { data: pushRows, error: pushRowsError } = await supabase
-    .from("push_subscriptions")
-    .select("endpoint,p256dh_key,auth_key")
-    .eq("user_id", userId);
-
-  if (pushRowsError || !pushRows || pushRows.length === 0) {
-    return { sent: 0, failed: 0 };
+  if (!subscriptions.length) {
+    return { sent: 0, failed: 0, hadSubscriptions: false };
   }
 
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
@@ -223,23 +205,40 @@ const sendToUser = async (
   let failed = 0;
   const staleEndpoints: string[] = [];
 
-  for (const subscription of pushRows as PushRow[]) {
-    const normalized = {
-      endpoint: subscription.endpoint,
-      keys: {
-        p256dh: toBase64Url(subscription.p256dh_key),
-        auth: toBase64Url(subscription.auth_key),
-      },
-    };
+  const concurrency = Math.max(1, Number(Deno.env.get("PUSH_SEND_CONCURRENCY") ?? "8"));
 
-    try {
-      await webpush.sendNotification(normalized, payload);
-      sent += 1;
-    } catch (error) {
-      failed += 1;
-      const statusCode = (error as { statusCode?: number })?.statusCode;
-      if (statusCode === 404 || statusCode === 410) {
-        staleEndpoints.push(subscription.endpoint);
+  for (let index = 0; index < subscriptions.length; index += concurrency) {
+    const batch = subscriptions.slice(index, index + concurrency);
+
+    const batchResults = await Promise.all(
+      batch.map(async (subscription) => {
+        const normalized = {
+          endpoint: subscription.endpoint,
+          keys: {
+            p256dh: toBase64Url(subscription.p256dh_key),
+            auth: toBase64Url(subscription.auth_key),
+          },
+        };
+
+        try {
+          await webpush.sendNotification(normalized, payload);
+          return { sent: 1, failed: 0, staleEndpoint: "" };
+        } catch (error) {
+          const statusCode = (error as { statusCode?: number })?.statusCode;
+          return {
+            sent: 0,
+            failed: 1,
+            staleEndpoint: statusCode === 404 || statusCode === 410 ? subscription.endpoint : "",
+          };
+        }
+      }),
+    );
+
+    for (const result of batchResults) {
+      sent += result.sent;
+      failed += result.failed;
+      if (result.staleEndpoint) {
+        staleEndpoints.push(result.staleEndpoint);
       }
     }
   }
@@ -248,7 +247,7 @@ const sendToUser = async (
     await supabase.from("push_subscriptions").delete().eq("user_id", userId).in("endpoint", staleEndpoints);
   }
 
-  return { sent, failed };
+  return { sent, failed, hadSubscriptions: true };
 };
 
 Deno.serve(async (request) => {
@@ -279,30 +278,35 @@ Deno.serve(async (request) => {
   const utcNow = new Date();
   const { hour, minute, date } = toUtcParts(utcNow);
 
-  const slotHours = new Set([9, 14, 20]);
-  const driftMinutes = Number(Deno.env.get("CRON_DRIFT_MINS") ?? "3");
-  if (!slotHours.has(hour) || minute > driftMinutes) {
-    console.log(`Skipping dispatch: hour=${hour} minute=${minute} drift=${driftMinutes}`);
-    return json({
-      usersChecked: 0,
-      notificationsAttempted: 0,
-      notificationsSent: 0,
-      hour,
-      minute,
-      date,
-      skipped: true,
-    });
-  }
+  // GitHub scheduled workflows can start late. Process catch-up sends for today
+  // (after a user's configured slot) and rely on dispatch_log for de-duplication.
+  const nowMinutes = toMinutesOfDay(hour, minute);
 
   const { data: subscriptionUsers, error: slotsError } = await supabase
     .from("push_subscriptions")
-    .select("user_id");
+    .select("user_id,endpoint,p256dh_key,auth_key");
 
   if (slotsError) {
     return json({ error: slotsError.message }, 500);
   }
 
-  const uniqueUserIds = [...new Set((subscriptionUsers ?? []).map((row) => row.user_id as string).filter(Boolean))];
+  const subscriptionsByUser = new Map<string, PushRow[]>();
+  for (const row of (subscriptionUsers ?? []) as PushRow[]) {
+    const userId = row.user_id;
+    if (!userId) continue;
+
+    if (!subscriptionsByUser.has(userId)) {
+      subscriptionsByUser.set(userId, []);
+    }
+
+    subscriptionsByUser.get(userId)?.push({
+      endpoint: row.endpoint,
+      p256dh_key: row.p256dh_key,
+      auth_key: row.auth_key,
+    });
+  }
+
+  const uniqueUserIds = [...subscriptionsByUser.keys()];
 
   if (uniqueUserIds.length === 0) {
     return json({
@@ -342,9 +346,53 @@ Deno.serve(async (request) => {
     });
   }
 
-  const targetUsers = [...userSlotsMap.values()].filter(
-    (slot) => slot.send_hour_utc === hour && slot.send_minute_utc === minute,
-  );
+  const targetUsers = [...userSlotsMap.values()].filter((slot) => {
+    const slotMinutes = toMinutesOfDay(slot.send_hour_utc, slot.send_minute_utc);
+    return nowMinutes >= slotMinutes;
+  });
+
+  const { data: sentRows, error: sentRowsError } = await supabase
+    .from("notification_dispatch_log")
+    .select("user_id,kind")
+    .eq("dispatch_date", date)
+    .in("user_id", uniqueUserIds);
+
+  if (sentRowsError) {
+    return json({ error: sentRowsError.message }, 500);
+  }
+
+  const sentKindsByUser = new Map<string, Set<NotificationKind>>();
+  for (const row of sentRows ?? []) {
+    const userId = row.user_id as string;
+    const kind = row.kind as NotificationKind;
+
+    if (!sentKindsByUser.has(userId)) {
+      sentKindsByUser.set(userId, new Set<NotificationKind>());
+    }
+
+    sentKindsByUser.get(userId)?.add(kind);
+  }
+
+  const diagnostics = {
+    runMinuteOfDayUtc: nowMinutes,
+    usersWithSubscriptions: uniqueUserIds.length,
+    usersMatchedSchedule: targetUsers.length,
+    checksRun: 0,
+    skippedAlreadySent: 0,
+    skippedNoDuePlants: 0,
+    skippedNoSubscriptions: 0,
+    deliveryFailures: 0,
+    attemptedByKind: {
+      watering_due: 0,
+      replant_due: 0,
+      replant_week_before: 0,
+    },
+    sentByKind: {
+      watering_due: 0,
+      replant_due: 0,
+      replant_week_before: 0,
+    },
+  };
 
   let notificationsAttempted = 0;
   let notificationsSent = 0;
@@ -356,28 +404,51 @@ Deno.serve(async (request) => {
       "replant_week_before",
     ];
 
-    for (const kind of checks) {
-      const sentAlready = await hasBeenSent(supabase, slot.user_id, kind, date);
-      if (sentAlready) continue;
+    const sentKinds = sentKindsByUser.get(slot.user_id) ?? new Set<NotificationKind>();
+    const userPlants = await fetchUserPlants(supabase, slot.user_id);
+    const dueNamesByKind = getDuePlantNamesByKind(userPlants, date);
+    const subscriptions = subscriptionsByUser.get(slot.user_id) ?? [];
 
-      const names = await selectPlantNames(supabase, slot.user_id, kind);
-      if (!names.length) continue;
+    for (const kind of checks) {
+      diagnostics.checksRun += 1;
+
+      if (sentKinds.has(kind)) {
+        diagnostics.skippedAlreadySent += 1;
+        continue;
+      }
+
+      const names = dueNamesByKind[kind] ?? [];
+      if (!names.length) {
+        diagnostics.skippedNoDuePlants += 1;
+        continue;
+      }
+
+      if (!subscriptions.length) {
+        diagnostics.skippedNoSubscriptions += 1;
+        continue;
+      }
 
       const notification = getNotificationContent(kind, names);
       notificationsAttempted += 1;
+      diagnostics.attemptedByKind[kind] += 1;
 
       const result = await sendToUser(
         supabase,
         slot.user_id,
+        subscriptions,
         notification,
         vapidSubject,
         vapidPublicKey,
         vapidPrivateKey,
       );
 
+      diagnostics.deliveryFailures += result.failed;
+
       if (result.sent > 0) {
         notificationsSent += 1;
+        diagnostics.sentByKind[kind] += 1;
         await markSent(supabase, slot.user_id, kind, date);
+        sentKinds.add(kind);
       }
     }
   }
@@ -389,5 +460,6 @@ Deno.serve(async (request) => {
     hour,
     minute,
     date,
+    diagnostics,
   });
 });

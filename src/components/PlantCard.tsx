@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from "framer-motion";
 import { IconLeafFilled } from "@tabler/icons-react";
 import { Plant } from "@/types/plant";
@@ -6,14 +7,15 @@ import { ButtonLow } from "@/components/ui/ButtonLow";
 
 interface PlantCardProps {
   plant: Plant;
-  onClick: () => void;
-  onOverdueClick?: () => void;
-  onWater?: () => void;
+  onOpenPlant: (plantId: string) => void;
+  onOpenOverdue?: (plantId: string) => void;
+  onWater?: (plantId: string) => void;
   index: number;
 }
 
-const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: PlantCardProps) => {
+const ComponentPlantCard = ({ plant, onOpenPlant, onOpenOverdue, onWater, index }: PlantCardProps) => {
   const status = getWateringStatus(plant);
+  const plantId = plant.id;
 
   return (
     <motion.div
@@ -21,11 +23,11 @@ const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: 
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.97 }}
-      onClick={onClick}
+      onClick={() => onOpenPlant(plantId)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onClick();
+          onOpenPlant(plantId);
         }
       }}
       role="button"
@@ -39,7 +41,7 @@ const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: 
           style={{ background: "var(--icon-warning)", boxShadow: "0 0 8px var(--background-overlay)" }}
           onClick={(e) => {
             e.stopPropagation();
-            onOverdueClick?.();
+            onOpenOverdue?.(plantId);
           }}
         />
       )}
@@ -67,7 +69,7 @@ const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: 
         className="mt-2 h-11 w-full"
         onClick={(e) => {
           e.stopPropagation();
-          onWater?.();
+          onWater?.(plantId);
         }}
       >
         Water
@@ -76,4 +78,14 @@ const ComponentPlantCard = ({ plant, onClick, onOverdueClick, onWater, index }: 
   );
 };
 
-export default ComponentPlantCard;
+const propsAreEqual = (prev: PlantCardProps, next: PlantCardProps) => {
+  return (
+    prev.index === next.index &&
+    prev.plant === next.plant &&
+    prev.onOpenPlant === next.onOpenPlant &&
+    prev.onOpenOverdue === next.onOpenOverdue &&
+    prev.onWater === next.onWater
+  );
+};
+
+export default React.memo(ComponentPlantCard, propsAreEqual);

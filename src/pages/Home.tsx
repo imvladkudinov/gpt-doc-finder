@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PageTransition from "@/components/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
-import { ButtonLow } from "@/components/ui/ButtonLow";
 import { IconMail, IconLock } from "@tabler/icons-react";
 import { appToast } from "@/lib/app-toast";
 import { AnimatePresence, motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
+import { prefetchRoute } from "@/lib/route-prefetch";
 
 const HomeIcon = () => (
   <img src="/home-icon.png" alt="Planty icon" className="w-[120px] h-[120px] mx-auto" />
@@ -99,6 +98,7 @@ const PageHome = () => {
         return;
       }
 
+      prefetchRoute("/plants");
       setTimeout(() => navigate("/plants", { replace: true }), 100);
       return;
     }
@@ -307,12 +307,18 @@ const PageHome = () => {
           <button
             className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0"
             onClick={() => navigate("/legal/terms")}
+            onMouseEnter={() => prefetchRoute("/legal/terms")}
+            onFocus={() => prefetchRoute("/legal/terms")}
+            onTouchStart={() => prefetchRoute("/legal/terms")}
           >
             Terms
           </button>
           <button
             className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0"
             onClick={() => navigate("/legal/policy")}
+            onMouseEnter={() => prefetchRoute("/legal/policy")}
+            onFocus={() => prefetchRoute("/legal/policy")}
+            onTouchStart={() => prefetchRoute("/legal/policy")}
           >
             Policy
           </button>

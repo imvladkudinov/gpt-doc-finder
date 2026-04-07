@@ -38,7 +38,7 @@ const PageNotificationPreferences = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSwitchReady, setIsSwitchReady] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
+  const [selectedSlot, setSelectedSlot] = useState<NotificationSlot | undefined>(undefined);
   const [isSavingTime, setIsSavingTime] = useState(false);
 
   const notificationsSupported = useMemo(
@@ -79,8 +79,12 @@ const PageNotificationPreferences = () => {
         const prefs = await response.json();
         if (prefs?.preferredTimeLocal && prefs.preferredTimeLocal in SLOT_TO_UTC_HOUR) {
           if (mounted) setSelectedSlot(prefs.preferredTimeLocal);
+        } else {
+          if (mounted) setSelectedSlot("Morning"); // fallback if not set
         }
-      } catch {}
+      } catch {
+        if (mounted) setSelectedSlot("Morning"); // fallback on error
+      }
     })();
     return () => { mounted = false; };
   }, [notificationsSupported]);
@@ -262,9 +266,10 @@ const PageNotificationPreferences = () => {
                 right={{
                   type: "select",
                   options: SLOT_OPTIONS.map((o) => ({ value: o.value, label: o.label })),
-                  value: selectedSlot,
-                  displayValue: selectedSlot,
+                  value: selectedSlot ?? "",
+                  displayValue: selectedSlot ?? "",
                   onChange: handleSendTimeChange,
+                  disabled: !selectedSlot,
                 }}
               />
 

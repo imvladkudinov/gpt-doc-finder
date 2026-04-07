@@ -1,4 +1,4 @@
-import { addMonths, format, isToday, isBefore, startOfDay } from "date-fns";
+import { addMonths, isToday, isBefore, startOfDay } from "date-fns";
 import { Plant } from "@/types/plant";
 
 export function getWateringStatus(plant: Plant) {
@@ -23,10 +23,6 @@ export function getWateringStatus(plant: Plant) {
     color: "primary" as const,
     daysLeft: days,
   };
-}
-
-export function formatWateringDate(date: Date) {
-  return format(new Date(date), "MMM d");
 }
 
 export function getReplantStatus(plant: Plant) {

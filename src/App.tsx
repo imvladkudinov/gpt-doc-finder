@@ -1,31 +1,29 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import Plants from "./pages/Plants";
-import Profile from "./pages/Profile";
-import PersonalDetails from "./pages/PersonalDetails";
-import NotificationPreferences from "./pages/NotificationPreferences";
-import Homes from "./pages/Homes";
-import HomeDetails from "./pages/HomeDetails";
-import UIPlayground from "./pages/UIPlayground";
-// import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import Legal from "./pages/Legal";
-import LegalTerms from "./pages/LegalTerms";
-import LegalPolicy from "./pages/LegalPolicy";
-import PasswordRecovery from "./pages/PasswordRecovery";
-import PageHome from "./pages/Home";
+import React, { Suspense } from "react";
+const Plants = React.lazy(() => import("./pages/Plants"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const PersonalDetails = React.lazy(() => import("./pages/PersonalDetails"));
+const NotificationPreferences = React.lazy(() => import("./pages/NotificationPreferences"));
+const Homes = React.lazy(() => import("./pages/Homes"));
+const HomeDetails = React.lazy(() => import("./pages/HomeDetails"));
+const UIPlayground = React.lazy(() => import("./pages/UIPlayground"));
+// const Auth = React.lazy(() => import("./pages/Auth"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
+const Legal = React.lazy(() => import("./pages/Legal"));
+const LegalTerms = React.lazy(() => import("./pages/LegalTerms"));
+const LegalPolicy = React.lazy(() => import("./pages/LegalPolicy"));
+const PasswordRecovery = React.lazy(() => import("./pages/PasswordRecovery"));
+const PageHome = React.lazy(() => import("./pages/Home"));
 import TabBar from "./components/TabBar";
 import { supabase } from "@/integrations/supabase/client";
-import { clearStoredActiveHomeId, ensureActiveHomeForCurrentUser } from "@/lib/homes";
-import { syncCurrentUserProfile } from "@/lib/profiles";
-import { ensurePushSubscription } from "@/lib/device-notifications";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { prefetchRoutes } from "@/lib/route-prefetch";
 
 const queryClient = new QueryClient();
 
@@ -39,8 +37,6 @@ const TAB_PATHS = [
   "/legal/terms",
   "/legal/policy"
 ];
-
-// No longer need ProtectedRoute, all users go to Home
 
 const ProtectedRoute = ({ session, children }: { session: Session | null, children: React.ReactNode }) => {
   if (!session) {
@@ -100,12 +96,31 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!session) return;
+
+    const timer = window.setTimeout(() => {
+      prefetchRoutes([
+        "/plants",
+        "/profile",
+        "/homes",
+        "/notification-preferences",
+        "/personal-details",
+        "/legal",
+      ]);
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+  }, [session]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
           <ErrorBoundary>
-            <AnimatedRoutes session={session} loading={loading} />
+            <Suspense fallback={<div className="min-h-screen bg-background" />}>
+              <AnimatedRoutes session={session} loading={loading} />
+            </Suspense>
           </ErrorBoundary>
         </BrowserRouter>
         <Sonner position="top-center" />

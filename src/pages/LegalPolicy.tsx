@@ -1,7 +1,7 @@
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import GlassBackButton from "@/components/GlassBackButton";
-import { IconFileSmileFilled, IconCopy } from "@tabler/icons-react";
+import { IconCopy } from "@tabler/icons-react";
 import { ButtonLow } from "@/components/ui/ButtonLow";
 import { appToast } from "@/lib/app-toast";
 

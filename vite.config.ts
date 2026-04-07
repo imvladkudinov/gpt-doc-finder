@@ -101,4 +101,31 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+
+          if (id.includes("react") || id.includes("scheduler")) {
+            return "vendor-react";
+          }
+
+          if (id.includes("react-router")) {
+            return "vendor-router";
+          }
+
+          if (id.includes("@supabase")) {
+            return "vendor-supabase";
+          }
+
+          if (id.includes("framer-motion")) {
+            return "vendor-motion";
+          }
+
+          return "vendor";
+        },
+      },
+    },
+  },
 }));

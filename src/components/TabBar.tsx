@@ -1,6 +1,7 @@
 import { IconLeafFilled, IconUserFilled } from "@tabler/icons-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { prefetchRoute } from "@/lib/route-prefetch";
 
 const tabs = [
   { path: "/plants", matchPaths: ["/plants"], icon: IconLeafFilled },
@@ -37,6 +38,9 @@ const ComponentTabBar = () => {
             <button
               key={path}
               onClick={() => navigate(path)}
+              onMouseEnter={() => prefetchRoute(path)}
+              onFocus={() => prefetchRoute(path)}
+              onTouchStart={() => prefetchRoute(path)}
               className="relative flex h-12 w-14 items-center justify-center rounded-full transition-colors"
             >
               {active && (
