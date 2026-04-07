@@ -33,13 +33,12 @@ const PageHome = () => {
 
   // Redirect if already authenticated
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!error && data.user) {
         navigate("/plants", { replace: true });
       }
     });
-    // ...existing code...
-  }, []);
+  }, [navigate]);
 
   const autofillTriggered = useRef(false);
   useEffect(() => {

@@ -83,14 +83,10 @@ const App = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const hydrateAuth = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const currentSession = sessionData.session;
-
-      if (!currentSession) {
+    const applySessionWithVerification = async (nextSession: Session | null) => {
+      if (!nextSession) {
         if (!isMounted) return;
         setSession(null);
-        setLoading(false);
         return;
       }
 
@@ -99,19 +95,26 @@ const App = () => {
         await supabase.auth.signOut({ scope: "local" });
         if (!isMounted) return;
         setSession(null);
-        setLoading(false);
         return;
       }
 
       if (!isMounted) return;
-      setSession(currentSession);
+      setSession(nextSession);
+    };
+
+    const hydrateAuth = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentSession = sessionData.session;
+
+      await applySessionWithVerification(currentSession);
+      if (!isMounted) return;
       setLoading(false);
     };
 
     hydrateAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
+      void applySessionWithVerification(nextSession);
     });
     return () => {
       isMounted = false;
