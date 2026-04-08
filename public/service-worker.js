@@ -42,9 +42,9 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener("push", (event) => {
   const payload = event.data ? event.data.json() : {};
-  const title = payload.title || "Planty";
-  const body = payload.body || "You have a new reminder.";
-  const targetUrl = payload.url || "/plants";
+  const title = payload.title ?? "Planty";
+  const body = payload.body ?? "You have a new reminder.";
+  const targetUrl = payload.url ?? "/plants";
 
   event.waitUntil(
     self.registration.showNotification(title, {
