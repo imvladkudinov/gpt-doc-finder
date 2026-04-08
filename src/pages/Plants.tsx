@@ -496,8 +496,6 @@ const PagePlants = () => {
             style={{
               top: 0,
               bottom: 0,
-              paddingTop: 'env(safe-area-inset-top, 0px)',
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)'
             }}
             onClick={() => setSelectedPlant(null)}
           >
