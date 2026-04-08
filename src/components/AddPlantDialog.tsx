@@ -89,7 +89,7 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
             WebkitBackdropFilter: "blur(40px) saturate(1.8)",
             border: "1px solid rgba(255,255,255,0.5)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-            maxHeight: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px)',
+            maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px)',
           }}
         >
           <div className="mb-5 flex items-center justify-between">

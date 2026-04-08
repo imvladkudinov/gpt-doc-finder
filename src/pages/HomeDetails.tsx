@@ -325,8 +325,8 @@ const PageHomeDetails = () => {
               exit={{ opacity: 0 }}
               className="fixed left-0 right-0 z-50 flex items-end justify-center bg-[var(--background-overlay)] backdrop-blur-sm"
               style={{
-                top: 'calc(0px - env(safe-area-inset-top, 0px))',
-                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                top: 0,
+                bottom: 0,
                 paddingTop: 'env(safe-area-inset-top, 0px)',
                 paddingBottom: 'env(safe-area-inset-bottom, 0px)'
               }}
@@ -345,7 +345,7 @@ const PageHomeDetails = () => {
                   WebkitBackdropFilter: "blur(40px) saturate(1.8)",
                   border: "1px solid rgba(255,255,255,0.5)",
                   boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  maxHeight: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px)',
+                  maxHeight: 'calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px)',
                 }}
               >
                 <div className="mb-5 flex items-center justify-between">
@@ -400,8 +400,8 @@ const PageHomeDetails = () => {
               transition={{ duration: 0.2 }}
               className="fixed left-0 right-0 z-50 bg-[var(--background-overlay)]"
               style={{
-                top: 'calc(0px - env(safe-area-inset-top, 0px))',
-                height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+                top: 0,
+                bottom: 0,
                 paddingTop: 'env(safe-area-inset-top, 0px)',
                 paddingBottom: 'env(safe-area-inset-bottom, 0px)'
               }}
