@@ -6,11 +6,7 @@ export function getWateringStatus(plant: Plant) {
   const next = new Date(plant.nextWatering);
   const todayStart = startOfDay(now);
 
-  if (isToday(next)) {
-    return { label: "today", urgent: false, color: "muted" as const, daysLeft: 0 };
-  }
-
-  if (plant.missedWatering || isBefore(next, todayStart)) {
+  if (plant.missedWatering || isBefore(next, todayStart) || isToday(next)) {
     return { label: "water me", urgent: true, color: "warning" as const, daysLeft: 0 };
   }
 

@@ -416,7 +416,7 @@ const PageHomeDetails = () => {
                   onClick={handleConfirmAction}
                   disabled={isBusy}
                 >
-                  Confirm
+                  Delete
                 </ButtonLow>
               </div>
             </motion.div>

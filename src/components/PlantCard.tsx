@@ -32,23 +32,22 @@ const ComponentPlantCard = ({ plant, onOpenPlant, onOpenOverdue, onWater, index 
       }}
       role="button"
       tabIndex={0}
-      className="relative flex h-[220px] flex-col items-start justify-between rounded-[28px] bg-[var(--background-secondary)] px-3 pb-3 pt-5 text-left shadow-sm transition-shadow hover:shadow-md"
+      className="relative flex h-[220px] flex-col items-start justify-between rounded-[28px] bg-[var(--background-secondary)] px-2 pb-3 pt-5 text-left shadow-sm transition-shadow hover:shadow-md"
     >
-      {/* Orange overdue indicator */}
-      {status.urgent && (
-        <div
-          className="absolute top-2.5 right-2.5 h-4 w-4 rounded-full"
-          style={{ background: "var(--icon-warning)", boxShadow: "0 0 8px var(--background-overlay)" }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenOverdue?.(plantId);
-          }}
-        />
-      )}
       <div className="w-full">
         <div className="flex w-full items-center justify-center">
-          <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[var(--background-main)]">
+          <div className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[var(--background-main)]">
             <IconLeafFilled className="h-5 w-5 text-icon-primary" />
+            {status.urgent && (
+              <div
+                className="absolute -right-[2px] -top-[2px] h-[18px] w-[18px] rounded-full border-2 border-[var(--background-secondary)]"
+                style={{ background: "var(--icon-warning)" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenOverdue?.(plantId);
+                }}
+              />
+            )}
           </div>
         </div>
         <div className="mt-3 w-full text-center">
@@ -64,16 +63,18 @@ const ComponentPlantCard = ({ plant, onOpenPlant, onOpenOverdue, onWater, index 
         </div>
       </div>
       {/* Watered button */}
-      <ButtonLow
-        variant="secondary"
-        className="mt-2 h-11 w-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          onWater?.(plantId);
-        }}
-      >
-        Water
-      </ButtonLow>
+      <div className="mt-2 w-full px-1">
+        <ButtonLow
+          variant="secondary"
+          className="h-11 w-full"
+          onClick={(e) => {
+            e.stopPropagation();
+            onWater?.(plantId);
+          }}
+        >
+          Water
+        </ButtonLow>
+      </div>
     </motion.div>
   );
 };
