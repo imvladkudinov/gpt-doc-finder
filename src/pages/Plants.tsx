@@ -6,7 +6,6 @@ import {
   IconDropletFilled,
   IconCalendarWeekFilled,
   IconPencilFilled,
-  IconTrash,
 } from "@tabler/icons-react";
 import { ChevronsUpDown } from "lucide-react";
 
@@ -222,10 +221,11 @@ const PagePlants = () => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
-  const [showPlantInfo, setShowPlantInfo] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [deletingPlantId, setDeletingPlantId] = useState<string | null>(null);
   const [pendingReplantInterval, setPendingReplantInterval] = useState<number | null>(null);
   const [showReplantChangeConfirm, setShowReplantChangeConfirm] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Removed lateWaterPlant logic
   const savePlantNameTimeout = useRef<number | null>(null);
@@ -395,6 +395,7 @@ const PagePlants = () => {
 
     setSelectedPlant(null);
     setShowDeleteConfirm(false);
+    setDeletingPlantId(null);
 
     if (!activeHomeId) return;
     await loadPlantsForHome(activeHomeId);
@@ -414,15 +415,26 @@ const PagePlants = () => {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="fixed top-6 right-6 z-40"
             >
-              <button
-                type="button"
-                onClick={() => setShowAdd(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                style={glassAction}
-                aria-label="Add plant"
-              >
-                <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-              </button>
+              {deleteMode ? (
+                <button
+                  type="button"
+                  onClick={() => setDeleteMode(false)}
+                  className="flex h-10 items-center justify-center rounded-full px-4 text-sm font-semibold text-foreground transition-all active:scale-95"
+                  style={glassAction}
+                >
+                  Done
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(true)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={glassAction}
+                  aria-label="Add plant"
+                >
+                  <IconPlusFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                </button>
+              )}
             </motion.div>
           ) : null}
 
@@ -489,7 +501,7 @@ const PagePlants = () => {
               </button>
             </div>
           ) : plants.length > 0 ? (
-            <div className="mt-4 grid grid-cols-3 gap-1 px-6">
+            <div className="relative z-[6] mt-4 grid grid-cols-3 gap-1 px-6">
               {sortedPlants.map((plant, i) => (
                   <PlantCard
                     key={plant.id}
@@ -498,6 +510,13 @@ const PagePlants = () => {
                     onOpenPlant={handleOpenPlant}
                     onOpenOverdue={handleOpenOverdue}
                     onWater={handleWaterWithCheck}
+                    deleteMode={deleteMode}
+                    onLongPress={() => setDeleteMode(true)}
+                    onExitDeleteMode={() => setDeleteMode(false)}
+                    onDeletePress={(id) => {
+                      setDeletingPlantId(id);
+                      setShowDeleteConfirm(true);
+                    }}
                   />
                 ))}
             </div>
@@ -512,20 +531,6 @@ const PagePlants = () => {
                   {selectedPlant.name}
                 </h2>
                 <div className="flex items-center gap-2">
-                  {/* Delete button */}
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                      backdropFilter: "blur(40px) saturate(1.8)",
-                      WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                      border: "1px solid rgba(255,255,255,0.5)",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                    }}
-                  >
-                    <IconTrash className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                  </button>
                   {/* Close button */}
                   <button
                     onClick={() => setSelectedPlant(null)}
@@ -763,7 +768,7 @@ const PagePlants = () => {
 
       {/* Delete confirm modal */}
       <AnimatePresence>
-        {showDeleteConfirm && selectedPlant && (
+        {showDeleteConfirm && deletingPlantId && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
@@ -777,7 +782,7 @@ const PagePlants = () => {
                 paddingTop: 'env(safe-area-inset-top, 0px)',
                 paddingBottom: 'env(safe-area-inset-bottom, 0px)'
               }}
-              onClick={() => setShowDeleteConfirm(false)}
+              onClick={() => { setShowDeleteConfirm(false); setDeletingPlantId(null); }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.92 }}
@@ -802,13 +807,13 @@ const PagePlants = () => {
               <div className="mt-5 flex items-center justify-start gap-2">
                 <ButtonLow
                   variant="secondary"
-                  onClick={() => setShowDeleteConfirm(false)}
+                  onClick={() => { setShowDeleteConfirm(false); setDeletingPlantId(null); }}
                 >
                   Cancel
                 </ButtonLow>
                 <ButtonLow
                   variant="error"
-                  onClick={() => handleDeletePlant(selectedPlant.id)}
+                  onClick={() => handleDeletePlant(deletingPlantId)}
                 >
                   Delete
                 </ButtonLow>
