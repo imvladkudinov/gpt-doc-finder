@@ -7,7 +7,6 @@ type PreferencesPayload = {
   preferredTimeLocal?: string;
 };
 
-const ALLOWED_SLOT_HOURS = new Set([9, 14, 20]);
 const ALLOWED_SLOT_LABELS = new Set(["Morning", "Day", "Evening"]);
 
 const corsHeaders = {
@@ -92,7 +91,7 @@ Deno.serve(async (request) => {
   const sendMinuteUtc = Number(payload.sendMinuteUtc);
   const preferredTimeLocal = String(payload.preferredTimeLocal ?? "").trim();
 
-  if (!Number.isInteger(sendHourUtc) || !ALLOWED_SLOT_HOURS.has(sendHourUtc)) {
+  if (!Number.isInteger(sendHourUtc) || sendHourUtc < 0 || sendHourUtc > 23) {
     return json({ error: "Invalid sendHourUtc" }, 400);
   }
 

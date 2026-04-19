@@ -8,11 +8,16 @@ import { ensurePushSubscription, disablePushSubscription } from "@/lib/device-no
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-const SLOT_TO_UTC_HOUR = {
+const SLOT_LOCAL_HOURS = {
   Morning: 9,
   Day: 14,
   Evening: 20,
 } as const;
+
+const localHourToUtc = (localHour: number): number => {
+  const offsetMinutes = new Date().getTimezoneOffset();
+  return ((localHour + Math.round(offsetMinutes / 60)) % 24 + 24) % 24;
+};
 
 const SLOT_OPTIONS = [
   { value: "Morning", label: "Morning (09:00)" },
@@ -107,7 +112,7 @@ const PageNotificationPreferences = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          sendHourUtc: SLOT_TO_UTC_HOUR[next],
+          sendHourUtc: localHourToUtc(SLOT_LOCAL_HOURS[next]),
           sendMinuteUtc: 0,
           preferredTimeLocal: next,
         }),
@@ -137,7 +142,7 @@ const PageNotificationPreferences = () => {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            sendHourUtc: SLOT_TO_UTC_HOUR[selectedSlot],
+            sendHourUtc: localHourToUtc(SLOT_LOCAL_HOURS[selectedSlot]),
             sendMinuteUtc: 0,
             preferredTimeLocal: selectedSlot,
           }),
@@ -239,13 +244,13 @@ const PageNotificationPreferences = () => {
   return (
     <PageTransition>
       <ScrollFadeLayout>
-        <div className="min-h-screen bg-background pb-24">
+        <div className="min-h-screen bg-background" style={{ paddingBottom: "8px" }}>
           <div className="fixed top-6 left-6 right-6 z-40 flex items-center gap-3">
             <GlassBackButton to="/profile" />
             <h1 className="font-serif text-[22px] font-bold text-foreground">Notifications</h1>
           </div>
 
-          <div className="px-6 pt-20">
+          <div style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "80px" }}>
             <div className="space-y-1">
               {isSwitchReady && (
                 <ListCell
@@ -262,7 +267,7 @@ const PageNotificationPreferences = () => {
               <ListCell
                 icon={<IconClockFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Send time"
-                subtitle="Sorry, UTC only"
+                subtitle="Sorry, CET only"
                 right={{
                   type: "select",
                   options: SLOT_OPTIONS.map((o) => ({ value: o.value, label: o.label })),
