@@ -139,7 +139,7 @@ const getDuePlantNamesByKind = (plants: UserPlant[], todayIso: string): DueNames
         lastWatered.getUTCDate(),
       ));
       wateringDue.setUTCDate(wateringDue.getUTCDate() + Number(plant.watering_interval));
-      if (wateringDue.toISOString().slice(0, 10) === todayIso) {
+      if (wateringDue.toISOString().slice(0, 10) <= todayIso) {
         namesByKind.watering_due.push(plant.name);
       }
     }
@@ -154,7 +154,7 @@ const getDuePlantNamesByKind = (plants: UserPlant[], todayIso: string): DueNames
       weekBefore.setUTCDate(weekBefore.getUTCDate() - 7);
       const weekBeforeIso = weekBefore.toISOString().slice(0, 10);
 
-      if (dueIso === todayIso) {
+      if (dueIso <= todayIso) {
         namesByKind.replant_due.push(plant.name);
       }
 
