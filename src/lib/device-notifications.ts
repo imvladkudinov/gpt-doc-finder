@@ -134,6 +134,14 @@ export const ensurePushSubscription = async () => {
       throw new Error(upsertError.message);
     }
 
+    // Remove stale subscriptions from the same browser/device (same user_agent, different endpoint)
+    await supabase
+      .from("push_subscriptions")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("user_agent", navigator.userAgent)
+      .neq("endpoint", subscription.endpoint);
+
     return subscription;
   } catch (error) {
     throw new Error(toPushEnableErrorMessage(error));
