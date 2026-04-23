@@ -15,7 +15,7 @@ export const ButtonLarge = React.forwardRef<HTMLButtonElement, ButtonLargeProps>
       <button
         ref={ref}
         className={cn(
-          "inline-flex h-[52px] w-full items-center justify-center rounded-full px-5 text-[16px] font-bold transition-colors",
+          "inline-flex h-[52px] w-full items-center justify-center rounded-full px-5 text-[16px] font-bold transition-colors shadow-sm",
           "disabled:cursor-not-allowed disabled:opacity-60",
           variant === "primary"
             ? "bg-control-primary text-text-primary-control hover:opacity-90"

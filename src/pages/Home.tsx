@@ -5,9 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { ButtonLow } from "@/components/ui/ButtonLow";
 import { appToast } from "@/lib/app-toast";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { prefetchRoute } from "@/lib/route-prefetch";
-import ComponentBottomSheet from "@/components/ComponentBottomSheet";
 
 // Side icons slide out from behind the main icon
 const leftIconAnim = {
@@ -19,10 +18,10 @@ const leftIconAnim = {
     opacity: 1,
     transition: {
       type: "spring",
-      stiffness: 120,
-      damping: 20,
-      mass: 1.2,
-      delay: 0.65,
+      stiffness: 200,
+      damping: 22,
+      mass: 1.0,
+      delay: 0.45,
     },
   },
 };
@@ -36,23 +35,10 @@ const rightIconAnim = {
     opacity: 1,
     transition: {
       type: "spring",
-      stiffness: 120,
-      damping: 20,
-      mass: 1.2,
-      delay: 0.65,
-    },
-  },
-};
-
-const mainIconAnim = {
-  hidden: { scale: 1 },
-  visible: {
-    scale: [1, 1.0375, 1],
-    transition: {
-      delay: 0.65,
-      duration: 1.0,
-      ease: "easeInOut",
-      times: [0, 0.4, 1],
+      stiffness: 200,
+      damping: 22,
+      mass: 1.0,
+      delay: 0.45,
     },
   },
 };
@@ -91,18 +77,13 @@ const HomeIcon = () => (
       <img src="/icon plant right.png" alt="" className="w-full h-full object-cover" />
     </motion.div>
 
-    {/* Main icon on top — briefly scales up then returns */}
-    <motion.div
-      variants={mainIconAnim}
-      initial="hidden"
-      animate="visible"
-      style={{ position: "relative", width: 160, height: 160, zIndex: 10, transformOrigin: "center bottom" }}
-    >
+    {/* Main icon on top */}
+    <div style={{ position: "relative", width: 160, height: 160, zIndex: 10 }}>
       <div style={{ width: 160, height: 160, borderRadius: 44, overflow: "hidden" }}>
         <img src="/home-icon.png" alt="Planty icon" className="w-[160px] h-[160px]" style={{ filter: "drop-shadow(0px 4px 4px rgba(0,0,0,0.1))" }} />
         <div style={{ position: "absolute", inset: 0, borderRadius: 44, border: "1px solid rgba(41,63,9,0.10)", pointerEvents: "none" }} />
       </div>
-    </motion.div>
+    </div>
   </div>
 );
 
@@ -124,7 +105,6 @@ const PageHome = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForgotSheet, setShowForgotSheet] = useState(false);
-  const [recoveryEmail, setRecoveryEmail] = useState("");
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -213,172 +193,164 @@ const PageHome = () => {
 
   return (
     <PageTransition duration={1.5} ease={[0.4, 0, 0.2, 1]}>
-      <div className="min-h-screen bg-background px-6 py-10 flex flex-col items-center justify-center">
-        <div className="w-full max-w-md mx-auto">
-          <div className="flex flex-col items-center">
-            <motion.div
-              animate={{ scale: showForm ? 0.75 : 1 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-            >
-              <HomeIcon />
-            </motion.div>
-            <motion.h1
-              animate={{ marginTop: showForm ? 0 : 16 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="text-[30px] font-title font-bold text-foreground"
-              style={{ maxWidth: 360 }}
-            >
-              Planty
-            </motion.h1>
-            <p className="mt-0.5 text-[16px] text-muted-foreground text-center" style={{ maxWidth: 360 }}>Never forget when to water your little ones. Treat your plant the way they deserve</p>
-          </div>
-
-            {/* Continue button — fades and collapses away */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: showForm ? 0 : 1, height: showForm ? 0 : "auto" }}
-              transition={{ opacity: { duration: 0.2, ease: "easeInOut" }, height: { duration: 0.35, ease: "easeInOut" } }}
-              style={{ overflow: "hidden" }}
-              className="mt-5 flex justify-center"
-            >
-              <ButtonLow variant="primary" onClick={() => setShowForm(true)}>
-                Continue
-              </ButtonLow>
-            </motion.div>
-
-            {/* Form — expands and fades in */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: showForm ? 1 : 0, height: showForm ? "auto" : 0 }}
-              transition={{ opacity: { duration: 0.3, delay: showForm ? 0.15 : 0, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
-              style={{ overflow: "hidden" }}
-              onAnimationComplete={() => {
-                if (showForm) {
-                  const el = document.getElementById("home-form-wrapper");
-                  if (el) el.style.overflow = "visible";
-                }
-              }}
-              id="home-form-wrapper"
-            >
-                  <div className="mt-3">
-                    <div className="w-full">
-                      <div className="relative">
-                        <input
-                          type="email"
-                          placeholder="Email"
-                          autoComplete="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
-                          style={{ border: "2px solid rgba(46,62,19,0.08)" }}
-                        />
-                      </div>
-
-                      <div className="relative mt-2">
-                        <input
-                          type="password"
-                          placeholder="Password"
-                          autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
-                          style={{ border: "2px solid rgba(46,62,19,0.08)" }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 pt-5 flex flex-col w-full">
-                      <ButtonLarge onClick={handleEmailAuth} disabled={loading}>
-                        {mode === "signin" ? "Sign in" : "Sign up"}
-                      </ButtonLarge>
-
-                      <ButtonLarge
-                        onClick={handleGoogleAuth}
-                        disabled={loading}
-                        variant="secondary"
-                        className="flex items-center justify-center gap-2"
-                        style={{
-                          background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                          backdropFilter: "blur(40px) saturate(1.8)",
-                          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                          border: "1px solid rgba(255,255,255,0.5)",
-                          boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                        }}
-                      >
-                        <GoogleIcon />
-                        Google
-                      </ButtonLarge>
-
-
-                    </div>
-                  </div>
-                </motion.div>
-
-          <AnimatePresence>
-            {showForgotSheet && (
-              <ComponentBottomSheet
-                onClose={() => setShowForgotSheet(false)}
-                sheetClassName="max-w-md"
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center" style={{ overflow: "visible" }}>
+        <motion.div
+          className="w-full max-w-md mx-auto px-6"
+          initial={{ opacity: 0, y: 48 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+          style={{ overflow: "visible" }}
+        >
+          {/* Icons, title, text - animate out when forgot password */}
+          <motion.div
+            animate={{ opacity: showForgotSheet ? 0 : 1, height: showForgotSheet ? 0 : "auto" }}
+            transition={{ opacity: { duration: 0.3, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="flex flex-col items-center">
+              <motion.div
+                animate={{ scale: showForm ? 0.75 : 1 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
               >
-                  <div className="mb-5 flex items-center justify-between">
-                    <h2 className="font-serif text-[22px] font-bold text-foreground">Password recovery</h2>
-                    <button
-                      onClick={() => setShowForgotSheet(false)}
-                      className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                        backdropFilter: "blur(40px) saturate(1.8)",
-                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                        border: "1px solid rgba(255,255,255,0.5)",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                      }}
-                    >
-                      <svg aria-hidden="true" className="h-[18px] w-[18px] text-foreground" viewBox="0 0 24 24"><path d="M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
-                    </button>
-                  </div>
+                <HomeIcon />
+              </motion.div>
+              <motion.h1
+                animate={{ marginTop: showForm ? 0 : 16 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="text-[30px] font-title font-bold text-foreground"
+                style={{ maxWidth: 360 }}
+              >
+                Planty
+              </motion.h1>
+              <p className="mt-0.5 text-[16px] text-muted-foreground text-center" style={{ maxWidth: 360 }}>Never forget when to water your little ones. Treat your plant the way they deserve</p>
+            </div>
+          </motion.div>
+
+          {/* Continue button — fades and collapses when form opens */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: showForm || showForgotSheet ? 0 : 1, height: showForm || showForgotSheet ? 0 : "auto" }}
+            transition={{ opacity: { duration: 0.15, ease: "easeInOut" }, height: { duration: 0.25, ease: "easeInOut" } }}
+            style={{ overflow: "hidden" }}
+            className="mt-5 flex justify-center"
+          >
+            <ButtonLow variant="primary" onClick={() => setShowForm(true)}>
+              Continue
+            </ButtonLow>
+          </motion.div>
+
+          {/* Form + buttons — collapse height when hidden, slide up as one unit when shown */}
+          <motion.div
+            initial={false}
+            animate={{ height: showForm || showForgotSheet ? "auto" : 0 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: showForm || showForgotSheet ? 1 : 0, y: showForm || showForgotSheet ? 0 : 32 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              {/* Email + password inputs */}
+              <div id="home-form-wrapper" className="mt-3">
+                <div className="w-full">
                   <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--control-primary)]">
-                      <IconMail className="h-5 w-5" />
-                    </div>
                     <input
                       type="email"
                       placeholder="Email"
                       autoComplete="email"
-                      value={recoveryEmail}
-                      onChange={(e) => setRecoveryEmail(e.target.value)}
-                      className="h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
+                      style={{ border: "2px solid rgba(46,62,19,0.08)" }}
                     />
                   </div>
-                  <ButtonLarge
-                    onClick={() => {
-                      if (!recoveryEmail.trim()) {
-                        appToast.error("Enter your email");
-                        return;
-                      }
-                      setLoading(true);
-                      supabase.auth.resetPasswordForEmail(recoveryEmail.trim()).then(({ error }) => {
-                        setLoading(false);
-                        if (error) {
-                          appToast.error("No account found for this email");
-                          return;
-                        }
-                        appToast.success("May god help you");
-                        setShowForgotSheet(false);
-                      });
-                    }}
-                    disabled={loading}
-                    className="mt-6"
+
+                  <motion.div
+                    initial={false}
+                    animate={{ opacity: showForgotSheet ? 0 : 1, height: showForgotSheet ? 0 : "auto" }}
+                    transition={{ opacity: { duration: 0.3, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
+                    style={{ overflow: "hidden" }}
+                    className="relative mt-2"
                   >
-                    Send email
-                  </ButtonLarge>
-              </ComponentBottomSheet>
-            )}
-          </AnimatePresence>
-        </div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
+                      style={{ border: "2px solid rgba(46,62,19,0.08)" }}
+                    />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <motion.div
+                animate={{ paddingTop: showForgotSheet ? 16 : 20 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="space-y-2 flex flex-col w-full pb-3"
+                style={{ overflow: "visible" }}
+              >
+              <ButtonLarge 
+                onClick={showForgotSheet ? () => {
+                  if (!email.trim()) {
+                    appToast.error("Enter your email");
+                    return;
+                  }
+                  setLoading(true);
+                  supabase.auth.resetPasswordForEmail(email.trim()).then(({ error }) => {
+                    setLoading(false);
+                    if (error) {
+                      appToast.error("No account found for this email");
+                      return;
+                    }
+                    appToast.success("May god help you");
+                    setShowForgotSheet(false);
+                    setEmail("");
+                  }).catch((err) => {
+                    setLoading(false);
+                    appToast.error("Error sending recovery email");
+                    console.error("Password reset error:", err);
+                  });
+                } : handleEmailAuth}
+                disabled={loading}
+              >
+                {showForgotSheet ? "Send mail" : (mode === "signin" ? "Sign in" : "Sign up")}
+              </ButtonLarge>
+
+              <motion.div
+                initial={false}
+                animate={{ opacity: showForgotSheet ? 0 : 1 }}
+                transition={{ opacity: { duration: 0.3, ease: "easeInOut" } }}
+                style={{ overflow: "visible" }}
+              >
+                <ButtonLarge
+                  onClick={handleGoogleAuth}
+                  disabled={loading}
+                  variant="secondary"
+                  className="flex items-center justify-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                >
+                  <GoogleIcon />
+                  Google
+                </ButtonLarge>
+              </motion.div>
+            </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
       <div className="fixed left-0 right-0 bottom-6 flex justify-center pointer-events-none">
         <div className="pointer-events-auto flex flex-row justify-center gap-8">
-          {!showForm ? (
+          {!showForm && !showForgotSheet ? (
             <>
               <button
                 className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0"
@@ -399,12 +371,11 @@ const PageHome = () => {
                 Policy
               </button>
             </>
-          ) : (
+          ) : showForm && !showForgotSheet ? (
             <>
               <button
                 className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0"
                 onClick={() => {
-                  setRecoveryEmail(email);
                   setShowForgotSheet(true);
                 }}
               >
@@ -417,7 +388,17 @@ const PageHome = () => {
                 {mode === "signin" ? "Sign up" : "Sign in"}
               </button>
             </>
-          )}
+          ) : showForgotSheet ? (
+            <button
+              className="text-[14px] font-body font-bold text-muted-foreground bg-transparent border-none p-0"
+              onClick={() => {
+                setShowForgotSheet(false);
+                setEmail("");
+              }}
+            >
+              Back
+            </button>
+          ) : null}
         </div>
       </div>
     </PageTransition>
