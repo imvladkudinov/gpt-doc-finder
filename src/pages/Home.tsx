@@ -291,7 +291,7 @@ const PageHome = () => {
             initial={false}
             animate={{ opacity: showForm || showForgotSheet ? 0 : 1, height: showForm || showForgotSheet ? 0 : "auto", marginTop: showForm || showForgotSheet ? 0 : 20 }}
             transition={{ opacity: { duration: 0.25, ease: "easeInOut" }, height: { duration: 0.5, ease: "easeInOut" }, marginTop: { duration: 0.5, ease: "easeInOut" } }}
-            style={{ overflow: "hidden" }}
+            style={{ overflow: "visible" }}
             className="flex justify-center"
           >
             <ButtonLow variant="primary" onClick={() => setShowForm(true)}>
