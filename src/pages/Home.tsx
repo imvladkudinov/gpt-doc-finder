@@ -258,7 +258,7 @@ const PageHome = () => {
           initial={{ opacity: 0, y: 48 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ overflow: "visible" }}
+          style={{ overflow: "visible", paddingBottom: 24 }}
         >
           {/* Icons, title, text - animate out when forgot password */}
           <motion.div
@@ -291,7 +291,6 @@ const PageHome = () => {
             initial={false}
             animate={{ opacity: showForm || showForgotSheet ? 0 : 1, height: showForm || showForgotSheet ? 0 : "auto", marginTop: showForm || showForgotSheet ? 0 : 20 }}
             transition={{ opacity: { duration: 0.25, ease: "easeInOut" }, height: { duration: 0.5, ease: "easeInOut" }, marginTop: { duration: 0.5, ease: "easeInOut" } }}
-            style={{ overflow: "visible" }}
             className="flex justify-center"
           >
             <ButtonLow variant="primary" onClick={() => setShowForm(true)}>
@@ -388,7 +387,7 @@ const PageHome = () => {
                     initial={false}
                     animate={{ opacity: showForgotSheet ? 0 : 1 }}
                     transition={{ opacity: { duration: 0.3, ease: "easeInOut" } }}
-                    style={{ overflow: "visible", paddingBottom: 56 }}
+                    style={{ overflow: "visible", paddingBottom: 64 }}
                   >
                     <ButtonLarge
                       onClick={handleGoogleAuth}
@@ -404,7 +403,7 @@ const PageHome = () => {
                       }}
                     >
                       <GoogleIcon />
-                      Google
+                      Continue with Google
                     </ButtonLarge>
                   </motion.div>
                   </div>
