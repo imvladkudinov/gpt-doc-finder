@@ -91,9 +91,8 @@ const HomeIcon = () => (
 
     {/* Main icon on top */}
     <div style={{ position: "relative", width: 160, height: 160, zIndex: 10 }}>
-      <div style={{ width: 160, height: 160, borderRadius: 44, overflow: "hidden" }}>
-        <img src="/home-icon.png" alt="Planty icon" className="w-[160px] h-[160px]" style={{ filter: "drop-shadow(0px 4px 4px rgba(0,0,0,0.1))" }} />
-        <div style={{ position: "absolute", inset: 0, borderRadius: 44, border: "1px solid rgba(41,63,9,0.10)", pointerEvents: "none" }} />
+        <div style={{ width: 160, height: 160, borderRadius: 44, overflow: "hidden", boxShadow: "rgba(0, 0, 0, 0.06) 0px 4px 8px", border: "1px solid rgba(41,63,9,0.10)" }}>
+        <img src="/home-icon.png" alt="Planty icon" className="w-[160px] h-[160px]" />
       </div>
     </div>
   </div>
@@ -265,7 +264,7 @@ const PageHome = () => {
           <motion.div
             animate={{ opacity: showForgotSheet ? 0 : 1, height: showForgotSheet ? 0 : "auto" }}
             transition={{ opacity: { duration: 0.3, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
-            style={{ overflow: "hidden" }}
+            style={{ overflow: showForgotSheet ? "hidden" : "visible" }}
           >
             <div className="flex flex-col items-center">
               <motion.div
