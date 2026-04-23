@@ -252,7 +252,7 @@ const PageHome = () => {
 
   return (
     <PageTransition duration={1.5} ease={[0.4, 0, 0.2, 1]}>
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center" style={{ overflow: "visible" }}>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center" style={{ overflow: "visible", paddingBottom: "env(safe-area-inset-bottom)" }}>
         <motion.div
           className="w-full max-w-md mx-auto px-6"
           initial={{ opacity: 0, y: 48 }}
