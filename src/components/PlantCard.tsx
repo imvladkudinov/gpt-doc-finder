@@ -8,7 +8,6 @@ import { ButtonLow } from "@/components/ui/ButtonLow";
 interface PlantCardProps {
   plant: Plant;
   onOpenPlant: (plantId: string) => void;
-  onOpenOverdue?: (plantId: string) => void;
   onWater?: (plantId: string) => void;
   onLongPress?: () => void;
   onDeletePress?: (plantId: string) => void;
@@ -42,7 +41,7 @@ const getJiggle = (index: number) => {
   };
 };
 
-const ComponentPlantCard = ({ plant, onOpenPlant, onOpenOverdue, onWater, onLongPress, onDeletePress, onExitDeleteMode, deleteMode, index }: PlantCardProps) => {
+const ComponentPlantCard = ({ plant, onOpenPlant, onWater, onLongPress, onDeletePress, onExitDeleteMode, deleteMode, index }: PlantCardProps) => {
   const status = getWateringStatus(plant);
   const plantId = plant.id;
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -123,7 +122,6 @@ const ComponentPlantCard = ({ plant, onOpenPlant, onOpenOverdue, onWater, onLong
                 style={{ background: "var(--icon-warning)" }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onOpenOverdue?.(plantId);
                 }}
               />
             )}
@@ -164,7 +162,6 @@ const propsAreEqual = (prev: PlantCardProps, next: PlantCardProps) => {
     prev.plant === next.plant &&
     prev.deleteMode === next.deleteMode &&
     prev.onOpenPlant === next.onOpenPlant &&
-    prev.onOpenOverdue === next.onOpenOverdue &&
     prev.onWater === next.onWater &&
     prev.onLongPress === next.onLongPress &&
     prev.onDeletePress === next.onDeletePress &&

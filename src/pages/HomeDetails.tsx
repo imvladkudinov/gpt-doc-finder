@@ -400,8 +400,8 @@ const PageHomeDetails = () => {
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {confirmAction === "leave"
-                  ? "You will leave this home. If it is your last one, a new home will be created automatically."
-                  : "This will permanently delete the home and all plants inside it."}
+                  ? "This will remove you from the home and revoke your access."
+                  : "This will permanently delete the home and all its data."}
               </p>
               <div className="mt-5 flex items-center justify-start gap-2">
                 <ButtonLow
@@ -416,7 +416,7 @@ const PageHomeDetails = () => {
                   onClick={handleConfirmAction}
                   disabled={isBusy}
                 >
-                  Delete
+                  {confirmAction === "leave" ? "Leave" : "Delete"}
                 </ButtonLow>
               </div>
             </motion.div>

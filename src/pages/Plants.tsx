@@ -220,7 +220,7 @@ const PagePlants = () => {
   }, []);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [overduePlant, setOverduePlant] = useState<Plant | null>(null);
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
   const [deletingPlantId, setDeletingPlantId] = useState<string | null>(null);
@@ -266,12 +266,6 @@ const PagePlants = () => {
     setSelectedPlant(plant);
   }, [plantById]);
 
-  const handleOpenOverdue = useCallback((plantId: string) => {
-    const plant = plantById.get(plantId);
-    if (!plant) return;
-    setOverduePlant(plant);
-  }, [plantById]);
-
   const handleAddPlant = async (_name: string, _interval: number) => {
     if (!activeHomeId) return;
     await loadPlantsForHome(activeHomeId);
@@ -304,7 +298,6 @@ const PagePlants = () => {
     setActiveHomeId(nextHomeId);
     setActiveHomeIdState(nextHomeId);
     setSelectedPlant(null);
-    setOverduePlant(null);
     await loadPlantsForHome(nextHomeId, { initial: true });
   };
 
@@ -508,7 +501,6 @@ const PagePlants = () => {
                     plant={plant}
                     index={i}
                     onOpenPlant={handleOpenPlant}
-                    onOpenOverdue={handleOpenOverdue}
                     onWater={handleWaterWithCheck}
                     deleteMode={deleteMode}
                     onLongPress={() => setDeleteMode(true)}
@@ -643,69 +635,6 @@ const PagePlants = () => {
         )}
       </AnimatePresence>
 
-      {/* Overdue modal */}
-      <AnimatePresence>
-        {overduePlant && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed left-0 right-0 z-[70] bg-black/40"
-              style={{
-                top: 0,
-                bottom: 0,
-                paddingTop: 'env(safe-area-inset-top, 0px)',
-                paddingBottom: 'env(safe-area-inset-bottom, 0px)'
-              }}
-              onClick={() => setOverduePlant(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.92 }}
-              transition={{ type: "spring", damping: 24, stiffness: 300 }}
-              className="fixed inset-0 z-[70] m-auto flex h-fit w-[85%] max-w-xs flex-col rounded-b-[46px] rounded-t-[38px] p-7"
-              style={{
-                background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                backdropFilter: "blur(40px) saturate(1.8)",
-                WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-              }}
-            >
-              <p className="text-3xl mb-2">{overduePlant.emoji}</p>
-              <p className="text-base font-medium text-foreground mb-5">
-                Was it watered earlier and you forgot to mark it?
-              </p>
-              <div className="flex justify-start gap-2">
-                <ButtonLow
-                  variant="secondary"
-                  onClick={() => {
-                    handleWater(overduePlant.id);
-                    setOverduePlant(null);
-                  }}
-                >
-                  Already watered
-                </ButtonLow>
-                <ButtonLow
-                  variant="secondary"
-                  onClick={() => {
-                    handleWater(overduePlant.id);
-                    setOverduePlant(null);
-                  }}
-                >
-                  Water now
-                </ButtonLow>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Late watering modal removed: always water and show toast */}
-
       {/* Replant change confirm modal */}
       <AnimatePresence>
         {showReplantChangeConfirm && selectedPlant && pendingReplantInterval !== null && (
@@ -741,8 +670,23 @@ const PagePlants = () => {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
               }}
             >
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="font-serif text-[22px] font-bold text-foreground">
+                  Update replanting interval?
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowReplantChangeConfirm(false);
+                    setPendingReplantInterval(null);
+                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={glassAction}
+                >
+                  <IconXFilled className="h-[18px] w-[18px] text-foreground" />
+                </button>
+              </div>
               <p className="text-base font-medium text-foreground mb-5">
-                Change value and restart counter from scratch?
+                The counter will reset and restart with the new value.
               </p>
               <div className="flex justify-start gap-2">
                 <ButtonLow
@@ -758,7 +702,7 @@ const PagePlants = () => {
                   variant="primary"
                   onClick={confirmReplantIntervalChange}
                 >
-                  Confirm
+                  Update
                 </ButtonLow>
               </div>
             </motion.div>
@@ -802,7 +746,7 @@ const PagePlants = () => {
                 Delete this plant?
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                This will permanently delete the plant and all data about it.
+                This will permanently delete the plant and all its data.
               </p>
               <div className="mt-5 flex items-center justify-start gap-2">
                 <ButtonLow

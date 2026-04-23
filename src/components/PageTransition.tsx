@@ -25,14 +25,14 @@ const pageTransition = {
   duration: 0.35,
 };
 
-const ComponentPageTransition = ({ children, className }: { children: ReactNode; className?: string }) => {
+const ComponentPageTransition = ({ children, className, duration, ease }: { children: ReactNode; className?: string; duration?: number; ease?: string | number[] }) => {
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={pageTransition}
+      transition={{ ...pageTransition, duration: duration ?? pageTransition.duration, ...(ease ? { ease } : {}) }}
       className={className}
     >
       {children}
