@@ -258,7 +258,7 @@ const PageHome = () => {
           initial={{ opacity: 0, y: 48 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-          style={{ overflow: "visible", paddingBottom: 24 }}
+          style={{ overflow: "visible", paddingBottom: 48 }}
         >
           {/* Icons, title, text - animate out when forgot password */}
           <motion.div
