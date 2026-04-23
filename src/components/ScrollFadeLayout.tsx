@@ -23,7 +23,9 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
       />
       {/* Bottom fade - always visible */}
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-30 h-24 bg-gradient-to-t from-background to-transparent" />
-      {children}
+      <div className="w-full max-w-[720px] mx-auto">
+        {children}
+      </div>
     </div>
   );
 };

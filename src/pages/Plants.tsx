@@ -402,11 +402,12 @@ const PagePlants = () => {
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24 flex flex-col">
           {plants.length > 0 ? (
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 pointer-events-none flex justify-end">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="fixed top-6 right-6 z-40"
+              className="pointer-events-auto"
             >
               {deleteMode ? (
                 <button
@@ -429,6 +430,7 @@ const PagePlants = () => {
                 </button>
               )}
             </motion.div>
+            </div>
           ) : null}
 
           {/* Header */}

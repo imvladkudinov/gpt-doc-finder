@@ -116,6 +116,54 @@ const PageHome = () => {
   }, [navigate]);
 
   const autofillTriggered = useRef(false);
+
+  // Detect Chrome autofill: Chrome fills DOM inputs but doesn't fire React onChange.
+  // Poll actual DOM values after form appears; when both are filled, sign in directly.
+  useEffect(() => {
+    if (!showForm || mode !== "signin") return;
+
+    let attempts = 0;
+    const MAX = 40; // poll for up to 4s
+
+    const interval = setInterval(async () => {
+      attempts++;
+      if (autofillTriggered.current) { clearInterval(interval); return; }
+
+      const emailInput = document.querySelector<HTMLInputElement>('input[type="email"]');
+      const passwordInput = document.querySelector<HTMLInputElement>('input[type="password"]');
+      if (!emailInput || !passwordInput) { if (attempts >= MAX) clearInterval(interval); return; }
+
+      const domEmail = emailInput.value.trim();
+      const domPassword = passwordInput.value.trim();
+
+      if (domEmail && domPassword) {
+        clearInterval(interval);
+        // Only auto-submit if the user hasn't already typed (React state empty = autofill)
+        if (!email.trim() && !password.trim()) {
+          autofillTriggered.current = true;
+          setEmail(domEmail);
+          setPassword(domPassword);
+          // Short delay to let state settle, then sign in
+          setTimeout(async () => {
+            setLoading(true);
+            const { error } = await supabase.auth.signInWithPassword({ email: domEmail, password: domPassword });
+            if (error) {
+              appToast.error("Wrong email or password");
+              setLoading(false);
+              autofillTriggered.current = false;
+            }
+          }, 150);
+        }
+        return;
+      }
+
+      if (attempts >= MAX) clearInterval(interval);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [showForm, mode]);
+
+  // Auto-submit when both fields are filled and neither is focused (manual autofill scenario)
   useEffect(() => {
     if (mode !== "signin" || loading || autofillTriggered.current) return;
     const emailInput = document.querySelector('input[type="email"]');

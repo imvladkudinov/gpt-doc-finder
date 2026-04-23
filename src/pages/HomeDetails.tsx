@@ -215,7 +215,7 @@ const PageHomeDetails = () => {
     <PageTransition>
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-28">
-          <div className="fixed top-6 left-6 right-6 z-40 flex items-center justify-between">
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <GlassBackButton to="/homes" />
               {isHomeTitleVisible && (
