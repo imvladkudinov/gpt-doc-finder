@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { ButtonLow } from "@/components/ui/ButtonLow";
 import { appToast } from "@/lib/app-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { prefetchRoute } from "@/lib/route-prefetch";
 
 // Side icons slide out from behind the main icon
@@ -258,13 +258,14 @@ const PageHome = () => {
             <div className="flex flex-col items-center">
               <motion.div
                 animate={{ scale: showForm ? 0.75 : 1 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ transformOrigin: "bottom center" }}
               >
                 <HomeIcon />
               </motion.div>
               <motion.h1
-                animate={{ marginTop: showForm ? 0 : 16 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                animate={{ marginTop: showForm ? 8 : 16 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="text-[30px] font-title font-bold text-foreground"
                 style={{ maxWidth: 360 }}
               >
@@ -277,123 +278,129 @@ const PageHome = () => {
           {/* Continue button — fades and collapses when form opens */}
           <motion.div
             initial={false}
-            animate={{ opacity: showForm || showForgotSheet ? 0 : 1, height: showForm || showForgotSheet ? 0 : "auto" }}
-            transition={{ opacity: { duration: 0.15, ease: "easeInOut" }, height: { duration: 0.25, ease: "easeInOut" } }}
+            animate={{ opacity: showForm || showForgotSheet ? 0 : 1, height: showForm || showForgotSheet ? 0 : "auto", marginTop: showForm || showForgotSheet ? 0 : 20 }}
+            transition={{ opacity: { duration: 0.25, ease: "easeInOut" }, height: { duration: 0.5, ease: "easeInOut" }, marginTop: { duration: 0.5, ease: "easeInOut" } }}
             style={{ overflow: "hidden" }}
-            className="mt-5 flex justify-center"
+            className="flex justify-center"
           >
             <ButtonLow variant="primary" onClick={() => setShowForm(true)}>
               Continue
             </ButtonLow>
           </motion.div>
 
-          {/* Form + buttons — collapse height when hidden, slide up as one unit when shown */}
-          <motion.div
-            initial={false}
-            animate={{ height: showForm || showForgotSheet ? "auto" : 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 32 }}
-              animate={{ opacity: showForm || showForgotSheet ? 1 : 0, y: showForm || showForgotSheet ? 0 : 32 }}
-              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              {/* Email + password inputs */}
-              <div id="home-form-wrapper" className="mt-3">
-                <div className="w-full">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
-                      style={{ border: "2px solid rgba(46,62,19,0.08)" }}
-                    />
+          {/* Form + buttons — only mounted when form is shown, so browser won't offer autofill on initial screen */}
+          <AnimatePresence>
+            {(showForm || showForgotSheet) && (
+              <motion.div
+                key="form-block-outer"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ overflow: "hidden" }}
+              >
+              <motion.div
+                key="form-block"
+                initial={{ y: 64 }}
+                animate={{ y: 0 }}
+                exit={{ y: 64 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                  {/* Email + password inputs */}
+                  <div id="home-form-wrapper" className="mt-5">
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          autoComplete="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
+                          style={{ border: "2px solid rgba(46,62,19,0.08)" }}
+                        />
+                      </div>
+
+                      <motion.div
+                        initial={false}
+                        animate={{ opacity: showForgotSheet ? 0 : 1, height: showForgotSheet ? 0 : "auto" }}
+                        transition={{ opacity: { duration: 0.3, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
+                        style={{ overflow: "hidden" }}
+                        className="relative mt-2"
+                      >
+                        <input
+                          type="password"
+                          placeholder="Password"
+                          autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
+                          style={{ border: "2px solid rgba(46,62,19,0.08)" }}
+                        />
+                      </motion.div>
+                    </div>
                   </div>
+
+                  {/* Buttons */}
+                  <div
+                    className="space-y-2 flex flex-col w-full pt-5"
+                    style={{ overflow: "visible" }}
+                  >
+                  <ButtonLarge 
+                    onClick={showForgotSheet ? () => {
+                      if (!email.trim()) {
+                        appToast.error("Enter your email");
+                        return;
+                      }
+                      setLoading(true);
+                      supabase.auth.resetPasswordForEmail(email.trim()).then(({ error }) => {
+                        setLoading(false);
+                        if (error) {
+                          appToast.error("No account found for this email");
+                          return;
+                        }
+                        appToast.success("May god help you");
+                        setShowForgotSheet(false);
+                        setEmail("");
+                      }).catch((err) => {
+                        setLoading(false);
+                        appToast.error("Error sending recovery email");
+                        console.error("Password reset error:", err);
+                      });
+                    } : handleEmailAuth}
+                    disabled={loading}
+                  >
+                    {showForgotSheet ? "Send mail" : (mode === "signin" ? "Sign in" : "Sign up")}
+                  </ButtonLarge>
 
                   <motion.div
                     initial={false}
-                    animate={{ opacity: showForgotSheet ? 0 : 1, height: showForgotSheet ? 0 : "auto" }}
-                    transition={{ opacity: { duration: 0.3, ease: "easeInOut" }, height: { duration: 0.4, ease: "easeInOut" } }}
-                    style={{ overflow: "hidden" }}
-                    className="relative mt-2"
+                    animate={{ opacity: showForgotSheet ? 0 : 1 }}
+                    transition={{ opacity: { duration: 0.3, ease: "easeInOut" } }}
+                    style={{ overflow: "visible", paddingBottom: 40 }}
                   >
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-[52px] w-full rounded-[16px] px-5 text-base text-left text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-semibold bg-transparent"
-                      style={{ border: "2px solid rgba(46,62,19,0.08)" }}
-                    />
+                    <ButtonLarge
+                      onClick={handleGoogleAuth}
+                      disabled={loading}
+                      variant="secondary"
+                      className="flex items-center justify-center gap-2"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
+                        backdropFilter: "blur(40px) saturate(1.8)",
+                        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                        border: "1px solid rgba(255,255,255,0.5)",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
+                      }}
+                    >
+                      <GoogleIcon />
+                      Google
+                    </ButtonLarge>
                   </motion.div>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <motion.div
-                animate={{ paddingTop: showForgotSheet ? 16 : 20 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="space-y-2 flex flex-col w-full pb-3"
-                style={{ overflow: "visible" }}
-              >
-              <ButtonLarge 
-                onClick={showForgotSheet ? () => {
-                  if (!email.trim()) {
-                    appToast.error("Enter your email");
-                    return;
-                  }
-                  setLoading(true);
-                  supabase.auth.resetPasswordForEmail(email.trim()).then(({ error }) => {
-                    setLoading(false);
-                    if (error) {
-                      appToast.error("No account found for this email");
-                      return;
-                    }
-                    appToast.success("May god help you");
-                    setShowForgotSheet(false);
-                    setEmail("");
-                  }).catch((err) => {
-                    setLoading(false);
-                    appToast.error("Error sending recovery email");
-                    console.error("Password reset error:", err);
-                  });
-                } : handleEmailAuth}
-                disabled={loading}
-              >
-                {showForgotSheet ? "Send mail" : (mode === "signin" ? "Sign in" : "Sign up")}
-              </ButtonLarge>
-
-              <motion.div
-                initial={false}
-                animate={{ opacity: showForgotSheet ? 0 : 1 }}
-                transition={{ opacity: { duration: 0.3, ease: "easeInOut" } }}
-                style={{ overflow: "visible" }}
-              >
-                <ButtonLarge
-                  onClick={handleGoogleAuth}
-                  disabled={loading}
-                  variant="secondary"
-                  className="flex items-center justify-center gap-2"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
-                    backdropFilter: "blur(40px) saturate(1.8)",
-                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)",
-                  }}
-                >
-                  <GoogleIcon />
-                  Google
-                </ButtonLarge>
+                  </div>
               </motion.div>
-            </motion.div>
-            </motion.div>
-          </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
       <div className="fixed left-0 right-0 bottom-6 flex justify-center pointer-events-none">
