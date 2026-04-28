@@ -154,37 +154,33 @@ const PagePersonalDetails = () => {
               </div>
 
               <div className="space-y-1 pb-4">
-                <div>
-                  <label className="sr-only">New password</label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary">
-                      <IconLockFilled className="h-5 w-5" />
-                    </div>
-                    <input
-                      type="password"
-                      placeholder="Min 6 chars"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className={`h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal`}
-                    />
-                  </div>
-                </div>
+                <ListCell
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
+                  title="New password"
+                  right={{
+                    type: "input",
+                    value: newPassword,
+                    onChange: setNewPassword,
+                    placeholder: "Minimum 6",
+                    inputType: "password",
+                    autoComplete: "new-password",
+                    inputClassName: "w-36",
+                  }}
+                />
 
-                <div>
-                  <label className="sr-only">Confirm password</label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary">
-                      <IconLockFilled className="h-5 w-5" />
-                    </div>
-                    <input
-                      type="password"
-                      placeholder="Repeat"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`h-[52px] w-full rounded-[40px] border border-[rgba(0,0,0,0.05)] bg-white pl-12 pr-4 text-base text-left text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal`}
-                    />
-                  </div>
-                </div>
+                <ListCell
+                  icon={<IconLockFilled className="h-5 w-5 shrink-0 text-primary" />}
+                  title="Repeat"
+                  right={{
+                    type: "input",
+                    value: confirmPassword,
+                    onChange: setConfirmPassword,
+                    placeholder: "Repeat",
+                    inputType: "password",
+                    autoComplete: "new-password",
+                    inputClassName: "w-32",
+                  }}
+                />
               </div>
               <ButtonLarge
                 variant="primary"

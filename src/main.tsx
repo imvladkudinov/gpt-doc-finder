@@ -8,9 +8,22 @@ applyTokensToRoot(PROJECT_THEME_TOKENS);
 
 if ("serviceWorker" in navigator) {
 	window.addEventListener("load", () => {
-		navigator.serviceWorker.register("/service-worker.js").catch(() => {
-			// Keep startup resilient even if service worker registration fails.
+		if (import.meta.env.PROD) {
+			navigator.serviceWorker.register("/service-worker.js").catch(() => {
+				// Keep startup resilient even if service worker registration fails.
+			});
+			return;
+		}
+
+		void navigator.serviceWorker.getRegistrations().then((registrations) => {
+			for (const registration of registrations) {
+				void registration.unregister();
+			}
 		});
+
+		if ("caches" in window) {
+			void caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))));
+		}
 	});
 }
 

@@ -23,14 +23,7 @@ const ComponentTabBar = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center px-6" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
       <nav
-        className="flex items-center gap-1 rounded-full px-1 py-1"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 100%)",
-          backdropFilter: "blur(40px) saturate(1.8)",
-          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
-          border: "1px solid rgba(255,255,255,0.5)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-        }}
+        className="glass-floating flex items-center gap-1 rounded-full px-1 py-1"
       >
         {tabs.map(({ path, matchPaths, icon: Icon }) => {
           const active = matchPaths.some((p) => location.pathname.startsWith(p));
@@ -46,12 +39,7 @@ const ComponentTabBar = () => {
               {active && (
                 <motion.div
                   layoutId="tab-active"
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%)",
-                    border: "1px solid rgba(255,255,255,0.55)",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
-                  }}
+                  className="glass-floating-active absolute inset-0 rounded-full"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}

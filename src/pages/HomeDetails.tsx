@@ -232,7 +232,7 @@ const PageHomeDetails = () => {
               className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
               style={glassAction}
             >
-              <Share className="h-[20px] w-[20px] text-foreground" strokeWidth={2.2} />
+              <Share className="h-[18px] w-[18px] text-foreground" strokeWidth={2.2} />
             </button>
           </div>
 

@@ -23,6 +23,8 @@ type InputSlot = {
   onChange: (value: string) => void;
   placeholder?: string;
   inputClassName?: string;
+  inputType?: React.HTMLInputTypeAttribute;
+  autoComplete?: string;
 };
 
 /** Label pill with native action-menu select. */
@@ -80,6 +82,8 @@ const RightSlotRenderer = ({ slot }: { slot: RightSlot }) => {
     case "input":
       return (
         <input
+          type={slot.inputType ?? "text"}
+          autoComplete={slot.autoComplete}
           value={slot.value}
           onChange={(e) => slot.onChange(e.target.value)}
           placeholder={slot.placeholder}
