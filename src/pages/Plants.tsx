@@ -496,7 +496,7 @@ const PagePlants = () => {
               </button>
             </div>
           ) : plants.length > 0 ? (
-            <div className="relative z-[6] mt-4 grid grid-cols-3 gap-1 px-6">
+            <div className="relative z-[6] mt-4 grid grid-cols-3 gap-1 px-6 min-[720px]:grid-cols-4">
               {sortedPlants.map((plant, i) => (
                   <PlantCard
                     key={plant.id}

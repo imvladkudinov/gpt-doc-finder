@@ -253,6 +253,13 @@ const PageHome = () => {
   return (
     <PageTransition duration={1.5} ease={[0.4, 0, 0.2, 1]}>
       <div className="min-h-screen bg-background flex flex-col items-center justify-center" style={{ overflow: "visible" }}>
+        <div className="pointer-events-none fixed right-16 top-16 z-10 hidden lg:block">
+          <div className="max-w-[270px] -rotate-[6deg] text-right text-primary/90">
+            <p className="font-hand text-[28px] leading-[1.05]">
+              Mobile first, but I made desktop feel pretty decent too. Have a look around :)
+            </p>
+          </div>
+        </div>
         <motion.div
           className="w-full max-w-md mx-auto px-6"
           initial={{ opacity: 0, y: 48 }}
