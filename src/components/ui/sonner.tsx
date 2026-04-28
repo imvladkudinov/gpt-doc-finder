@@ -1,12 +1,9 @@
-import { useTheme } from "next-themes";
 import type { CSSProperties } from "react";
 import { Toaster as Sonner, toast } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
-
   const toastSurfaceStyle = {
     background: "var(--control-secondary)",
     color: "var(--text-main)",
@@ -22,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       position="top-center"
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       className="toaster group"
       toastOptions={{
         style: toastSurfaceStyle,

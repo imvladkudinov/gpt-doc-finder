@@ -86,6 +86,22 @@ const themeTokenSyncPlugin = (): Plugin => ({
   },
 });
 
+const getManualChunk = (id: string) => {
+  if (!id.includes("node_modules")) return undefined;
+
+  if (id.includes("/recharts/")) return "vendor-recharts";
+  if (id.includes("/framer-motion/")) return "vendor-motion";
+  if (id.includes("/@supabase/")) return "vendor-supabase";
+  if (id.includes("/@tanstack/")) return "vendor-query";
+  if (id.includes("/react-router/") || id.includes("/react-router-dom/")) return "vendor-router";
+  if (id.includes("/sonner/")) return "vendor-sonner";
+  if (id.includes("/lucide-react/") || id.includes("/@tabler/")) return "vendor-icons";
+  if (id.includes("/@radix-ui/")) return "vendor-radix";
+  if (id.includes("/react/") || id.includes("/react-dom/")) return "vendor-react";
+
+  return "vendor-misc";
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -99,6 +115,13 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: getManualChunk,
+      },
     },
   },
 }));

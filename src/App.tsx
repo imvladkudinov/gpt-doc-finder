@@ -1,4 +1,3 @@
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
@@ -6,6 +5,9 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import React, { Suspense } from "react";
+const AppToaster = React.lazy(() =>
+  import("@/components/ui/sonner").then((module) => ({ default: module.Toaster })),
+);
 const Plants = React.lazy(() => import("./pages/Plants"));
 const Profile = React.lazy(() => import("./pages/Profile"));
 const PersonalDetails = React.lazy(() => import("./pages/PersonalDetails"));
@@ -20,7 +22,7 @@ const LegalTerms = React.lazy(() => import("./pages/LegalTerms"));
 const LegalPolicy = React.lazy(() => import("./pages/LegalPolicy"));
 const PasswordRecovery = React.lazy(() => import("./pages/PasswordRecovery"));
 const PageHome = React.lazy(() => import("./pages/Home"));
-import TabBar from "./components/TabBar";
+const AppTabBar = React.lazy(() => import("./components/TabBar"));
 import { supabase } from "@/integrations/supabase/client";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { prefetchRoutes } from "@/lib/route-prefetch";
@@ -72,7 +74,11 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
-      {showTabBar && <TabBar />}
+      {showTabBar ? (
+        <Suspense fallback={null}>
+          <AppTabBar />
+        </Suspense>
+      ) : null}
     </>
   );
 };
@@ -169,7 +175,9 @@ const App = () => {
             </Suspense>
           </ErrorBoundary>
         </BrowserRouter>
-        <Sonner position="top-center" />
+        <Suspense fallback={null}>
+          <AppToaster position="top-center" />
+        </Suspense>
       </TooltipProvider>
     </QueryClientProvider>
   );
