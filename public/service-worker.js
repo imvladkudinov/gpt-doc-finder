@@ -1,4 +1,5 @@
-const CACHE_NAME = "planty-static-v2";
+const CACHE_NAME = "planty-static-v3";
+const RUNTIME_CACHE_NAME = "planty-runtime-v1";
 const STATIC_ASSETS = ["/index.html", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -17,6 +18,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
+  const url = new URL(request.url);
 
   if (request.method !== "GET") return;
 
@@ -34,6 +36,32 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(() => caches.match("/index.html")),
     );
+    return;
+  }
+
+  if (url.origin === self.location.origin && ["script", "style", "font", "image"].includes(request.destination)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(RUNTIME_CACHE_NAME);
+      const cached = await cache.match(request);
+      const networkRequest = fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone()).catch(() => {
+              // Ignore cache write failures to keep asset loading resilient.
+            });
+          }
+          return response;
+        });
+
+      if (cached) {
+        event.waitUntil(networkRequest.catch(() => {
+          // Ignore refresh failures when a cached asset is already available.
+        }));
+        return cached;
+      }
+
+      return networkRequest;
+    })());
     return;
   }
 

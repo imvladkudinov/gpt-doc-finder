@@ -109,20 +109,23 @@ const App = () => {
       setSession(nextSession);
     };
 
+    const applySessionWithoutBlocking = (nextSession: Session | null) => {
+      if (!isMounted) return;
+      setSession(nextSession);
+    };
+
     const hydrateAuth = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const currentSession = sessionData.session;
 
       if (!currentSession) {
-        // Give auth state listener a short chance to restore session in PWA context.
-        window.setTimeout(() => {
-          markInitialResolved();
-        }, 250);
+        markInitialResolved();
         return;
       }
 
-      await applySessionWithVerification(currentSession);
+      applySessionWithoutBlocking(currentSession);
       markInitialResolved();
+      void applySessionWithVerification(currentSession);
     };
 
     hydrateAuth();

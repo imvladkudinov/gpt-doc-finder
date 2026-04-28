@@ -70,12 +70,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
     if (count === 1) {
       return {
         title: "Incoming message",
-        body: `time to water me ${firstName} 🪴`,
+        body: `Time to water ${firstName} 🪴`,
       };
     }
     return {
       title: "Incoming message",
-      body: "time to water some plants 🪴",
+      body: "Some plants 🪴 need watering",
     };
   }
 
@@ -83,12 +83,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
     if (count === 1) {
       return {
         title: "Incoming message",
-        body: `${firstName} 🪴 ready for replanting`,
+        body: `${firstName} 🪴 is ready for replanting`,
       };
     }
     return {
       title: "Incoming message",
-      body: "some plants 🪴 ready for replanting",
+      body: "Some plants 🪴 are ready for replanting",
     };
   }
 
@@ -96,12 +96,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
   if (count === 1) {
     return {
       title: "Incoming message",
-      body: `${firstName} 🪴 replanting due in 1 week`,
+      body: `${firstName} 🪴 needs replanting in 1 week`,
     };
   }
   return {
     title: "Incoming message",
-    body: "some plants 🪴 replanting due in 1 week",
+    body: "Some plants 🪴 need replanting in 1 week",
   };
 };
 
