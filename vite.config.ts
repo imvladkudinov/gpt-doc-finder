@@ -103,25 +103,32 @@ const getManualChunk = (id: string) => {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 5173,
-    hmr: {
-      overlay: false,
-    },
-  },
-  plugins: [react(), themeTokenSyncPlugin(), mode === "development" && componentTagger()].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: getManualChunk,
+export default defineConfig(({ mode }) => {
+  const buildHash = Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+
+  return {
+    server: {
+      host: "::",
+      port: 5173,
+      hmr: {
+        overlay: false,
       },
     },
-  },
-}));
+    plugins: [react(), themeTokenSyncPlugin(), mode === "development" && componentTagger()].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+    define: {
+      __BUILD_HASH__: JSON.stringify(buildHash),
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: getManualChunk,
+        },
+      },
+    },
+  };
+});

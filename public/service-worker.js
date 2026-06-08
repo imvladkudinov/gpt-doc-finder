@@ -1,5 +1,6 @@
-const CACHE_NAME = "planty-static-v3";
-const RUNTIME_CACHE_NAME = "planty-runtime-v1";
+const BUILD_HASH = typeof __BUILD_HASH__ !== "undefined" ? __BUILD_HASH__ : "unknown";
+const CACHE_NAME = `planty-static-${BUILD_HASH}`;
+const RUNTIME_CACHE_NAME = `planty-runtime-${BUILD_HASH}`;
 const CURRENT_CACHES = [CACHE_NAME, RUNTIME_CACHE_NAME];
 const STATIC_ASSETS = ["/index.html", "/manifest.webmanifest"];
 
