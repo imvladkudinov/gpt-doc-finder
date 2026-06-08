@@ -1,42 +1,159 @@
-# Welcome to your Lovable project
+# Planty – Plant Care PWA
 
-## Project info
+A progressive web app for managing plant care reminders across shared homes. Built with React, TypeScript, Vite, Supabase, and deployed on Vercel.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Project Setup
 
-## How can I edit this code?
+### Local Development
 
-There are several ways of editing your application.
+**Requirements:**
+- Node.js 18+ (use [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) to manage versions)
+- **npm only** — this project uses npm exclusively. Do not use bun, yarn, or pnpm, as they will cause lockfile drift with `package-lock.json`.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-> **Package manager:** this project uses **npm** (`package-lock.json` is the source of truth). Please don't use bun, yarn, or pnpm — mixing managers causes lockfile drift.
-
-Follow these steps:
+**Installation:**
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+Visit `http://localhost:5173` in your browser.
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in:
+- `VITE_SUPABASE_URL` — your Supabase project URL
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — your Supabase anonymous key
+- `VITE_VAPID_PUBLIC_KEY` — public key from your web-push VAPID keypair (for push notifications)
+
+Get these from your Supabase project dashboard and web-push VAPID setup.
+
+## Architecture
+
+### Core Stack
+
+- **Frontend:** React 18 + TypeScript + Vite (fast HMR, optimal bundling)
+- **Styling:** Tailwind CSS + shadcn/ui components + custom theme token system
+- **Backend:** Supabase (PostgreSQL with RLS policies for multi-home sharing)
+- **Edge Functions:** Deno-based serverless for scheduled reminders and notification dispatch
+- **Deployment:** Vercel (SPA rewrite, security headers, immutable asset caching)
+- **PWA:** Service worker for offline support, push notifications via Web Push API
+
+### Key Features
+
+#### Optimistic UI Updates
+Plant watering actions update the UI immediately while syncing in the background. If the request fails, the UI rolls back to the previous state without interrupting other concurrent changes. See `src/pages/Plants.tsx` for the implementation pattern.
+
+#### Multi-Home Shared Access
+Uses Supabase RLS (Row-Level Security) policies so users can manage plants across multiple homes with fine-grained access control. Each home is a shared resource with explicit member management.
+
+#### Push Notifications
+- Scheduled reminders for watering and replanting delivered in user's preferred time slot (Morning/Day/Evening CET)
+- Users can enable/disable notifications and change their preferred time in Profile → Notifications
+- Powered by edge functions (`supabase/functions/dispatch-plant-reminders`) that run on a cron schedule
+- Note: Notification titles display "Incoming message" with plant details in the body (iOS PWA limitation)
+
+#### Theme Token System
+Brand colors and spacing are defined in `src/lib/theme-tokens.ts` and injected at runtime as inline styles. CSS tokens (e.g., `--background-overlay`, `--text-control-error`) exist only in `src/index.css` and are used locally. This keeps the design system centralized while avoiding duplication.
+
+#### Text Selection Prevention
+Plant cards and bottom sheets disable text selection during long-press interactions to improve touch UX, especially on iOS where selection can interfere with delete mode.
+
+### Security
+
+- Supabase client is only exposed globally in development (`src/integrations/supabase/client.ts`)
+- RLS policies enforce user/home ownership on all database operations
+- Vercel deployment includes security headers:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: SAMEORIGIN`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Strict-Transport-Security: max-age=31536000` (enforces HTTPS)
+  - Asset caching: `/assets/*` cached immutably for 1 year
+
+### Edge Functions
+
+Located in `supabase/functions/`, these Deno-based serverless functions handle background tasks:
+
+- `dispatch-plant-reminders` — cron-triggered, sends scheduled notifications to all users
+- `send-push-notification` — on-demand function to send test notifications (requires user auth)
+- `notification-preferences` — GET/POST user notification settings
+
+**Type Checking:** All edge functions use TypeScript with lenient type checking (`supabase/functions/deno.json` sets `"strict": false`). This allows real type verification without breaking dynamic query patterns. Before deploying, verify with:
+
+```sh
+deno check supabase/functions
+```
+
+## Testing
+
+Plant status logic (watering and replanting intervals) is covered by tests in `src/lib/plant-utils.test.ts`:
+
+```sh
+npm run test
+```
+
+Run tests in watch mode during development:
+
+```sh
+npm run test -- --watch
+```
+
+## Deployment
+
+### Vercel (Frontend)
+
+```sh
+vercel deploy
+```
+
+Deployments automatically include security headers and asset caching per `vercel.json`.
+
+### Supabase Edge Functions
+
+Before deploying, verify edge functions:
+
+```sh
+deno check supabase/functions
+```
+
+Deploy individual functions:
+
+```sh
+supabase functions deploy dispatch-plant-reminders
+supabase functions deploy send-push-notification
+supabase functions deploy notification-preferences
+```
+
+Or deploy all:
+
+```sh
+supabase functions deploy
+```
+
+Set required secrets before deploying push notification functions:
+
+```sh
+supabase secrets set VAPID_PUBLIC_KEY=<your-public-key>
+supabase secrets set VAPID_PRIVATE_KEY=<your-private-key>
+supabase secrets set VAPID_SUBJECT=mailto:your-email@example.com
+supabase secrets set CRON_SECRET=<strong-random-secret>
+```
+
+## Development Guidelines
+
+### Toast Messages
+Use `src/lib/app-toast.ts` helpers (`toast.success()`, `toast.error()`, `toast.info()`). Only one toast displays at a time; the library automatically dismisses previous toasts before showing new ones.
+
+### Plant Name Editing
+Plant names use a confirm-to-save pattern: changes are buffered locally, confirmed on close. This prevents accidental rapid updates and provides visual feedback (green checkmark) when saving.
+
+### Notification Timing
+Notifications are dispatched in CET (Central European Time) at your chosen slot time (9:00, 14:00, or 20:00). The scheduler tolerates up to 60 minutes of jitter from the cron runner and uses a dispatch log to prevent duplicate sends on the same day.
+
+### Bottom Sheets
+All bottom sheets (modals) are capped at `max-w-[720px]` to match the app's content max-width on desktop. This prevents sheets from spanning the full browser width.
 
 ## Push Notifications (MVP)
 
