@@ -20,6 +20,8 @@ If you want to work locally using your own IDE, you can clone this repo and push
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
+> **Package manager:** this project uses **npm** (`package-lock.json` is the source of truth). Please don't use bun, yarn, or pnpm — mixing managers causes lockfile drift.
+
 Follow these steps:
 
 ```sh
@@ -51,7 +53,7 @@ npm run dev
 	- `supabase secrets set VAPID_SUBJECT=mailto:you@example.com`
 2. Deploy function:
 	- `supabase functions deploy send-push-notification --no-verify-jwt=false`
-3. In app, open Profile -> Notifications and tap Send test.
+3. In app, open Profile -> Notifications and enable notifications; reminders are delivered on your chosen schedule.
 
 **Edit a file directly in GitHub**
 
