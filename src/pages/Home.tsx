@@ -69,7 +69,7 @@ const HomeIcon = () => (
         transition={{ duration: 3.2, ease: "easeInOut", repeat: Infinity, delay: 0.9 }}
         style={{ width: 120, height: 120, borderRadius: 36, border: "4px solid #ffffff", overflow: "hidden", boxShadow: "-2px 6px 6px rgba(0,0,0,0.10)" }}
       >
-        <img src="/icon plant left.png" alt="" className="w-full h-full object-cover" />
+        <img src="/icon plant left.webp" alt="" className="w-full h-full object-cover" />
       </motion.div>
     </motion.div>
 
@@ -85,7 +85,7 @@ const HomeIcon = () => (
         transition={{ duration: 3.8, ease: "easeInOut", repeat: Infinity, delay: 1.1 }}
         style={{ width: 116, height: 116, borderRadius: 36, border: "4px solid #ffffff", overflow: "hidden", boxShadow: "2px 6px 6px rgba(0,0,0,0.10)" }}
       >
-        <img src="/icon plant right.png" alt="" className="w-full h-full object-cover" />
+        <img src="/icon plant right.webp" alt="" className="w-full h-full object-cover" />
       </motion.div>
     </motion.div>
 
