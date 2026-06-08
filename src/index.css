@@ -12,28 +12,12 @@
 
 @layer base {
   :root {
-    --background-main: #ecefe7;
-    --background-modals: #f9fbf9;
-    --background-secondary: #e7eae1;
+    /* The brand palette is the single source of truth in
+       src/data/themeTokens.ts, applied to :root at startup via
+       applyTokensToRoot(). Only tokens NOT defined there are declared here. */
     --background-overlay: #1f2e2633;
-
-    --text-main: #1f2e26;
-    --text-secondary: #677e73;
-    --text-primary-control: #f9fbf9;
-    --text-secondary-control: #2f4f3d;
     --text-control-error: #ffffff;
-    --text-warning: #d88764;
-    --text-error: #d74242;
-
-    --control-primary: #4b8b66;
-    --control-secondary: #eceee8;
     --control-error: #d74242;
-
-    --icon-primary: #4b8b66;
-    --icon-main: #1f2e26;
-    --icon-secondary: #677e73;
-    --icon-warning: #d88764;
-    --icon-error: #d74242;
 
     /* shadcn bridge mapped to design-system tokens */
     --background: var(--background-main);
