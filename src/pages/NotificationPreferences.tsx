@@ -40,7 +40,6 @@ const toFriendlyNotificationError = (raw: string) => {
 
 const PageNotificationPreferences = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isTesting, setIsTesting] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSwitchReady, setIsSwitchReady] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
@@ -182,65 +181,6 @@ const PageNotificationPreferences = () => {
     await handleDisable();
   };
 
-  const handleTestNotification = async () => {
-    setIsTesting(true);
-
-    try {
-      await ensurePushSubscription();
-      await refreshSubscriptionState();
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session?.access_token) {
-        return;
-      }
-
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-push-notification`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          title: "Planty",
-          body: "Test notification delivered",
-          url: "/plants",
-        }),
-      });
-
-      let data: { sent?: number } = {};
-      try {
-        data = await response.json();
-      } catch {
-        data = {};
-      }
-
-      if (!response.ok) {
-        const errorMessage =
-          typeof (data as { error?: unknown }).error === "string"
-            ? (data as { error: string }).error
-            : `Test notification failed (${response.status})`;
-        appToast.error(toFriendlyNotificationError(errorMessage));
-        return;
-      }
-
-      const sent = Number(data?.sent ?? 0);
-      if (sent > 0) {
-        appToast.success("Test alert sent");
-      } else {
-        appToast.info("No devices connected");
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Test notification failed";
-      appToast.error(toFriendlyNotificationError(message));
-    } finally {
-      setIsTesting(false);
-    }
-  };
-
   return (
     <PageTransition>
       <ScrollFadeLayout>
@@ -276,28 +216,6 @@ const PageNotificationPreferences = () => {
                   onChange: handleSendTimeChange,
                   disabled: !selectedSlot,
                 }}
-              />
-
-              {/* Invisible test notification button */}
-              <button
-                style={{
-                  width: 200,
-                  height: 50,
-                  opacity: 0,
-                  border: 'none',
-                  background: 'transparent',
-                  position: 'relative',
-                  marginTop: 0,
-                  marginBottom: 0,
-                  padding: 0,
-                  zIndex: 1,
-                  cursor: 'pointer',
-                  display: 'block',
-                }}
-                tabIndex={-1}
-                aria-hidden="true"
-                onClick={handleTestNotification}
-                disabled={isTesting}
               />
             </div>
           </div>
