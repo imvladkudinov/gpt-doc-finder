@@ -1,5 +1,6 @@
 const CACHE_NAME = "planty-static-v3";
 const RUNTIME_CACHE_NAME = "planty-runtime-v1";
+const CURRENT_CACHES = [CACHE_NAME, RUNTIME_CACHE_NAME];
 const STATIC_ASSETS = ["/index.html", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -11,7 +12,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => !CURRENT_CACHES.includes(key)).map((key) => caches.delete(key))))
       .then(() => self.clients.claim()),
   );
 });

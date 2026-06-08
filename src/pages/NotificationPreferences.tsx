@@ -43,7 +43,7 @@ const PageNotificationPreferences = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSwitchReady, setIsSwitchReady] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<NotificationSlot | undefined>(undefined);
+  const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
   const [isSavingTime, setIsSavingTime] = useState(false);
 
   const notificationsSupported = useMemo(
