@@ -260,11 +260,6 @@ const PagePlants = () => {
     appToast.success("Watered");
   }, [activeHomeId, loadPlantsForHome]);
 
-  // Always water on click, no modal or urgent check
-  const handleWaterWithCheck = useCallback((id: string) => {
-    handleWater(id);
-  }, [handleWater]);
-
   const handleOpenPlant = useCallback((plantId: string) => {
     const plant = plantById.get(plantId);
     if (!plant) return;
@@ -507,7 +502,7 @@ const PagePlants = () => {
                     plant={plant}
                     index={i}
                     onOpenPlant={handleOpenPlant}
-                    onWater={handleWaterWithCheck}
+                    onWater={handleWater}
                     deleteMode={deleteMode}
                     onLongPress={() => setDeleteMode(true)}
                     onExitDeleteMode={() => setDeleteMode(false)}
