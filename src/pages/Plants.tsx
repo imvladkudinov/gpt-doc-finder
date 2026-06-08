@@ -83,9 +83,17 @@ const PagePlants = () => {
   const activeHomeName = homes.find((home) => home.id === activeHomeId)?.name ?? "";
   const plantsCounterText = `${plants.length} plants`;
 
+  const plantStatusCache = useMemo(() => {
+    const cache = new Map<string, ReturnType<typeof getWateringStatus>>();
+    plants.forEach((plant) => {
+      cache.set(plant.id, getWateringStatus(plant));
+    });
+    return cache;
+  }, [plants]);
+
   const sortedPlants = useMemo(() => {
     const scored = plants.map((plant) => {
-      const status = getWateringStatus(plant);
+      const status = plantStatusCache.get(plant.id) || getWateringStatus(plant);
       return {
         plant,
         due: status.urgent || status.daysLeft === 0,
@@ -105,7 +113,7 @@ const PagePlants = () => {
     });
 
     return scored.map((item) => item.plant);
-  }, [plants]);
+  }, [plants, plantStatusCache]);
 
   const plantById = useMemo(() => {
     return new Map(plants.map((plant) => [plant.id, plant]));
@@ -200,15 +208,25 @@ const PagePlants = () => {
     }
   }, []);
 
-  // Fetch plants from Supabase on mount
+  // Fetch plants from Supabase on mount (parallelize homes + plants load)
   useEffect(() => {
     const bootstrap = async () => {
-      const resolvedHomeId = await loadHomes();
+      const storedHomeId = getActiveHomeId();
+
+      // Load homes and plants in parallel for faster initial load
+      const [resolvedHomeId] = await Promise.all([
+        loadHomes(),
+        storedHomeId ? loadPlantsForHome(storedHomeId, { initial: true }) : Promise.resolve()
+      ]);
+
+      // If homes finished with a different ID than stored, reload plants for that home
+      if (resolvedHomeId && resolvedHomeId !== storedHomeId) {
+        await loadPlantsForHome(resolvedHomeId, { initial: false });
+      }
+
       if (!resolvedHomeId) {
         setIsLoadingPlants(false);
-        return;
       }
-      await loadPlantsForHome(resolvedHomeId, { initial: true });
     };
 
     bootstrap();
@@ -218,7 +236,7 @@ const PagePlants = () => {
         window.clearTimeout(savePlantNameTimeout.current);
       }
     };
-  }, []);
+  }, [loadPlantsForHome]);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [editingName, setEditingName] = useState<string>("");
   const [showAdd, setShowAdd] = useState(false);
@@ -415,6 +433,19 @@ const PagePlants = () => {
     appToast.success("Plant deleted");
   }, [activeHomeId, loadPlantsForHome]);
 
+  const handleLongPress = useCallback(() => {
+    setDeleteMode(true);
+  }, []);
+
+  const handleExitDeleteMode = useCallback(() => {
+    setDeleteMode(false);
+  }, []);
+
+  const handleDeletePress = useCallback((id: string) => {
+    setDeletingPlantId(id);
+    setShowDeleteConfirm(true);
+  }, []);
+
 
 
   return (
@@ -525,12 +556,9 @@ const PagePlants = () => {
                     onOpenPlant={handleOpenPlant}
                     onWater={handleWater}
                     deleteMode={deleteMode}
-                    onLongPress={() => setDeleteMode(true)}
-                    onExitDeleteMode={() => setDeleteMode(false)}
-                    onDeletePress={(id) => {
-                      setDeletingPlantId(id);
-                      setShowDeleteConfirm(true);
-                    }}
+                    onLongPress={handleLongPress}
+                    onExitDeleteMode={handleExitDeleteMode}
+                    onDeletePress={handleDeletePress}
                   />
                 ))}
             </div>
