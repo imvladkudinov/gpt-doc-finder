@@ -245,20 +245,41 @@ const PagePlants = () => {
   }, [isLoadingPlants]);
 
   const handleWater = useCallback(async (id: string) => {
-    // Update last_watered in Supabase
+    const nowIso = new Date().toISOString();
+    const now = new Date(nowIso);
+
+    // Optimistically water the tapped plant; snapshot for rollback on failure.
+    const snapshot: { plants: Plant[] } = { plants: [] };
+    setPlants((prev) => {
+      snapshot.plants = prev;
+      return prev.map((plant) =>
+        plant.id === id
+          ? {
+              ...plant,
+              lastWatered: now,
+              nextWatering: new Date(now.getTime() + plant.wateringInterval * 24 * 60 * 60 * 1000),
+              missedWatering: false,
+            }
+          : plant,
+      );
+    });
+    appToast.success("Watered");
+
     const { error } = await supabase
       .from("plants")
-      .update({ last_watered: new Date().toISOString() })
+      .update({ last_watered: nowIso })
       .eq("id", id);
+
     if (error) {
+      // Restore only the tapped plant so concurrent updates are preserved.
+      setPlants((curr) => {
+        const original = snapshot.plants.find((plant) => plant.id === id);
+        if (!original) return curr;
+        return curr.map((plant) => (plant.id === id ? original : plant));
+      });
       appToast.error("Water update failed");
-      return;
     }
-    // Refetch plants
-    if (!activeHomeId) return;
-    await loadPlantsForHome(activeHomeId);
-    appToast.success("Watered");
-  }, [activeHomeId, loadPlantsForHome]);
+  }, []);
 
   const handleOpenPlant = useCallback((plantId: string) => {
     const plant = plantById.get(plantId);
