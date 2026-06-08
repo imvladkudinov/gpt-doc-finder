@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { IconXFilled, IconDropletFilled, IconKeyframesFilled, IconPencilFilled, IconCalendarWeekFilled } from "@tabler/icons-react";
-import { ButtonLarge } from "@/components/ui/ButtonLarge";
+import { IconXFilled, IconDropletFilled, IconPencilFilled, IconCalendarWeekFilled, IconCheckFilled } from "@tabler/icons-react";
 import { ListCell } from "@/components/ui/ListCell";
 import ComponentBottomSheet from "@/components/ComponentBottomSheet";
 import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
@@ -72,13 +72,37 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
       <ComponentBottomSheet onClose={onClose}>
           <div className="mb-5 flex items-center justify-between">
             <h2 className="font-serif text-[22px] font-bold text-foreground">Add a plant</h2>
-            <button
-              onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-              style={glassClose}
-            >
-              <IconXFilled className="h-[18px] w-[18px] text-foreground" />
-            </button>
+            <div className="flex items-center gap-2">
+              <AnimatePresence>
+                {name.trim().length > 0 && (
+                  <motion.button
+                    key="confirm"
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.7 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    onClick={handleSubmit}
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                    style={{
+                      background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                      backdropFilter: "blur(40px) saturate(1.8)",
+                      WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                    }}
+                  >
+                    <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <button
+                onClick={onClose}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                style={glassClose}
+              >
+                <IconXFilled className="h-[18px] w-[18px] text-foreground" />
+              </button>
+            </div>
           </div>
 
           {/* Photo identification row */}
@@ -118,11 +142,6 @@ const ComponentAddPlantDialog = ({ open, onClose, onAdd }: AddPlantDialogProps) 
             />
           </div>
 
-          <div className="mt-6">
-            <ButtonLarge onClick={handleSubmit}>
-              Add plant
-            </ButtonLarge>
-          </div>
       </ComponentBottomSheet>
 
     </>

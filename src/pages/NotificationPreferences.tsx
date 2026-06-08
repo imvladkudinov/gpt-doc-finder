@@ -25,7 +25,7 @@ const SLOT_OPTIONS = [
   { value: "Evening", label: "Evening (20:00)" },
 ] as const;
 
-type NotificationSlot = keyof typeof SLOT_TO_UTC_HOUR;
+type NotificationSlot = keyof typeof SLOT_LOCAL_HOURS;
 
 const toFriendlyNotificationError = (raw: string) => {
   const normalized = raw.toLowerCase();
@@ -82,7 +82,7 @@ const PageNotificationPreferences = () => {
         });
         if (!response.ok) return;
         const prefs = await response.json();
-        if (prefs?.preferredTimeLocal && prefs.preferredTimeLocal in SLOT_TO_UTC_HOUR) {
+        if (prefs?.preferredTimeLocal && prefs.preferredTimeLocal in SLOT_LOCAL_HOURS) {
           if (mounted) setSelectedSlot(prefs.preferredTimeLocal);
         } else {
           if (mounted) setSelectedSlot("Morning"); // fallback if not set
@@ -96,7 +96,7 @@ const PageNotificationPreferences = () => {
 
   const handleSendTimeChange = async (value: string | number) => {
     const next = String(value) as NotificationSlot;
-    if (!(next in SLOT_TO_UTC_HOUR) || next === selectedSlot || isSavingTime) return;
+    if (!(next in SLOT_LOCAL_HOURS) || next === selectedSlot || isSavingTime) return;
     setIsSavingTime(true);
     try {
       setSelectedSlot(next);

@@ -6,6 +6,7 @@ import {
   IconDropletFilled,
   IconCalendarWeekFilled,
   IconPencilFilled,
+  IconCheckFilled,
 } from "@tabler/icons-react";
 import { ChevronsUpDown } from "lucide-react";
 
@@ -219,6 +220,7 @@ const PagePlants = () => {
     };
   }, []);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
+  const [editingName, setEditingName] = useState<string>("");
   const [showAdd, setShowAdd] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -227,7 +229,10 @@ const PagePlants = () => {
   const [pendingReplantInterval, setPendingReplantInterval] = useState<number | null>(null);
   const [showReplantChangeConfirm, setShowReplantChangeConfirm] = useState(false);
 
-  // Removed lateWaterPlant logic
+  useEffect(() => {
+    if (selectedPlant) setEditingName(selectedPlant.name);
+  }, [selectedPlant?.id]);
+
   const savePlantNameTimeout = useRef<number | null>(null);
 
   useEffect(() => {
@@ -273,25 +278,24 @@ const PagePlants = () => {
   };
 
   const handlePlantNameChange = (nextName: string) => {
+    setEditingName(nextName);
+  };
+
+  const handleBottomSheetClose = () => {
+    setSelectedPlant(null);
+  };
+
+  const handleConfirmChanges = async () => {
     if (!selectedPlant) return;
-
-    const plantId = selectedPlant.id;
-    setSelectedPlant((prev) => (prev ? { ...prev, name: nextName } : prev));
-    setPlants((prev) => prev.map((plant) => (plant.id === plantId ? { ...plant, name: nextName } : plant)));
-
-    if (savePlantNameTimeout.current) {
-      window.clearTimeout(savePlantNameTimeout.current);
+    const trimmed = editingName.trim();
+    const finalName = trimmed || selectedPlant.name;
+    if (finalName !== selectedPlant.name) {
+      const plantId = selectedPlant.id;
+      setPlants((prev) => prev.map((p) => (p.id === plantId ? { ...p, name: finalName } : p)));
+      await supabase.from("plants").update({ name: finalName }).eq("id", plantId);
     }
-
-    savePlantNameTimeout.current = window.setTimeout(async () => {
-      const trimmed = nextName.trim();
-      if (!trimmed) return;
-
-      await supabase.from("plants").update({ name: trimmed }).eq("id", plantId);
-
-      setSelectedPlant((prev) => (prev && prev.id === plantId ? { ...prev, name: trimmed } : prev));
-      setPlants((prev) => prev.map((plant) => (plant.id === plantId ? { ...plant, name: trimmed } : plant)));
-    }, 350);
+    setSelectedPlant(null);
+    appToast.success("Changes saved");
   };
 
   const handleActiveHomeChange = async (nextHomeId: string) => {
@@ -519,15 +523,37 @@ const PagePlants = () => {
       {/* Bottom sheet detail */}
       <AnimatePresence>
         {selectedPlant && (
-          <ComponentBottomSheet onClose={() => setSelectedPlant(null)} sheetClassName="max-w-md">
+          <ComponentBottomSheet onClose={handleBottomSheetClose}>
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="font-serif text-[22px] font-bold text-foreground">
                   {selectedPlant.name}
                 </h2>
                 <div className="flex items-center gap-2">
+                  <AnimatePresence>
+                    {editingName !== selectedPlant.name && (
+                      <motion.button
+                        key="confirm"
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        onClick={handleConfirmChanges}
+                        className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                        style={{
+                          background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                          backdropFilter: "blur(40px) saturate(1.8)",
+                          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                          border: "1px solid rgba(255,255,255,0.3)",
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                   {/* Close button */}
                   <button
-                    onClick={() => setSelectedPlant(null)}
+                    onClick={handleBottomSheetClose}
                     className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
                     style={{
                       background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.28) 100%)",
@@ -546,7 +572,7 @@ const PagePlants = () => {
                 className="mb-1"
                 icon={<IconPencilFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Plant name"
-                right={{ type: "input", value: selectedPlant.name, onChange: handlePlantNameChange }}
+                right={{ type: "input", value: editingName, onChange: handlePlantNameChange }}
               />
 
               {/* Watering interval row */}

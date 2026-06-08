@@ -21,6 +21,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       position="top-center"
       theme="light"
       className="toaster group"
+      style={{ zIndex: 9999 }}
       toastOptions={{
         style: toastSurfaceStyle,
         classNames: {

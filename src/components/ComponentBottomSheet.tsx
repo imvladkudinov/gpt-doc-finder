@@ -42,7 +42,7 @@ const ComponentBottomSheet = ({
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "glass-heavy mb-2 w-[calc(100%-16px)] rounded-b-[58px] rounded-t-[50px] p-6 pb-7 overflow-y-auto",
+          "glass-heavy mb-2 w-[calc(100%-16px)] max-w-[720px] rounded-b-[58px] rounded-t-[50px] p-6 pb-7 overflow-y-auto",
           sheetClassName,
         )}
         style={{ ...sheetBaseStyle, ...sheetStyle }}

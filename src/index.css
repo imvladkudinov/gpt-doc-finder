@@ -186,8 +186,10 @@
     border: none !important;
     box-shadow: none !important;
     opacity: 1 !important;
+    --opacity: 1;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    transition: transform 0.4s ease, height 0.4s ease !important;
   }
 
   .glass {

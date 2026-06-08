@@ -78,7 +78,6 @@ const ComponentPlantCard = ({ plant, onOpenPlant, onWater, onLongPress, onDelete
       initial={{ opacity: 0, y: 20 }}
       animate={deleteMode ? controls : { opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
-      style={{ originX: 0.5, originY: 0.5 }}
       whileTap={deleteMode ? undefined : { scale: 0.97 }}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
@@ -92,7 +91,8 @@ const ComponentPlantCard = ({ plant, onOpenPlant, onWater, onLongPress, onDelete
       }}
       role="button"
       tabIndex={0}
-      className="relative flex h-[220px] flex-col items-start justify-between rounded-[28px] bg-[var(--background-secondary)] px-2 pb-3 pt-5 text-left shadow-sm transition-shadow hover:shadow-md"
+      style={{ originX: 0.5, originY: 0.5, WebkitUserSelect: "none", userSelect: "none", WebkitTouchCallout: "none" }}
+      className="relative flex h-[220px] flex-col items-start justify-between rounded-[28px] bg-[var(--background-secondary)] px-2 pb-3 pt-5 text-left shadow-sm transition-shadow hover:shadow-md select-none"
     >
       {deleteMode && (
         <button
