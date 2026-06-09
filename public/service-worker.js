@@ -1,4 +1,7 @@
-const BUILD_HASH = typeof __BUILD_HASH__ !== "undefined" ? __BUILD_HASH__ : "unknown";
+// __SW_BUILD_HASH__ is replaced with a unique value at build time by the
+// serviceWorkerHashPlugin in vite.config.ts. In dev it stays as the literal
+// placeholder, which is fine because the SW is unregistered outside PROD.
+const BUILD_HASH = "__SW_BUILD_HASH__";
 const CACHE_NAME = `planty-static-${BUILD_HASH}`;
 const RUNTIME_CACHE_NAME = `planty-runtime-${BUILD_HASH}`;
 const CURRENT_CACHES = [CACHE_NAME, RUNTIME_CACHE_NAME];

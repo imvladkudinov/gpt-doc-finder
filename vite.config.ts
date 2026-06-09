@@ -86,6 +86,24 @@ const themeTokenSyncPlugin = (): Plugin => ({
   },
 });
 
+// Files in public/ are copied verbatim — Vite's `define` does NOT transform
+// them. To version the service worker cache we must rewrite the emitted file
+// on disk after the build, replacing the __SW_BUILD_HASH__ placeholder.
+const serviceWorkerHashPlugin = (buildHash: string): Plugin => ({
+  name: "service-worker-hash-plugin",
+  apply: "build",
+  async closeBundle() {
+    const swPath = path.resolve(__dirname, "dist/service-worker.js");
+    try {
+      const source = await fs.readFile(swPath, "utf8");
+      const replaced = source.replaceAll("__SW_BUILD_HASH__", buildHash);
+      await fs.writeFile(swPath, replaced, "utf8");
+    } catch {
+      // If the service worker isn't present, skip silently.
+    }
+  },
+});
+
 const getManualChunk = (id: string) => {
   if (!id.includes("node_modules")) return undefined;
 
@@ -114,14 +132,16 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
     },
-    plugins: [react(), themeTokenSyncPlugin(), mode === "development" && componentTagger()].filter(Boolean),
+    plugins: [
+      react(),
+      themeTokenSyncPlugin(),
+      serviceWorkerHashPlugin(buildHash),
+      mode === "development" && componentTagger(),
+    ].filter(Boolean),
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
-    },
-    define: {
-      __BUILD_HASH__: JSON.stringify(buildHash),
     },
     build: {
       rollupOptions: {
