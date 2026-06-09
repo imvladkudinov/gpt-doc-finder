@@ -154,15 +154,18 @@ const PageHome = () => {
           autofillTriggered.current = true;
           setEmail(domEmail);
           setPassword(domPassword);
-          // Short delay to let state settle, then sign in
+          // Short delay to let state settle, then sign in.
+          // On iOS passkey, this might fail due to timing; Path 2 will retry via handleEmailAuth.
+          // So we silently fail here (don't show error) and let the normal flow handle it.
           setTimeout(async () => {
             setLoading(true);
             const { error } = await supabase.auth.signInWithPassword({ email: domEmail, password: domPassword });
             if (error) {
-              appToast.error("Wrong email or password");
+              // Silent fail — Path 2's handleEmailAuth will retry with proper error handling
               setLoading(false);
               autofillTriggered.current = false;
             }
+            // If success, auth state observer will handle navigation
           }, 150);
         }
         return;
