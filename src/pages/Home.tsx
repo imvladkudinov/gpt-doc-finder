@@ -91,7 +91,7 @@ const HomeIcon = () => (
 
     {/* Main icon on top */}
     <div style={{ position: "relative", width: 160, height: 160, zIndex: 10 }}>
-        <div style={{ width: 160, height: 160, borderRadius: 44, overflow: "hidden", boxShadow: "rgba(0, 0, 0, 0.06) 0px 4px 8px", border: "1px solid rgba(41,63,9,0.10)" }}>
+        <div style={{ width: 160, height: 160, borderRadius: 44, overflow: "hidden", boxShadow: "rgba(0, 0, 0, 0.06) 0px 4px 8px", border: "1px solid rgba(41,63,9,0.075)" }}>
         <img src="/home-icon.png" alt="Planty icon" className="w-[160px] h-[160px]" />
       </div>
     </div>
