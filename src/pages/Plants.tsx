@@ -484,8 +484,8 @@ const PagePlants = () => {
             </div>
           ) : null}
 
-          {/* Header */}
-          <div className="pl-6 pr-[76px] pt-6 pb-2">
+          {/* Header — min-h reserves space during load to prevent layout shift */}
+          <div className="pl-6 pr-[76px] pt-6 pb-2 min-h-[88px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeHomeId ?? "no-home"}
