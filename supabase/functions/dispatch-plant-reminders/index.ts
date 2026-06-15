@@ -1,17 +1,11 @@
+// @ts-nocheck
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
 
-type NotificationSlot = "Morning" | "Day" | "Evening";
-
 type UserSlot = {
   user_id: string;
-  slot: NotificationSlot;
-};
-
-const SLOT_CET_HOURS: Record<NotificationSlot, number> = {
-  Morning: 9,
-  Day: 14,
-  Evening: 20,
+  send_hour_utc: number;
+  send_minute_utc: number;
 };
 
 type PushRow = {
@@ -50,14 +44,11 @@ const json = (body: unknown, status = 200) =>
     },
   });
 
-const toCetParts = (date: Date) => {
-  const cetDate = new Date(date.toLocaleString("en-US", { timeZone: "Europe/Warsaw" }));
-  return {
-    hour: cetDate.getHours(),
-    minute: cetDate.getMinutes(),
-    date: `${cetDate.getFullYear()}-${String(cetDate.getMonth() + 1).padStart(2, "0")}-${String(cetDate.getDate()).padStart(2, "0")}`,
-  };
-};
+const toUtcParts = (date: Date) => ({
+  hour: date.getUTCHours(),
+  minute: date.getUTCMinutes(),
+  date: date.toISOString().slice(0, 10),
+});
 
 const toMinutesOfDay = (hour: number, minute: number) => (hour * 60) + minute;
 
@@ -69,12 +60,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
     if (count === 1) {
       return {
         title: "Incoming message",
-        body: `Time to water ${firstName} 🪴`,
+        body: `time to water me ${firstName} 🪴`,
       };
     }
     return {
       title: "Incoming message",
-      body: "Some plants 🪴 need watering",
+      body: "time to water some plants 🪴",
     };
   }
 
@@ -82,12 +73,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
     if (count === 1) {
       return {
         title: "Incoming message",
-        body: `${firstName} 🪴 is ready for replanting`,
+        body: `${firstName} 🪴 ready for replanting`,
       };
     }
     return {
       title: "Incoming message",
-      body: "Some plants 🪴 are ready for replanting",
+      body: "some plants 🪴 ready for replanting",
     };
   }
 
@@ -95,12 +86,12 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
   if (count === 1) {
     return {
       title: "Incoming message",
-      body: `${firstName} 🪴 needs replanting in 1 week`,
+      body: `${firstName} 🪴 replanting due in 1 week`,
     };
   }
   return {
     title: "Incoming message",
-    body: "Some plants 🪴 need replanting in 1 week",
+    body: "some plants 🪴 replanting due in 1 week",
   };
 };
 
@@ -284,7 +275,8 @@ Deno.serve(async (request) => {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const { hour, minute, date } = toCetParts(new Date());
+  const utcNow = new Date();
+  const { hour, minute, date } = toUtcParts(utcNow);
 
   // GitHub scheduled workflows can start late. Process catch-up sends for today
   // (after a user's configured slot) and rely on dispatch_log for de-duplication.
@@ -329,37 +321,34 @@ Deno.serve(async (request) => {
 
   const { data: preferencesRows, error: preferencesError } = await supabase
     .from("notification_preferences")
-    .select("user_id,preferred_time_local")
+    .select("user_id,send_hour_utc,send_minute_utc")
     .in("user_id", uniqueUserIds);
 
   if (preferencesError) {
     return json({ error: preferencesError.message }, 500);
   }
 
-  const prefMap = new Map<string, NotificationSlot>();
+  const prefMap = new Map<string, { send_hour_utc: number; send_minute_utc: number }>();
   for (const row of preferencesRows ?? []) {
-    const slot = row.preferred_time_local as NotificationSlot;
-    if (slot in SLOT_CET_HOURS) {
-      prefMap.set(row.user_id as string, slot);
-    }
+    prefMap.set(row.user_id as string, {
+      send_hour_utc: Number(row.send_hour_utc ?? 9),
+      send_minute_utc: Number(row.send_minute_utc ?? 0),
+    });
   }
 
   const userSlotsMap = new Map<string, UserSlot>();
   for (const userId of uniqueUserIds) {
+    const pref = prefMap.get(userId);
     userSlotsMap.set(userId, {
       user_id: userId,
-      slot: prefMap.get(userId) ?? "Morning",
+      send_hour_utc: pref?.send_hour_utc ?? 9,
+      send_minute_utc: pref?.send_minute_utc ?? 0,
     });
   }
 
-  const TOLERANCE_MINUTES = 60;
-
   const targetUsers = [...userSlotsMap.values()].filter((slot) => {
-    const slotHour = SLOT_CET_HOURS[slot.slot];
-    const slotMinutes = toMinutesOfDay(slotHour, 0);
-    const matched = nowMinutes >= slotMinutes - TOLERANCE_MINUTES;
-    console.log(`[dispatch] user=${slot.user_id} slotCET=${slotHour}:00 (${slot.slot}) nowMinutes=${nowMinutes} slotMinutes=${slotMinutes} tolerance=${TOLERANCE_MINUTES} matched=${matched}`);
-    return matched;
+    const slotMinutes = toMinutesOfDay(slot.send_hour_utc, slot.send_minute_utc);
+    return nowMinutes >= slotMinutes;
   });
 
   const { data: sentRows, error: sentRowsError } = await supabase
@@ -464,7 +453,7 @@ Deno.serve(async (request) => {
     }
   }
 
-  const result = {
+  return json({
     usersChecked: targetUsers.length,
     notificationsAttempted,
     notificationsSent,
@@ -472,9 +461,5 @@ Deno.serve(async (request) => {
     minute,
     date,
     diagnostics,
-  };
-
-  console.log("[dispatch-plant-reminders] result:", JSON.stringify(result));
-
-  return json(result);
+  });
 });
