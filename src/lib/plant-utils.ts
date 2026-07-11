@@ -21,6 +21,29 @@ export function getWateringStatus(plant: Plant) {
   };
 }
 
+export function getSprayStatus(lastSprayedDate: string | null, intervalDays: number) {
+  if (!lastSprayedDate) {
+    return { label: "spray me", urgent: true, daysLeft: 0 };
+  }
+
+  const now = new Date();
+  const due = startOfDay(new Date(lastSprayedDate));
+  due.setDate(due.getDate() + intervalDays);
+
+  if (now >= due) {
+    return { label: "spray me", urgent: true, daysLeft: 0 };
+  }
+
+  const msLeft = due.getTime() - now.getTime();
+  const days = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+
+  return {
+    label: days === 1 ? "tomorrow" : `in ${days} days`,
+    urgent: false,
+    daysLeft: days,
+  };
+}
+
 export function getReplantStatus(plant: Plant) {
   const now = new Date();
   const lastReplanted = plant.lastReplanted ? new Date(plant.lastReplanted) : now;

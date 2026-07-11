@@ -4,6 +4,7 @@ import {
   IconPlusFilled,
   IconXFilled,
   IconDropletFilled,
+  IconDropletsFilled,
   IconCalendarWeekFilled,
   IconPencilFilled,
   IconCheckFilled,
@@ -20,7 +21,7 @@ import { ButtonLow } from "@/components/ui/ButtonLow";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Plant } from "@/types/plant";
-import { getReplantStatus, getWateringStatus } from "@/lib/plant-utils";
+import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
 
@@ -78,7 +79,13 @@ const PagePlants = () => {
   const [isTopBarVisible, setIsTopBarVisible] = useState(false);
   const [homes, setHomes] = useState<HomeRow[]>([]);
   const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
+  const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
   const hasTopBarAnimated = useRef(false);
+
+  const sprayStatus = useMemo(() => {
+    if (!sprayPrefs) return null;
+    return getSprayStatus(sprayPrefs.lastSprayedDate, sprayPrefs.intervalDays);
+  }, [sprayPrefs]);
 
   const activeHomeName = homes.find((home) => home.id === activeHomeId)?.name ?? "";
   const plantsCounterText = `${plants.length} plants`;
@@ -208,20 +215,43 @@ const PagePlants = () => {
     }
   }, []);
 
+  const loadSprayPrefsForHome = useCallback(async (homeId: string) => {
+    const { data, error } = await supabase
+      .from("home_spray_preferences")
+      .select("enabled,interval_days,last_sprayed_date")
+      .eq("home_id", homeId)
+      .maybeSingle();
+
+    if (error || !data) {
+      setSprayPrefs({ enabled: false, intervalDays: 7, lastSprayedDate: null });
+      return;
+    }
+
+    setSprayPrefs({
+      enabled: Boolean(data.enabled),
+      intervalDays: Number(data.interval_days),
+      lastSprayedDate: data.last_sprayed_date,
+    });
+  }, []);
+
   // Fetch plants from Supabase on mount (parallelize homes + plants load)
   useEffect(() => {
     const bootstrap = async () => {
       const storedHomeId = getActiveHomeId();
 
-      // Load homes and plants in parallel for faster initial load
+      // Load homes, plants, and spray prefs in parallel for faster initial load
       const [resolvedHomeId] = await Promise.all([
         loadHomes(),
-        storedHomeId ? loadPlantsForHome(storedHomeId, { initial: true }) : Promise.resolve()
+        storedHomeId ? loadPlantsForHome(storedHomeId, { initial: true }) : Promise.resolve(),
+        storedHomeId ? loadSprayPrefsForHome(storedHomeId) : Promise.resolve(),
       ]);
 
-      // If homes finished with a different ID than stored, reload plants for that home
+      // If homes finished with a different ID than stored, reload data for that home
       if (resolvedHomeId && resolvedHomeId !== storedHomeId) {
-        await loadPlantsForHome(resolvedHomeId, { initial: false });
+        await Promise.all([
+          loadPlantsForHome(resolvedHomeId, { initial: false }),
+          loadSprayPrefsForHome(resolvedHomeId),
+        ]);
       }
 
       if (!resolvedHomeId) {
@@ -336,8 +366,30 @@ const PagePlants = () => {
     setActiveHomeId(nextHomeId);
     setActiveHomeIdState(nextHomeId);
     setSelectedPlant(null);
-    await loadPlantsForHome(nextHomeId, { initial: true });
+    await Promise.all([
+      loadPlantsForHome(nextHomeId, { initial: true }),
+      loadSprayPrefsForHome(nextHomeId),
+    ]);
   };
+
+  const handleSprayPress = useCallback(async () => {
+    if (!activeHomeId) return;
+    const todayIso = new Date().toISOString().slice(0, 10);
+
+    const snapshot = sprayPrefs;
+    setSprayPrefs((prev) => (prev ? { ...prev, lastSprayedDate: todayIso } : prev));
+    appToast.success("Sprayed");
+
+    const { error } = await supabase
+      .from("home_spray_preferences")
+      .update({ last_sprayed_date: todayIso })
+      .eq("home_id", activeHomeId);
+
+    if (error) {
+      setSprayPrefs(snapshot);
+      appToast.error("Spray update failed");
+    }
+  }, [activeHomeId, sprayPrefs]);
 
   const restartReplantCounter = async (plantId: string) => {
     const nowIso = new Date().toISOString();
@@ -453,7 +505,31 @@ const PagePlants = () => {
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24 flex flex-col">
           {plants.length > 0 ? (
-            <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 pointer-events-none flex justify-end">
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 pointer-events-none flex items-center justify-end gap-2">
+            {!deleteMode && sprayPrefs?.enabled && sprayStatus ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="pointer-events-auto"
+              >
+                <button
+                  type="button"
+                  onClick={handleSprayPress}
+                  className="relative flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-semibold text-foreground transition-all active:scale-95"
+                  style={glassAction}
+                >
+                  <IconDropletsFilled className="h-4 w-4 text-foreground" />
+                  <span>{sprayStatus.label}</span>
+                  {sprayStatus.urgent && (
+                    <div
+                      className="absolute -right-[2px] -top-[2px] h-[10px] w-[10px] rounded-full border-2 border-[var(--background-secondary)]"
+                      style={{ background: "var(--icon-warning)" }}
+                    />
+                  )}
+                </button>
+              </motion.div>
+            ) : null}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={isTopBarVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}

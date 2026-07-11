@@ -15,7 +15,7 @@ type PushRow = {
   auth_key: string;
 };
 
-type NotificationKind = "watering_due" | "replant_due" | "replant_week_before";
+type NotificationKind = "watering_due" | "replant_due" | "replant_week_before" | "spray_due";
 
 type DueNamesByKind = Record<NotificationKind, string[]>;
 
@@ -165,6 +165,40 @@ const getDuePlantNamesByKind = (plants: UserPlant[], todayIso: string): DueNames
   }
 
   return namesByKind;
+};
+
+const isSprayDueForUser = async (
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  todayIso: string,
+): Promise<boolean> => {
+  const { data: homeRows, error: homeError } = await supabase
+    .from("home_members")
+    .select("home_id")
+    .eq("user_id", userId);
+
+  if (homeError || !homeRows?.length) return false;
+
+  const homeIds = homeRows.map((row) => row.home_id as string);
+
+  const { data: prefRows, error: prefError } = await supabase
+    .from("home_spray_preferences")
+    .select("interval_days,last_sprayed_date")
+    .eq("enabled", true)
+    .in("home_id", homeIds);
+
+  if (prefError || !prefRows?.length) return false;
+
+  const today = new Date(`${todayIso}T00:00:00Z`);
+
+  return prefRows.some((row) => {
+    const lastSprayedDate = row.last_sprayed_date as string | null;
+    if (!lastSprayedDate) return true;
+
+    const lastDate = new Date(`${lastSprayedDate}T00:00:00Z`);
+    const daysSince = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSince >= Number(row.interval_days);
+  });
 };
 
 const markSent = async (
@@ -386,11 +420,13 @@ Deno.serve(async (request) => {
       watering_due: 0,
       replant_due: 0,
       replant_week_before: 0,
+      spray_due: 0,
     },
     sentByKind: {
       watering_due: 0,
       replant_due: 0,
       replant_week_before: 0,
+      spray_due: 0,
     },
   };
 
@@ -398,10 +434,11 @@ Deno.serve(async (request) => {
   let notificationsSent = 0;
 
   for (const slot of targetUsers) {
-    const checks: Array<"watering_due" | "replant_due" | "replant_week_before"> = [
+    const checks: NotificationKind[] = [
       "watering_due",
       "replant_due",
       "replant_week_before",
+      "spray_due",
     ];
 
     const sentKinds = sentKindsByUser.get(slot.user_id) ?? new Set<NotificationKind>();
@@ -417,18 +454,36 @@ Deno.serve(async (request) => {
         continue;
       }
 
-      const names = dueNamesByKind[kind] ?? [];
-      if (!names.length) {
-        diagnostics.skippedNoDuePlants += 1;
-        continue;
+      let notification: { title: string; body: string };
+
+      if (kind === "spray_due") {
+        const due = await isSprayDueForUser(supabase, slot.user_id, date);
+        if (!due) {
+          diagnostics.skippedNoDuePlants += 1;
+          continue;
+        }
+
+        if (!subscriptions.length) {
+          diagnostics.skippedNoSubscriptions += 1;
+          continue;
+        }
+
+        notification = { title: "Incoming message", body: "Time to spray your plants 💦" };
+      } else {
+        const names = dueNamesByKind[kind] ?? [];
+        if (!names.length) {
+          diagnostics.skippedNoDuePlants += 1;
+          continue;
+        }
+
+        if (!subscriptions.length) {
+          diagnostics.skippedNoSubscriptions += 1;
+          continue;
+        }
+
+        notification = getNotificationContent(kind, names);
       }
 
-      if (!subscriptions.length) {
-        diagnostics.skippedNoSubscriptions += 1;
-        continue;
-      }
-
-      const notification = getNotificationContent(kind, names);
       notificationsAttempted += 1;
       diagnostics.attemptedByKind[kind] += 1;
 

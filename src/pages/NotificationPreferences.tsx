@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { IconBellFilled, IconClockFilled } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { IconBellFilled, IconClockFilled, IconDropletsFilled, IconCalendarFilled } from "@tabler/icons-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import GlassBackButton from "@/components/GlassBackButton";
@@ -7,6 +8,12 @@ import { ListCell } from "@/components/ui/ListCell";
 import { ensurePushSubscription, disablePushSubscription } from "@/lib/device-notifications";
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
+
+const SPRAY_INTERVAL_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14].map((days) => ({
+  value: days,
+  label: `${days} days`,
+}));
 
 const SLOT_LOCAL_HOURS = {
   Morning: 9,
@@ -44,6 +51,11 @@ const PageNotificationPreferences = () => {
   const [isSwitchReady, setIsSwitchReady] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<NotificationSlot>("Morning");
   const [isSavingTime, setIsSavingTime] = useState(false);
+  const [homeId, setHomeId] = useState<string | null>(null);
+  const [sprayEnabled, setSprayEnabled] = useState(false);
+  const [sprayIntervalDays, setSprayIntervalDays] = useState(7);
+  const [isSpraySettingsReady, setIsSpraySettingsReady] = useState(false);
+  const [isSavingSpray, setIsSavingSpray] = useState(false);
 
   const notificationsSupported = useMemo(
     () => "serviceWorker" in navigator && "PushManager" in window,
@@ -92,6 +104,79 @@ const PageNotificationPreferences = () => {
     })();
     return () => { mounted = false; };
   }, [notificationsSupported]);
+
+  // On mount, resolve the active home and fetch its spray reminder settings
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const resolvedHomeId = await ensureActiveHomeForCurrentUser();
+      if (!mounted) return;
+      setHomeId(resolvedHomeId);
+
+      if (!resolvedHomeId) {
+        setIsSpraySettingsReady(true);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("home_spray_preferences")
+        .select("enabled,interval_days")
+        .eq("home_id", resolvedHomeId)
+        .maybeSingle();
+
+      if (mounted) {
+        if (!error && data) {
+          setSprayEnabled(Boolean(data.enabled));
+          setSprayIntervalDays(Number(data.interval_days));
+        }
+        setIsSpraySettingsReady(true);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleSprayToggle = async (checked: boolean) => {
+    if (!homeId || isSavingSpray) return;
+    setIsSavingSpray(true);
+    const previous = sprayEnabled;
+    setSprayEnabled(checked);
+
+    const { error } = await supabase
+      .from("home_spray_preferences")
+      .upsert(
+        { home_id: homeId, enabled: checked, interval_days: sprayIntervalDays },
+        { onConflict: "home_id" },
+      );
+
+    if (error) {
+      setSprayEnabled(previous);
+      appToast.error("Failed to update spray reminder");
+    } else {
+      appToast.success(checked ? "Spray reminder turned on" : "Spray reminder turned off");
+    }
+    setIsSavingSpray(false);
+  };
+
+  const handleSprayIntervalChange = async (value: string | number) => {
+    const next = Number(value);
+    if (!homeId || !Number.isFinite(next) || next === sprayIntervalDays || isSavingSpray) return;
+    setIsSavingSpray(true);
+    const previous = sprayIntervalDays;
+    setSprayIntervalDays(next);
+
+    const { error } = await supabase
+      .from("home_spray_preferences")
+      .upsert(
+        { home_id: homeId, enabled: sprayEnabled, interval_days: next },
+        { onConflict: "home_id" },
+      );
+
+    if (error) {
+      setSprayIntervalDays(previous);
+      appToast.error("Failed to save interval");
+    }
+    setIsSavingSpray(false);
+  };
 
   const handleSendTimeChange = async (value: string | number) => {
     const next = String(value) as NotificationSlot;
@@ -217,6 +302,43 @@ const PageNotificationPreferences = () => {
                   disabled: !selectedSlot,
                 }}
               />
+
+              {isSpraySettingsReady && (
+                <ListCell
+                  icon={<IconDropletsFilled className="h-6 w-6 shrink-0 text-primary" />}
+                  title="Spray reminder"
+                  right={{
+                    type: "switch",
+                    checked: sprayEnabled,
+                    onCheckedChange: handleSprayToggle,
+                  }}
+                />
+              )}
+
+              <AnimatePresence initial={false}>
+                {isSpraySettingsReady && sprayEnabled && (
+                  <motion.div
+                    key="spray-interval"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    style={{ overflow: "hidden" }}
+                  >
+                    <ListCell
+                      icon={<IconCalendarFilled className="h-6 w-6 shrink-0 text-primary" />}
+                      title="Interval"
+                      right={{
+                        type: "select",
+                        options: SPRAY_INTERVAL_OPTIONS,
+                        value: sprayIntervalDays,
+                        displayValue: `${sprayIntervalDays} days`,
+                        onChange: handleSprayIntervalChange,
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
