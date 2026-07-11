@@ -54,6 +54,14 @@ Uses Supabase RLS (Row-Level Security) policies so users can manage plants acros
 - Users can enable/disable notifications and change their preferred time in Profile → Notifications
 - Powered by edge functions (`supabase/functions/dispatch-plant-reminders`) that run on a cron schedule
 - Note: Notification titles display "Incoming message" with plant details in the body (iOS PWA limitation)
+- See also: Spray Reminders below, which use the same dispatch cron and time-slot mechanism
+
+#### Spray Reminders
+A standalone, per-home reminder to mist plants — independent of any single plant's watering schedule.
+- Toggle on/off and set an interval (2–10, 12, or 14 days) in Profile → Notifications
+- Home-scoped: stored in the `home_spray_preferences` table (`enabled`, `interval_days`, `last_sprayed_date`), so each home a user belongs to can have its own schedule
+- Dispatched from the same `dispatch-plant-reminders` cron run as watering/replanting, deduped per user per day via `notification_dispatch_log` (kind `spray_due`)
+- The Plants page shows a due-status button (droplet icon) next to Add Plant when enabled, with a countdown ("3 days", "Spray" when due) and a tap-to-mark-sprayed action that resets the countdown without waiting for the push
 
 #### Theme Token System
 Brand colors and spacing are defined in `src/lib/theme-tokens.ts` and injected at runtime as inline styles. CSS tokens (e.g., `--background-overlay`, `--text-control-error`) exist only in `src/index.css` and are used locally. This keeps the design system centralized while avoiding duplication.
@@ -146,14 +154,17 @@ supabase secrets set CRON_SECRET=<strong-random-secret>
 ### Toast Messages
 Use `src/lib/app-toast.ts` helpers (`toast.success()`, `toast.error()`, `toast.info()`). Only one toast displays at a time; the library automatically dismisses previous toasts before showing new ones.
 
-### Plant Name Editing
-Plant names use a confirm-to-save pattern: changes are buffered locally, confirmed on close. This prevents accidental rapid updates and provides visual feedback (green checkmark) when saving.
+### Confirm-to-Save Pattern
+Edits to plant name, home name, profile name, password, and home-sharing invites all use the same confirm-to-save pattern: changes are buffered locally in component state and only committed when a green checkmark button (shown next to the close/back action) is tapped. Navigating away or dismissing the sheet/page without tapping it discards the buffered edit. This avoids accidental rapid writes and gives clear visual feedback on save.
 
 ### Notification Timing
 Notifications are dispatched in CET (Central European Time) at your chosen slot time (9:00, 14:00, or 20:00). The scheduler tolerates up to 60 minutes of jitter from the cron runner and uses a dispatch log to prevent duplicate sends on the same day.
 
 ### Bottom Sheets
 All bottom sheets (modals) are capped at `max-w-[720px]` to match the app's content max-width on desktop. This prevents sheets from spanning the full browser width.
+
+### Scroll Behavior
+The app resets `window` scroll to the top on every route change and sets `history.scrollRestoration` to `manual`, since client-side navigation and PWA app-switching don't reset scroll position on their own. The native scrollbar is hidden app-wide (via `scrollbar-width: none` / `::-webkit-scrollbar`) for a more native-app feel; scrolling itself is unaffected.
 
 ## Push Notifications (MVP)
 
