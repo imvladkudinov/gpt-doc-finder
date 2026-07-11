@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { IconBellFilled, IconClockFilled, IconDropletsFilled, IconCalendarFilled } from "@tabler/icons-react";
+import { IconBellFilled, IconClockFilled, IconDropletsFilled, IconCalendarWeekFilled } from "@tabler/icons-react";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import GlassBackButton from "@/components/GlassBackButton";
@@ -272,7 +272,7 @@ const PageNotificationPreferences = () => {
         <div className="min-h-screen bg-background" style={{ paddingBottom: "8px" }}>
           <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 flex items-center gap-3">
             <GlassBackButton to="/profile" />
-            <h1 className="font-serif text-[22px] font-bold text-foreground">Notifications</h1>
+            <h1 className="font-serif text-[22px] font-bold leading-none text-foreground">Notifications</h1>
           </div>
 
           <div style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "80px" }}>
@@ -326,7 +326,7 @@ const PageNotificationPreferences = () => {
                     style={{ overflow: "hidden" }}
                   >
                     <ListCell
-                      icon={<IconCalendarFilled className="h-6 w-6 shrink-0 text-primary" />}
+                      icon={<IconCalendarWeekFilled className="h-6 w-6 shrink-0 text-primary" />}
                       title="Interval"
                       right={{
                         type: "select",

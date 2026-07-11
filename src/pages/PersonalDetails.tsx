@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { IconPencilFilled, IconMailFilled, IconLockFilled, IconXFilled } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { IconPencilFilled, IconMailFilled, IconLockFilled, IconXFilled, IconCheckFilled } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassBackButton from "@/components/GlassBackButton";
 import PageTransition from "@/components/PageTransition";
 import ScrollFadeLayout from "@/components/ScrollFadeLayout";
 import ComponentBottomSheet from "@/components/ComponentBottomSheet";
 import { ListCell } from "@/components/ui/ListCell";
-import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { Label } from "@/components/ui/label";
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +19,8 @@ const glassClose = {
 };
 
 const PagePersonalDetails = () => {
-  const [name, setName] = useState("Plant lover");
+  const [savedName, setSavedName] = useState("Plant lover");
+  const [editingName, setEditingName] = useState("Plant lover");
   const [email, setEmail] = useState("-");
   const [isGoogleAuth, setIsGoogleAuth] = useState(false);
   const [isDetailsResolved, setIsDetailsResolved] = useState(false);
@@ -29,7 +29,6 @@ const PagePersonalDetails = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
-  const saveNameTimeout = useRef<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -39,7 +38,8 @@ const PagePersonalDetails = () => {
 
       const metadata = data.user?.user_metadata ?? {};
       const fullName = String(metadata.full_name ?? metadata.name ?? "").trim();
-      setName(fullName || "Plant lover");
+      setSavedName(fullName || "Plant lover");
+      setEditingName(fullName || "Plant lover");
       setEmail(data.user?.email ?? "-");
 
       const providers = Array.isArray(data.user?.app_metadata?.providers)
@@ -56,27 +56,34 @@ const PagePersonalDetails = () => {
 
     return () => {
       isMounted = false;
-      if (saveNameTimeout.current) {
-        window.clearTimeout(saveNameTimeout.current);
-      }
     };
   }, []);
 
   const handleNameChange = (nextValue: string) => {
-    setName(nextValue);
+    setEditingName(nextValue);
+  };
 
-    if (saveNameTimeout.current) {
-      window.clearTimeout(saveNameTimeout.current);
-    }
+  const handleConfirmNameChange = async () => {
+    const trimmed = editingName.trim();
+    const finalName = trimmed || savedName;
 
-    saveNameTimeout.current = window.setTimeout(async () => {
-      const trimmed = nextValue.trim();
-      await supabase.auth.updateUser({
+    if (finalName !== savedName) {
+      const { error } = await supabase.auth.updateUser({
         data: {
-          full_name: trimmed || null,
+          full_name: finalName,
         },
       });
-    }, 400);
+
+      if (error) {
+        appToast.error("Something went wrong");
+        return;
+      }
+
+      setSavedName(finalName);
+    }
+
+    setEditingName(finalName);
+    appToast.success("Changes saved");
   };
 
   const handlePasswordChange = async () => {
@@ -94,13 +101,43 @@ const PagePersonalDetails = () => {
     setIsUpdatingPassword(false);
   };
 
+  const handleClosePasswordSheet = () => {
+    setShowPasswordSheet(false);
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
   return (
     <PageTransition>
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24">
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 flex items-center gap-3">
-            <GlassBackButton to="/profile" />
-            <h1 className="font-serif text-[22px] font-bold text-foreground">Personal details</h1>
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <GlassBackButton to="/profile" />
+              <h1 className="font-serif text-[22px] font-bold leading-none text-foreground">Personal details</h1>
+            </div>
+            <AnimatePresence>
+              {editingName !== savedName && (
+                <motion.button
+                  key="confirm-name"
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  onClick={handleConfirmNameChange}
+                  className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                  style={{
+                    background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                    backdropFilter: "blur(40px) saturate(1.8)",
+                    WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                  }}
+                >
+                  <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="px-6 pt-20">
@@ -109,7 +146,7 @@ const PagePersonalDetails = () => {
                 <ListCell
                   icon={<IconPencilFilled className="h-5 w-5 shrink-0 text-primary" />}
                 title="Name"
-                right={{ type: "input", value: name, onChange: handleNameChange }}
+                right={{ type: "input", value: editingName, onChange: handleNameChange }}
                 rightContainerClassName={isDetailsResolved && isDetailsVisible ? "transition-opacity duration-300 opacity-100" : "opacity-0"}
               />
 
@@ -141,16 +178,41 @@ const PagePersonalDetails = () => {
       {/* Change password bottom sheet */}
       <AnimatePresence>
         {showPasswordSheet && (
-          <ComponentBottomSheet onClose={() => setShowPasswordSheet(false)}>
+          <ComponentBottomSheet onClose={handleClosePasswordSheet}>
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="font-serif text-[22px] font-bold text-foreground">Change password</h2>
-                <button
-                  onClick={() => setShowPasswordSheet(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                  style={glassClose}
-                >
-                    <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                </button>
+                <div className="flex items-center gap-2">
+                  <AnimatePresence>
+                    {newPassword.trim().length > 0 && (
+                      <motion.button
+                        key="confirm-password"
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        onClick={handlePasswordChange}
+                        disabled={isUpdatingPassword}
+                        className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95 disabled:opacity-50"
+                        style={{
+                          background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                          backdropFilter: "blur(40px) saturate(1.8)",
+                          WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                          border: "1px solid rgba(255,255,255,0.3)",
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                  <button
+                    onClick={handleClosePasswordSheet}
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                    style={glassClose}
+                  >
+                      <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-1 pb-4">
@@ -182,14 +244,6 @@ const PagePersonalDetails = () => {
                   }}
                 />
               </div>
-              <ButtonLarge
-                variant="primary"
-                className="mt-4"
-                onClick={handlePasswordChange}
-                disabled={isUpdatingPassword}
-              >
-                {isUpdatingPassword ? "Updating..." : "Update password"}
-              </ButtonLarge>
           </ComponentBottomSheet>
         )}
       </AnimatePresence>

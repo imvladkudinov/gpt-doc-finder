@@ -2,6 +2,7 @@ import { IconHomeFilled, IconMailFilled, IconPlusFilled, IconUserFilled, IconXFi
 import { IconMapPinFilled } from "@tabler/icons-react";
 import { IconMoodNeutralFilled } from "@tabler/icons-react";
 import { IconKeyframesFilled } from "@tabler/icons-react";
+import { IconCheckFilled } from "@tabler/icons-react";
 import { Share } from "lucide-react";
 import avatarPlant from "@/assets/avatar-plant.png";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +14,6 @@ import GlassBackButton from "@/components/GlassBackButton";
 import ComponentBottomSheet from "@/components/ComponentBottomSheet";
 import { ListCell } from "@/components/ui/ListCell";
 import { ButtonLow } from "@/components/ui/ButtonLow";
-import { ButtonLarge } from "@/components/ui/ButtonLarge";
 import { appToast } from "@/lib/app-toast";
 import { sendHomeInvite } from "@/lib/home-invites";
 import {
@@ -54,7 +54,8 @@ const PageHomeDetails = () => {
   const initialHomeName = (location.state as any)?.homeName ?? "Home";
 
   const [home, setHome] = useState<HomeRow | null>(null);
-  const [homeName, setHomeName] = useState(initialHomeName);
+  const [savedHomeName, setSavedHomeName] = useState(initialHomeName);
+  const [editingHomeName, setEditingHomeName] = useState(initialHomeName);
   const [isHomeTitleVisible, setIsHomeTitleVisible] = useState(false);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, ProfileRow>>({});
@@ -67,8 +68,6 @@ const PageHomeDetails = () => {
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [isBusy, setIsBusy] = useState(false);
-
-  const saveHomeNameTimeout = useRef<number | null>(null);
 
   const loadData = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -91,7 +90,8 @@ const PageHomeDetails = () => {
     if (homeData) {
       const typedHome = homeData as HomeRow;
       setHome(typedHome);
-      setHomeName(typedHome.name);
+      setSavedHomeName(typedHome.name);
+      setEditingHomeName(typedHome.name);
       window.requestAnimationFrame(() => {
         setIsHomeTitleVisible(true);
       });
@@ -135,28 +135,29 @@ const PageHomeDetails = () => {
 
   useEffect(() => {
     loadData();
-
-    return () => {
-      if (saveHomeNameTimeout.current) {
-        window.clearTimeout(saveHomeNameTimeout.current);
-      }
-    };
   }, [homeId]);
 
   const handleHomeNameChange = (next: string) => {
-    setHomeName(next);
+    setEditingHomeName(next);
+  };
 
-    if (saveHomeNameTimeout.current) {
-      window.clearTimeout(saveHomeNameTimeout.current);
+  const handleConfirmHomeName = async () => {
+    const trimmed = editingHomeName.trim();
+    const finalName = trimmed || savedHomeName;
+
+    if (finalName !== savedHomeName) {
+      const { error } = await supabase.from("homes").update({ name: finalName }).eq("id", homeId);
+      if (error) {
+        appToast.error("Something went wrong");
+        return;
+      }
+
+      setHome((prev) => (prev ? { ...prev, name: finalName } : prev));
+      setSavedHomeName(finalName);
     }
 
-    saveHomeNameTimeout.current = window.setTimeout(async () => {
-      const trimmed = next.trim();
-      if (!trimmed) return;
-
-      await supabase.from("homes").update({ name: trimmed }).eq("id", homeId);
-      setHome((prev) => (prev ? { ...prev, name: trimmed } : prev));
-    }, 350);
+    setEditingHomeName(finalName);
+    appToast.success("Changes saved");
   };
 
   const handleConfirmAction = async () => {
@@ -211,6 +212,11 @@ const PageHomeDetails = () => {
     }
   };
 
+  const handleCloseShareSheet = () => {
+    setShowShareSheet(false);
+    setInviteEmail("");
+  };
+
   return (
     <PageTransition>
       <ScrollFadeLayout>
@@ -219,21 +225,45 @@ const PageHomeDetails = () => {
             <div className="flex items-center gap-3">
               <GlassBackButton to="/homes" />
               {isHomeTitleVisible && (
-                <h1 className="font-serif text-[22px] font-bold text-foreground transition-opacity duration-300 opacity-100">
-                  {homeName}
+                <h1 className="font-serif text-[22px] font-bold leading-none text-foreground transition-opacity duration-300 opacity-100">
+                  {savedHomeName}
                 </h1>
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setShowShareSheet(true);
-              }}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-              style={glassAction}
-            >
-              <Share className="h-[18px] w-[18px] text-foreground" strokeWidth={2.2} />
-            </button>
+            <div className="flex items-center gap-2">
+              <AnimatePresence>
+                {editingHomeName !== savedHomeName && (
+                  <motion.button
+                    key="confirm-home-name"
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.7 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    onClick={handleConfirmHomeName}
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                    style={{
+                      background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                      backdropFilter: "blur(40px) saturate(1.8)",
+                      WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                    }}
+                  >
+                    <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowShareSheet(true);
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                style={glassAction}
+              >
+                <Share className="h-[18px] w-[18px] text-foreground" strokeWidth={2.2} />
+              </button>
+            </div>
           </div>
 
           <div className="px-6 pt-20">
@@ -241,7 +271,7 @@ const PageHomeDetails = () => {
               <ListCell
                 icon={<IconMapPinFilled className="h-6 w-6 shrink-0 text-primary" />}
                 title="Home name"
-                right={{ type: "input", value: homeName, onChange: handleHomeNameChange }}
+                right={{ type: "input", value: editingHomeName, onChange: handleHomeNameChange }}
               />
             </div>
 
@@ -320,16 +350,40 @@ const PageHomeDetails = () => {
       <AnimatePresence>
         {showShareSheet ? (
           <>
-            <ComponentBottomSheet onClose={() => setShowShareSheet(false)}>
+            <ComponentBottomSheet onClose={handleCloseShareSheet}>
                 <div className="mb-5 flex items-center justify-between">
                   <h2 className="font-serif text-[22px] font-bold text-foreground">Share home</h2>
-                  <button
-                    onClick={() => setShowShareSheet(false)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
-                    style={glassAction}
-                  >
-                    <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <AnimatePresence>
+                      {inviteEmail.trim().length > 0 && (
+                        <motion.button
+                          key="confirm-invite"
+                          initial={{ opacity: 0, scale: 0.7 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.7 }}
+                          transition={{ duration: 0.18, ease: "easeOut" }}
+                          onClick={handleShareInvite}
+                          className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                          style={{
+                            background: "color-mix(in srgb, var(--control-primary) 90%, transparent)",
+                            backdropFilter: "blur(40px) saturate(1.8)",
+                            WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3)",
+                          }}
+                        >
+                          <IconCheckFilled className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                    <button
+                      onClick={handleCloseShareSheet}
+                      className="flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-95"
+                      style={glassAction}
+                    >
+                      <IconXFilled className="h-[18px] w-[18px] text-foreground" strokeWidth={2.5} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-1">
@@ -350,15 +404,6 @@ const PageHomeDetails = () => {
                   Enter the email of the person you want to add to this home. If they already have an account, they
                   are added immediately and can start managing plants together.
                 </p>
-
-                <div className="mt-4">
-                  <ButtonLarge
-                    variant="primary"
-                    onClick={handleShareInvite}
-                  >
-                    Add member
-                  </ButtonLarge>
-                </div>
             </ComponentBottomSheet>
           </>
         ) : null}

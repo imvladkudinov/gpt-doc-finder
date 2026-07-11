@@ -80,6 +80,8 @@ const PagePlants = () => {
   const [homes, setHomes] = useState<HomeRow[]>([]);
   const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
   const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
+  const [topBarWidth, setTopBarWidth] = useState(0);
+  const topBarRef = useRef<HTMLDivElement | null>(null);
   const hasTopBarAnimated = useRef(false);
 
   const sprayStatus = useMemo(() => {
@@ -291,6 +293,24 @@ const PagePlants = () => {
       setIsTopBarVisible(true);
     });
   }, [isLoadingPlants]);
+
+  // Measure the top action-button row so the header can reserve exactly enough
+  // space to keep an 8px gap between the truncated title and the buttons.
+  useEffect(() => {
+    const el = topBarRef.current;
+    if (!el) {
+      setTopBarWidth(0);
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setTopBarWidth(entry.contentRect.width);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [deleteMode, sprayPrefs?.enabled, sprayStatus?.label]);
 
   const handleWater = useCallback(async (id: string) => {
     const nowIso = new Date().toISOString();
@@ -505,7 +525,8 @@ const PagePlants = () => {
       <ScrollFadeLayout>
         <div className="min-h-screen bg-background pb-24 flex flex-col">
           {plants.length > 0 ? (
-            <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 pointer-events-none flex items-center justify-end gap-2">
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-[720px] px-6 z-40 pointer-events-none flex items-center justify-end">
+            <div ref={topBarRef} className="flex items-center gap-2">
             {!deleteMode && sprayPrefs?.enabled && sprayStatus ? (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -516,14 +537,14 @@ const PagePlants = () => {
                 <button
                   type="button"
                   onClick={handleSprayPress}
-                  className="relative flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-semibold text-foreground transition-all active:scale-95"
+                  className="relative flex h-10 items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95"
                   style={glassAction}
                 >
                   <IconDropletsFilled className="h-4 w-4 text-foreground" />
-                  <span>{sprayStatus.label}</span>
+                  <span>{sprayStatus.urgent ? "Spray" : sprayStatus.label}</span>
                   {sprayStatus.urgent && (
                     <div
-                      className="absolute -right-[2px] -top-[2px] h-[10px] w-[10px] rounded-full border-2 border-[var(--background-secondary)]"
+                      className="absolute -right-[2px] -top-[2px] h-[14px] w-[14px] rounded-full"
                       style={{ background: "var(--icon-warning)" }}
                     />
                   )}
@@ -558,10 +579,14 @@ const PagePlants = () => {
               )}
             </motion.div>
             </div>
+            </div>
           ) : null}
 
           {/* Header — min-h reserves space during load to prevent layout shift */}
-          <div className="pl-6 pr-[76px] pt-6 pb-2 min-h-[88px]">
+          <div
+            className="pl-6 pt-6 pb-2 min-h-[88px]"
+            style={{ paddingRight: plants.length > 0 ? topBarWidth + 24 + 8 : 24 }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeHomeId ?? "no-home"}
@@ -574,10 +599,10 @@ const PagePlants = () => {
                   <div className="flex min-w-0 items-center gap-1">
                     {activeHomeName ? (
                       <>
-                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[30px] font-bold text-foreground">
+                        <h1 className="max-w-full truncate whitespace-nowrap font-serif text-[30px] font-bold leading-none pt-1 text-foreground">
                           {activeHomeName}
                         </h1>
-                        <ChevronsUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 translate-y-[4px] text-muted-foreground" />
                       </>
                     ) : null}
                   </div>

@@ -38,7 +38,7 @@ export function getSprayStatus(lastSprayedDate: string | null, intervalDays: num
   const days = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
 
   return {
-    label: days === 1 ? "tomorrow" : `in ${days} days`,
+    label: `${days} day${days === 1 ? "" : "s"}`,
     urgent: false,
     daysLeft: days,
   };
