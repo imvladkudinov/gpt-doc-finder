@@ -51,6 +51,10 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
   const location = useLocation();
   const showTabBar = Boolean(session) && TAB_PATHS.some((p) => location.pathname.startsWith(p));
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   if (loading) {
     return <div className="min-h-screen bg-background" />;
   }
@@ -85,6 +89,12 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;

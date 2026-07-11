@@ -253,3 +253,12 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Hide the browser scrollbar app-wide for a native app feel */
+html, body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
