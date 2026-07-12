@@ -63,6 +63,10 @@ A standalone, per-home reminder to mist plants — independent of any single pla
 - Dispatched from the same `dispatch-plant-reminders` cron run as watering/replanting, deduped per user per day via `notification_dispatch_log` (kind `spray_due`)
 - The Plants page shows a due-status button (droplet icon) next to Add Plant when enabled, with a countdown ("3 days", "Spray" when due) and a tap-to-mark-sprayed action that resets the countdown without waiting for the push
 
+#### Performance Optimizations
+- **Self-Hosted Fonts:** Google Fonts (Caveat, DM Sans, Fraunces) are bundled locally in `public/fonts/` instead of loaded via render-blocking third-party CDN requests. Eliminates ~200–400ms of DNS+TLS+font-fetch overhead on every cold PWA launch.
+- **Cache-First Service Worker:** Navigation requests use cache-first strategy with background revalidation. App shell renders instantly from cache on repeat visits (~50ms), while background fetch updates the cache. New deployments apply on the next app launch (one-visit lag for consistency).
+
 #### Theme Token System
 Brand colors and spacing are defined in `src/lib/theme-tokens.ts` and injected at runtime as inline styles. CSS tokens (e.g., `--background-overlay`, `--text-control-error`) exist only in `src/index.css` and are used locally. This keeps the design system centralized while avoiding duplication.
 

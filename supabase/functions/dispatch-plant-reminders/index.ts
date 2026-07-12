@@ -60,7 +60,7 @@ const getNotificationContent = (kind: NotificationKind, names: string[]) => {
     if (count === 1) {
       return {
         title: "Incoming message",
-        body: `time to water me ${firstName} 🪴`,
+        body: `time to water ${firstName} 🪴`,
       };
     }
     return {
