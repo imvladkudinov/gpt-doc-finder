@@ -21,7 +21,7 @@ const ComponentTabBar = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center px-6" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
+    <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center px-6" style={{ paddingBottom: "calc(max(1.5rem, env(safe-area-inset-bottom)) - 8px)" }}>
       <nav
         className="glass-floating flex items-center gap-1 rounded-full px-1 py-1"
       >
