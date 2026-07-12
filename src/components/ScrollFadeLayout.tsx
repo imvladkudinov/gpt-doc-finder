@@ -12,12 +12,19 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="relative min-h-screen">
-      {/* Top fade (covers safe area) */}
+      {/* Solid safe-area cover (status bar / dynamic island) - always visible */}
       <div
-        className="pointer-events-none fixed left-0 right-0 z-30 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
+        className="pointer-events-none fixed left-0 right-0 z-30 bg-background"
         style={{
           top: "calc(0px - env(safe-area-inset-top, 0px))",
-          height: "calc(4rem + env(safe-area-inset-top, 0px))",
+          height: "env(safe-area-inset-top, 0px)",
+        }}
+      />
+      {/* Top fade below the safe area */}
+      <div
+        className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
+        style={{
+          top: 0,
           opacity: scrolled ? 1 : 0,
         }}
       />
