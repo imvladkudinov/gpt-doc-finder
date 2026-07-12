@@ -14,7 +14,13 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    if (window.location.hash.includes("safedebug")) {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+    // Show the diagnostic automatically inside an installed PWA (its launch URL
+    // can't carry #safedebug), or on demand in a browser via the hash. It never
+    // shows for normal web visitors.
+    if (standalone || window.location.hash.includes("safedebug")) {
       const probe = document.createElement("div");
       probe.style.cssText =
         "position:fixed;top:0;height:env(safe-area-inset-top,0px);width:0;visibility:hidden;";
@@ -22,9 +28,7 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
       const px = probe.getBoundingClientRect().height;
       document.body.removeChild(probe);
       setDebug(
-        `safe-top=${px}px | standalone=${
-          window.matchMedia("(display-mode: standalone)").matches
-        } | ${window.innerWidth}x${window.innerHeight}`,
+        `safe-top=${px}px | standalone=${standalone} | ${window.innerWidth}x${window.innerHeight}`,
       );
     }
 
