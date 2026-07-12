@@ -20,17 +20,13 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
               PageTransition's motion.div applies a transform to its ancestors
               (a transform turns descendant `fixed` into relative-to-ancestor). */}
           <div
-            className="pointer-events-none fixed left-0 right-0 z-30 bg-background"
-            style={{
-              top: 0,
-              height: "env(safe-area-inset-top, 0px)",
-            }}
+            className="pointer-events-none fixed left-0 right-0 z-50 bg-background"
+            style={{ top: 0, height: "env(safe-area-inset-top, 50px)" }}
           />
-          {/* Top fade starting below the safe area */}
           <div
             className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
             style={{
-              top: "env(safe-area-inset-top, 0px)",
+              top: "env(safe-area-inset-top, 50px)",
               opacity: scrolled ? 1 : 0,
             }}
           />
