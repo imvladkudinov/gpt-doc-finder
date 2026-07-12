@@ -29,17 +29,28 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put("/index.html", responseClone).catch(() => {
-              // Ignore cache put failures to keep navigation resilient.
+      caches.match("/index.html").then((cached) => {
+        const networkRequest = fetch(request)
+          .then((response) => {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put("/index.html", responseClone).catch(() => {
+                // Ignore cache put failures to keep navigation resilient.
+              });
             });
+            return response;
+          })
+          .catch(() => {
+            // Ignore network fetch failures when a cached response is available.
           });
-          return response;
-        })
-        .catch(() => caches.match("/index.html")),
+
+        if (cached) {
+          event.waitUntil(networkRequest);
+          return cached;
+        }
+
+        return networkRequest;
+      }),
     );
     return;
   }
