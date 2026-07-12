@@ -22,15 +22,15 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
           <div
             className="pointer-events-none fixed left-0 right-0 z-30 bg-background"
             style={{
-              top: "calc(0px - env(safe-area-inset-top, 0px))",
+              top: 0,
               height: "env(safe-area-inset-top, 0px)",
             }}
           />
-          {/* Top fade below the safe area */}
+          {/* Top fade starting below the safe area */}
           <div
             className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
             style={{
-              top: 0,
+              top: "env(safe-area-inset-top, 0px)",
               opacity: scrolled ? 1 : 0,
             }}
           />
