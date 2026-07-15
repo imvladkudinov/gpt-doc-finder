@@ -1,61 +1,26 @@
 import { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-// Measures env(safe-area-inset-top) via a probe element instead of trusting
-// the live CSS value directly. On some WebKit/iOS PWA cold launches,
-// env(safe-area-inset-top) reports 0 on first paint and only recalculates
-// after a later reflow (e.g. a toast mounting) — so components that inline
-// `env(...)` into style can end up with a stuck 0px height. Measuring in JS
-// and re-checking a few times after mount works around that.
-const measureSafeAreaTop = () => {
-  const probe = document.createElement("div");
-  probe.style.cssText =
-    "position:fixed;top:0;height:env(safe-area-inset-top,0px);width:0;visibility:hidden;";
-  document.body.appendChild(probe);
-  const px = probe.getBoundingClientRect().height;
-  document.body.removeChild(probe);
-  return px;
-};
+// Fixed cover height instead of env(safe-area-inset-top). Relying on the live
+// env() value (directly in CSS, or measured via JS) turned out unreliable on
+// iOS: it can read 0 on a cold PWA launch and only "unstick" after an
+// unrelated reflow (observed: any toast appearing fixes it). A static height
+// large enough for the tallest current safe area (Dynamic Island ~59px) is
+// simple and always correct — the cover paints the same background color as
+// the page, so a few extra px on devices with a smaller inset just reads as
+// top padding, not a visible seam.
+const SAFE_AREA_TOP_PX = 59;
 
 const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [safeTop, setSafeTop] = useState(0);
-  const [debug, setDebug] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-
-    const refresh = () => {
-      const px = measureSafeAreaTop();
-      setSafeTop(px);
-      if (standalone || window.location.hash.includes("safedebug")) {
-        setDebug(`safe-top=${px}px | standalone=${standalone} | ${window.innerWidth}x${window.innerHeight}`);
-      }
-    };
-
-    refresh();
-    // Re-measure shortly after mount to catch the case where env() was 0 on
-    // first paint and only updates after a later reflow.
-    const retryTimers = [100, 300, 800, 1500].map((ms) => window.setTimeout(refresh, ms));
-    window.addEventListener("resize", refresh);
-    window.addEventListener("orientationchange", refresh);
-    window.addEventListener("pageshow", refresh);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", refresh);
-      window.removeEventListener("orientationchange", refresh);
-      window.removeEventListener("pageshow", refresh);
-      retryTimers.forEach((t) => window.clearTimeout(t));
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // ALL overlays are portaled to document.body. They are position:fixed and
@@ -67,17 +32,16 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   // and bottom sheets (z-50).
   const overlays = (
     <>
-      {/* Solid safe-area cover (status bar / dynamic island). Height is the
-          JS-measured safe-area inset (see measureSafeAreaTop above), not a
-          live CSS env() reference — always visible, static. */}
+      {/* Solid safe-area cover (status bar / dynamic island) — always visible,
+          static, painted with the app background color regardless of scroll. */}
       <div
         className="pointer-events-none fixed left-0 right-0 top-0 z-30 bg-background"
-        style={{ height: safeTop }}
+        style={{ height: SAFE_AREA_TOP_PX }}
       />
       {/* Top fade below the safe area — appears only when scrolled. */}
       <div
         className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
-        style={{ top: safeTop, opacity: scrolled ? 1 : 0 }}
+        style={{ top: SAFE_AREA_TOP_PX, opacity: scrolled ? 1 : 0 }}
       />
       {/* Bottom fade — always visible. */}
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-30 h-24 bg-gradient-to-t from-background to-transparent" />
@@ -87,13 +51,6 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative min-h-screen">
       {mounted && createPortal(overlays, document.body)}
-
-      {debug && (
-        <div className="pointer-events-none fixed left-2 bottom-24 z-[999] rounded bg-black/80 px-2 py-1 text-[11px] font-mono text-white">
-          {debug}
-        </div>
-      )}
-
       <div className="w-full max-w-[720px] mx-auto">
         {children}
       </div>
