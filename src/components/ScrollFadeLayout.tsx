@@ -1,16 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-// Fixed cover height instead of env(safe-area-inset-top). Relying on the live
-// env() value (directly in CSS, or measured via JS) turned out unreliable on
-// iOS: it can read 0 on a cold PWA launch and only "unstick" after an
-// unrelated reflow (observed: any toast appearing fixes it). A static height
-// large enough for the tallest current safe area (Dynamic Island ~59px) is
-// simple and always correct — the cover paints the same background color as
-// the page, so a few extra px on devices with a smaller inset just reads as
-// top padding, not a visible seam.
-const SAFE_AREA_TOP_PX = 59;
-
 const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -30,18 +20,24 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
   // ancestor, so in-layout overlays scroll away with the content. Portaling
   // escapes the transformed subtree. z-30 keeps them below the tab bar (z-40)
   // and bottom sheets (z-50).
+  //
+  // Height/offset use CSS env(safe-area-inset-top) directly (not a JS-measured
+  // snapshot) so they self-correct the instant WebKit recomputes the inset.
+  // iOS standalone PWAs report 0 for env() on cold launch until a viewport
+  // recompute occurs — forceSafeAreaRecalc() in main.tsx triggers that at
+  // startup so the cover appears immediately instead of only after a toast.
   const overlays = (
     <>
       {/* Solid safe-area cover (status bar / dynamic island) — always visible,
           static, painted with the app background color regardless of scroll. */}
       <div
         className="pointer-events-none fixed left-0 right-0 top-0 z-30 bg-background"
-        style={{ height: SAFE_AREA_TOP_PX }}
+        style={{ height: "env(safe-area-inset-top, 0px)" }}
       />
       {/* Top fade below the safe area — appears only when scrolled. */}
       <div
         className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
-        style={{ top: SAFE_AREA_TOP_PX, opacity: scrolled ? 1 : 0 }}
+        style={{ top: "env(safe-area-inset-top, 0px)", opacity: scrolled ? 1 : 0 }}
       />
       {/* Bottom fade — always visible. */}
       <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-30 h-24 bg-gradient-to-t from-background to-transparent" />
