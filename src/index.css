@@ -12,6 +12,13 @@
 
 @layer base {
   :root {
+    /* Light-mode base tokens — duplicated here from themeTokens.ts so the body
+       background is correct on the very first CSS paint, before any JS runs.
+       Without this, --background-main is undefined at first paint and the body
+       background is transparent, making the safe-area zone appear white until
+       the first compositing event (e.g. a toast) triggers a repaint. */
+    --background-main: #ECEFE7;
+
     /* The brand palette is the single source of truth in
        src/data/themeTokens.ts, applied to :root at startup via
        applyTokensToRoot(). Only tokens NOT defined there are declared here. */
