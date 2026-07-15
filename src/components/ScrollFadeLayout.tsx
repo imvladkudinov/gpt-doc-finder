@@ -13,28 +13,20 @@ const ComponentScrollFadeLayout = ({ children }: { children: ReactNode }) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ALL overlays are portaled to document.body. They are position:fixed and
-  // must stay pinned to the viewport, but every page nests this layout inside
-  // PageTransition, whose framer-motion div keeps a CSS transform applied. A
-  // transform on any ancestor re-anchors descendant position:fixed to that
-  // ancestor, so in-layout overlays scroll away with the content. Portaling
-  // escapes the transformed subtree. z-30 keeps them below the tab bar (z-40)
-  // and bottom sheets (z-50).
+  // Overlays are portaled to document.body so they escape PageTransition's
+  // CSS transform (any transformed ancestor re-anchors position:fixed children
+  // to itself, causing them to scroll away with the content).
   //
-  // Height/offset use CSS env(safe-area-inset-top) directly (not a JS-measured
-  // snapshot) so they self-correct the instant WebKit recomputes the inset.
-  // iOS standalone PWAs report 0 for env() on cold launch until a viewport
-  // recompute occurs — forceSafeAreaRecalc() in main.tsx triggers that at
-  // startup so the cover appears immediately instead of only after a toast.
+  // The safe area (status bar / Dynamic Island) is covered by the body's own
+  // bg-background — iOS extends the body background behind the status bar
+  // whenever viewport-fit=cover is set. No separate solid div is needed, and
+  // relying on one would break on cold launch because env(safe-area-inset-top)
+  // reads 0 until WebKit recomputes it.
   const overlays = (
     <>
-      {/* Solid safe-area cover (status bar / dynamic island) — always visible,
-          static, painted with the app background color regardless of scroll. */}
-      <div
-        className="pointer-events-none fixed left-0 right-0 top-0 z-30 bg-background"
-        style={{ height: "env(safe-area-inset-top, 0px)" }}
-      />
-      {/* Top fade below the safe area — appears only when scrolled. */}
+      {/* Top fade — appears only when scrolled, starts below the safe area.
+          When env() is 0 on cold launch it sits at top:0 which is still fine:
+          the gradient from-background covers the safe area with the right color. */}
       <div
         className="pointer-events-none fixed left-0 right-0 z-30 h-16 bg-gradient-to-b from-background to-transparent transition-opacity duration-300"
         style={{ top: "env(safe-area-inset-top, 0px)", opacity: scrolled ? 1 : 0 }}
