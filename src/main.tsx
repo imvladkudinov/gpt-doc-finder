@@ -6,7 +6,6 @@ import { applyTokensToRoot } from "@/lib/theme-tokens";
 
 applyTokensToRoot(PROJECT_THEME_TOKENS);
 
-
 if ("serviceWorker" in navigator) {
 	window.addEventListener("load", () => {
 		if (import.meta.env.PROD) {
