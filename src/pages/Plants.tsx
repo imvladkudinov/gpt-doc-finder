@@ -604,7 +604,7 @@ const PagePlants = () => {
                   onTouchStart={handleSprayPressStart}
                   onTouchEnd={handleSprayPressEnd}
                   onContextMenu={(e) => e.preventDefault()}
-                  className={`relative flex h-10 select-none items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none] ${
+                  className={`relative flex h-10 select-none items-center gap-[5px] rounded-full pl-[10px] pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none] ${
                     isSprayLongPressArmed ? "scale-105" : ""
                   }`}
                   style={{ ...glassAction, WebkitUserSelect: "none", userSelect: "none" }}
@@ -637,11 +637,10 @@ const PagePlants = () => {
                       ref={sprayIntervalSelectRef}
                       value={String(sprayPrefs.intervalDays)}
                       onChange={(e) => handleSprayIntervalChange(Number(e.target.value))}
-                      onClick={(e) => e.stopPropagation()}
                       disabled={isSavingSprayInterval}
                       tabIndex={-1}
                       aria-hidden
-                      className="absolute inset-0 h-full w-full cursor-default opacity-0"
+                      className="pointer-events-none absolute inset-0 h-full w-full cursor-default opacity-0"
                     >
                       {SPRAY_INTERVAL_OPTIONS.map((option) => (
                         <option key={option.value} value={String(option.value)}>
