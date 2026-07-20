@@ -83,10 +83,13 @@ const PagePlants = () => {
   const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
   const [topBarWidth, setTopBarWidth] = useState(0);
   const [isSavingSprayInterval, setIsSavingSprayInterval] = useState(false);
+  const [isSprayLongPressArmed, setIsSprayLongPressArmed] = useState(false);
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const hasTopBarAnimated = useRef(false);
   const sprayPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const sprayIntervalSelectRef = useRef<HTMLSelectElement | null>(null);
+  const isSprayLongPressRef = useRef(false);
+  const suppressNextSprayClickRef = useRef(false);
 
   const sprayStatus = useMemo(() => {
     if (!sprayPrefs) return null;
@@ -397,6 +400,10 @@ const PagePlants = () => {
   };
 
   const handleSprayPress = useCallback(async () => {
+    if (suppressNextSprayClickRef.current) {
+      suppressNextSprayClickRef.current = false;
+      return;
+    }
     if (!activeHomeId) return;
     const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -416,8 +423,10 @@ const PagePlants = () => {
   }, [activeHomeId, sprayPrefs]);
 
   const handleSprayPressStart = useCallback(() => {
+    isSprayLongPressRef.current = false;
     sprayPressTimerRef.current = setTimeout(() => {
-      sprayIntervalSelectRef.current?.click();
+      isSprayLongPressRef.current = true;
+      setIsSprayLongPressArmed(true);
     }, 500);
   }, []);
 
@@ -425,6 +434,18 @@ const PagePlants = () => {
     if (sprayPressTimerRef.current) {
       clearTimeout(sprayPressTimerRef.current);
       sprayPressTimerRef.current = null;
+    }
+    setIsSprayLongPressArmed(false);
+
+    // Opening a native <select> picker only works as the direct, synchronous
+    // result of a genuine touch-ending gesture on iOS/WebKit — it can't be
+    // triggered from a setTimeout while the finger is still down. So the
+    // long-press timer above only arms a flag; the picker actually opens
+    // here, the instant the finger lifts (immediately, once armed).
+    if (isSprayLongPressRef.current) {
+      isSprayLongPressRef.current = false;
+      suppressNextSprayClickRef.current = true;
+      sprayIntervalSelectRef.current?.click();
     }
   }, []);
 
@@ -584,7 +605,9 @@ const PagePlants = () => {
                   onTouchStart={handleSprayPressStart}
                   onTouchEnd={handleSprayPressEnd}
                   onContextMenu={(e) => e.preventDefault()}
-                  className="relative flex h-10 select-none items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none]"
+                  className={`relative flex h-10 select-none items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none] ${
+                    isSprayLongPressArmed ? "scale-105" : ""
+                  }`}
                   style={{ ...glassAction, WebkitUserSelect: "none", userSelect: "none" }}
                 >
                   <IconDropletsFilled className="h-4 w-4 text-foreground" />
