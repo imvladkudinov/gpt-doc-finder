@@ -9,7 +9,7 @@ import { ensurePushSubscription, disablePushSubscription } from "@/lib/device-no
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
-import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray";
+import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray.ts";
 
 const SLOT_LOCAL_HOURS = {
   Morning: 9,

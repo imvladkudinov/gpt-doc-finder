@@ -24,7 +24,7 @@ import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
-import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray";
+import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray.ts";
 
 type HomeRow = {
   id: string;
