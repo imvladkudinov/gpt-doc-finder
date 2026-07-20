@@ -24,6 +24,7 @@ import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
+import { cn } from "@/lib/utils";
 import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray.ts";
 
 type HomeRow = {
@@ -431,7 +432,11 @@ const PagePlants = () => {
   const handleSprayIntervalChange = useCallback(
     async (value: string | number) => {
       const next = Number(value);
-      if (!activeHomeId || !Number.isFinite(next) || !sprayPrefs || next === sprayPrefs.intervalDays || isSavingSprayInterval) return;
+      if (!activeHomeId || !Number.isFinite(next) || !sprayPrefs || isSavingSprayInterval) return;
+
+      setShowSprayFrequencyMenu(false);
+
+      if (next === sprayPrefs.intervalDays) return;
 
       setIsSavingSprayInterval(true);
       const previous = sprayPrefs.intervalDays;
@@ -447,7 +452,6 @@ const PagePlants = () => {
         appToast.error("Failed to save interval");
       } else {
         appToast.success("Changes saved");
-        setShowSprayFrequencyMenu(false);
       }
       setIsSavingSprayInterval(false);
     },
@@ -582,8 +586,9 @@ const PagePlants = () => {
                   onClick={handleSprayPress}
                   onTouchStart={handleSprayPressStart}
                   onTouchEnd={handleSprayPressEnd}
-                  className="relative flex h-10 items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95"
-                  style={glassAction}
+                  onContextMenu={(e) => e.preventDefault()}
+                  className="relative flex h-10 select-none items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none]"
+                  style={{ ...glassAction, WebkitUserSelect: "none", userSelect: "none" }}
                 >
                   <IconDropletsFilled className="h-4 w-4 text-foreground" />
                   <span>{sprayStatus.urgent ? "Spray" : sprayStatus.label}</span>
@@ -993,25 +998,34 @@ const PagePlants = () => {
 
 
     {/* Spray Frequency Selection Sheet */}
-    <ComponentBottomSheet
-      isOpen={showSprayFrequencyMenu}
-      onClose={() => setShowSprayFrequencyMenu(false)}
-      title="Spray Frequency"
-      hasHandle
-    >
-      <div className="space-y-2 px-6 pb-8">
-        {SPRAY_INTERVAL_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => handleSprayIntervalChange(option.value)}
-            disabled={isSavingSprayInterval}
-            className="w-full rounded-lg bg-secondary p-4 text-left font-medium text-foreground transition-colors hover:bg-secondary/80 disabled:opacity-50"
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </ComponentBottomSheet>
+    <AnimatePresence>
+      {showSprayFrequencyMenu && (
+        <ComponentBottomSheet onClose={() => setShowSprayFrequencyMenu(false)}>
+          <h2 className="mb-5 font-serif text-[22px] font-bold text-foreground">Spray frequency</h2>
+          <div className="flex flex-wrap gap-2 pb-1">
+            {SPRAY_INTERVAL_OPTIONS.map((option) => {
+              const isSelected = sprayPrefs?.intervalDays === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleSprayIntervalChange(option.value)}
+                  disabled={isSavingSprayInterval}
+                  className={cn(
+                    "inline-flex items-center rounded-[8px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 disabled:opacity-50",
+                    isSelected
+                      ? "bg-control-primary text-primary-foreground"
+                      : "bg-control-secondary text-text-secondary-control",
+                  )}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </ComponentBottomSheet>
+      )}
+    </AnimatePresence>
 
     </ScrollFadeLayout>
     </PageTransition>
