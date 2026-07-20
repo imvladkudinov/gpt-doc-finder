@@ -4,7 +4,6 @@ import {
   IconPlusFilled,
   IconXFilled,
   IconDropletFilled,
-  IconDropletsFilled,
   IconCalendarWeekFilled,
   IconPencilFilled,
   IconCheckFilled,
@@ -610,8 +609,20 @@ const PagePlants = () => {
                   }`}
                   style={{ ...glassAction, WebkitUserSelect: "none", userSelect: "none" }}
                 >
-                  <IconDropletsFilled className="h-4 w-4 text-foreground" />
-                  <span>{sprayStatus.urgent ? "Spray" : sprayStatus.label}</span>
+                  <span
+                    className="h-4 w-4 shrink-0 bg-foreground"
+                    style={{
+                      WebkitMaskImage: "url('/spray%20icon.svg')",
+                      maskImage: "url('/spray%20icon.svg')",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskSize: "contain",
+                      maskSize: "contain",
+                      WebkitMaskPosition: "center",
+                      maskPosition: "center",
+                    }}
+                  />
+                  <span>{sprayStatus.urgent ? "Spray" : `in ${sprayStatus.daysLeft}`}</span>
                   {sprayStatus.urgent && (
                     <div
                       className="absolute -right-[2px] -top-[2px] h-[14px] w-[14px] rounded-full"
