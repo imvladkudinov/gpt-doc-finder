@@ -9,11 +9,7 @@ import { ensurePushSubscription, disablePushSubscription } from "@/lib/device-no
 import { appToast } from "@/lib/app-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ensureActiveHomeForCurrentUser } from "@/lib/homes";
-
-const SPRAY_INTERVAL_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14].map((days) => ({
-  value: days,
-  label: `${days} days`,
-}));
+import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray";
 
 const SLOT_LOCAL_HOURS = {
   Morning: 9,
@@ -174,6 +170,8 @@ const PageNotificationPreferences = () => {
     if (error) {
       setSprayIntervalDays(previous);
       appToast.error("Failed to save interval");
+    } else {
+      appToast.success("Changes saved");
     }
     setIsSavingSpray(false);
   };

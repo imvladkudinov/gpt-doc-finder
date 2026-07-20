@@ -24,6 +24,7 @@ import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
+import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray";
 
 type HomeRow = {
   id: string;
@@ -81,8 +82,11 @@ const PagePlants = () => {
   const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
   const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
   const [topBarWidth, setTopBarWidth] = useState(0);
+  const [showSprayFrequencyMenu, setShowSprayFrequencyMenu] = useState(false);
+  const [isSavingSprayInterval, setIsSavingSprayInterval] = useState(false);
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const hasTopBarAnimated = useRef(false);
+  const sprayPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sprayStatus = useMemo(() => {
     if (!sprayPrefs) return null;
@@ -411,6 +415,45 @@ const PagePlants = () => {
     }
   }, [activeHomeId, sprayPrefs]);
 
+  const handleSprayPressStart = useCallback(() => {
+    sprayPressTimerRef.current = setTimeout(() => {
+      setShowSprayFrequencyMenu(true);
+    }, 500);
+  }, []);
+
+  const handleSprayPressEnd = useCallback(() => {
+    if (sprayPressTimerRef.current) {
+      clearTimeout(sprayPressTimerRef.current);
+      sprayPressTimerRef.current = null;
+    }
+  }, []);
+
+  const handleSprayIntervalChange = useCallback(
+    async (value: string | number) => {
+      const next = Number(value);
+      if (!activeHomeId || !Number.isFinite(next) || !sprayPrefs || next === sprayPrefs.intervalDays || isSavingSprayInterval) return;
+
+      setIsSavingSprayInterval(true);
+      const previous = sprayPrefs.intervalDays;
+      setSprayPrefs((prev) => (prev ? { ...prev, intervalDays: next } : prev));
+
+      const { error } = await supabase
+        .from("home_spray_preferences")
+        .update({ interval_days: next })
+        .eq("home_id", activeHomeId);
+
+      if (error) {
+        setSprayPrefs((prev) => (prev ? { ...prev, intervalDays: previous } : prev));
+        appToast.error("Failed to save interval");
+      } else {
+        appToast.success("Changes saved");
+        setShowSprayFrequencyMenu(false);
+      }
+      setIsSavingSprayInterval(false);
+    },
+    [activeHomeId, sprayPrefs, isSavingSprayInterval],
+  );
+
   const restartReplantCounter = async (plantId: string) => {
     const nowIso = new Date().toISOString();
     const { error } = await supabase.from("plants").update({ last_replanted: nowIso }).eq("id", plantId);
@@ -537,6 +580,8 @@ const PagePlants = () => {
                 <button
                   type="button"
                   onClick={handleSprayPress}
+                  onTouchStart={handleSprayPressStart}
+                  onTouchEnd={handleSprayPressEnd}
                   className="relative flex h-10 items-center gap-1.5 rounded-full pl-3 pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95"
                   style={glassAction}
                 >
@@ -942,10 +987,31 @@ const PagePlants = () => {
     </div>
 
     {/* Plant Info Bottom Sheet */}
-    
+
 
     {/* Wiki Sheet */}
-    
+
+
+    {/* Spray Frequency Selection Sheet */}
+    <ComponentBottomSheet
+      isOpen={showSprayFrequencyMenu}
+      onClose={() => setShowSprayFrequencyMenu(false)}
+      title="Spray Frequency"
+      hasHandle
+    >
+      <div className="space-y-2 px-6 pb-8">
+        {SPRAY_INTERVAL_OPTIONS.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => handleSprayIntervalChange(option.value)}
+            disabled={isSavingSprayInterval}
+            className="w-full rounded-lg bg-secondary p-4 text-left font-medium text-foreground transition-colors hover:bg-secondary/80 disabled:opacity-50"
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </ComponentBottomSheet>
 
     </ScrollFadeLayout>
     </PageTransition>
