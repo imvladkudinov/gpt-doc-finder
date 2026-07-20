@@ -24,7 +24,6 @@ import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
-import { cn } from "@/lib/utils";
 import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray.ts";
 
 type HomeRow = {
@@ -83,11 +82,11 @@ const PagePlants = () => {
   const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
   const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
   const [topBarWidth, setTopBarWidth] = useState(0);
-  const [showSprayFrequencyMenu, setShowSprayFrequencyMenu] = useState(false);
   const [isSavingSprayInterval, setIsSavingSprayInterval] = useState(false);
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const hasTopBarAnimated = useRef(false);
   const sprayPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const sprayIntervalSelectRef = useRef<HTMLSelectElement | null>(null);
 
   const sprayStatus = useMemo(() => {
     if (!sprayPrefs) return null;
@@ -418,7 +417,7 @@ const PagePlants = () => {
 
   const handleSprayPressStart = useCallback(() => {
     sprayPressTimerRef.current = setTimeout(() => {
-      setShowSprayFrequencyMenu(true);
+      sprayIntervalSelectRef.current?.click();
     }, 500);
   }, []);
 
@@ -433,8 +432,6 @@ const PagePlants = () => {
     async (value: string | number) => {
       const next = Number(value);
       if (!activeHomeId || !Number.isFinite(next) || !sprayPrefs || isSavingSprayInterval) return;
-
-      setShowSprayFrequencyMenu(false);
 
       if (next === sprayPrefs.intervalDays) return;
 
@@ -597,6 +594,27 @@ const PagePlants = () => {
                       className="absolute -right-[2px] -top-[2px] h-[14px] w-[14px] rounded-full"
                       style={{ background: "var(--icon-warning)" }}
                     />
+                  )}
+                  {/* Hidden native select — long-pressing the button opens the
+                      OS action sheet, same mechanism as the Label component's
+                      mode="select" used on the Notification Preferences page. */}
+                  {sprayPrefs && (
+                    <select
+                      ref={sprayIntervalSelectRef}
+                      value={String(sprayPrefs.intervalDays)}
+                      onChange={(e) => handleSprayIntervalChange(Number(e.target.value))}
+                      onClick={(e) => e.stopPropagation()}
+                      disabled={isSavingSprayInterval}
+                      tabIndex={-1}
+                      aria-hidden
+                      className="absolute inset-0 h-full w-full cursor-default opacity-0"
+                    >
+                      {SPRAY_INTERVAL_OPTIONS.map((option) => (
+                        <option key={option.value} value={String(option.value)}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
                   )}
                 </button>
               </motion.div>
@@ -996,36 +1014,6 @@ const PagePlants = () => {
 
     {/* Wiki Sheet */}
 
-
-    {/* Spray Frequency Selection Sheet */}
-    <AnimatePresence>
-      {showSprayFrequencyMenu && (
-        <ComponentBottomSheet onClose={() => setShowSprayFrequencyMenu(false)}>
-          <h2 className="mb-5 font-serif text-[22px] font-bold text-foreground">Spray frequency</h2>
-          <div className="flex flex-wrap gap-2 pb-1">
-            {SPRAY_INTERVAL_OPTIONS.map((option) => {
-              const isSelected = sprayPrefs?.intervalDays === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSprayIntervalChange(option.value)}
-                  disabled={isSavingSprayInterval}
-                  className={cn(
-                    "inline-flex items-center rounded-[8px] px-3 py-1.5 text-sm font-semibold transition-all active:scale-95 disabled:opacity-50",
-                    isSelected
-                      ? "bg-control-primary text-primary-foreground"
-                      : "bg-control-secondary text-text-secondary-control",
-                  )}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-        </ComponentBottomSheet>
-      )}
-    </AnimatePresence>
 
     </ScrollFadeLayout>
     </PageTransition>
