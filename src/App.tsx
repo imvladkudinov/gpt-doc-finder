@@ -29,6 +29,37 @@ import { prefetchRoutes } from "@/lib/route-prefetch";
 
 const queryClient = new QueryClient();
 
+/**
+ * Read the persisted Supabase session synchronously from localStorage.
+ *
+ * supabase-js only exposes getSession() as async, and on iOS PWAs that call can
+ * stall: it serializes auth-token access behind the Web Locks API
+ * (navigator.locks), and a lock held by a previously-killed webview context is
+ * never released — so getSession() hangs and the app sits on a blank auth gate
+ * until something jostles it (which is why switching pages "unsticks" it).
+ *
+ * The session is already sitting in localStorage though (persistSession: true),
+ * so we read it directly for the very first render instead of blocking on the
+ * stalling call. The async flow below still runs to verify/correct state.
+ * Returns null on any problem, which simply falls back to the old behavior.
+ */
+const readStoredSession = (): Session | null => {
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (!key || !/^sb-.*-auth-token$/.test(key)) continue;
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      const candidate = parsed?.access_token ? parsed : parsed?.currentSession ?? null;
+      if (candidate?.access_token && candidate?.user) return candidate as Session;
+    }
+  } catch {
+    // Malformed or inaccessible storage — fall back to the async auth flow.
+  }
+  return null;
+};
+
 const TAB_PATHS = [
   "/plants",
   "/profile",
@@ -87,8 +118,11 @@ const AnimatedRoutes = ({ session, loading }: { session: Session | null; loading
   );
 };
 const App = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(readStoredSession);
+  // If a session was restored synchronously from storage, we can render the
+  // app immediately instead of blocking on the (potentially stalling) async
+  // getSession() call.
+  const [loading, setLoading] = useState<boolean>(session === null);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -105,6 +139,18 @@ const App = () => {
       initialResolved = true;
       setLoading(false);
     };
+
+    // The session was already restored synchronously from storage, so the
+    // initial gate is satisfied — no need to wait on getSession() below.
+    if (readStoredSession()) {
+      markInitialResolved();
+    }
+
+    // Watchdog: never let the auth gate hang. If getSession() stalls on the
+    // navigator.locks issue, force the gate open after a short delay so the
+    // shell renders regardless; the async flow still corrects state when it
+    // eventually resolves.
+    const watchdogId = window.setTimeout(markInitialResolved, 2000);
 
     const applySessionWithVerification = async (nextSession: Session | null) => {
       if (!nextSession) {
@@ -154,6 +200,7 @@ const App = () => {
     });
     return () => {
       isMounted = false;
+      window.clearTimeout(watchdogId);
       subscription.unsubscribe();
     };
   }, []);

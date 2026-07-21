@@ -2,10 +2,10 @@
   "name": "Planty",
   "short_name": "Planty",
   "description": "Plant care and reminders",
-  "start_url": "/",
+  "start_url": "/plants",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f7f7f2",
+  "background_color": "#ECEFE7",
   "theme_color": "#2f5f3a",
   "icons": [
     {

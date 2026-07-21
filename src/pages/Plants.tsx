@@ -23,7 +23,6 @@ import { Plant } from "@/types/plant";
 import { getReplantStatus, getWateringStatus, getSprayStatus } from "@/lib/plant-utils";
 import { ensureActiveHomeForCurrentUser, getActiveHomeId, setActiveHomeId } from "@/lib/homes";
 import { appToast } from "@/lib/app-toast";
-import { SPRAY_INTERVAL_OPTIONS } from "@/constants/spray.ts";
 
 type HomeRow = {
   id: string;
@@ -81,14 +80,8 @@ const PagePlants = () => {
   const [activeHomeId, setActiveHomeIdState] = useState<string | null>(getActiveHomeId());
   const [sprayPrefs, setSprayPrefs] = useState<{ enabled: boolean; intervalDays: number; lastSprayedDate: string | null } | null>(null);
   const [topBarWidth, setTopBarWidth] = useState(0);
-  const [isSavingSprayInterval, setIsSavingSprayInterval] = useState(false);
-  const [isSprayLongPressArmed, setIsSprayLongPressArmed] = useState(false);
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const hasTopBarAnimated = useRef(false);
-  const sprayPressTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const sprayIntervalSelectRef = useRef<HTMLSelectElement | null>(null);
-  const isSprayLongPressRef = useRef(false);
-  const suppressNextSprayClickRef = useRef(false);
 
   const sprayStatus = useMemo(() => {
     if (!sprayPrefs) return null;
@@ -399,10 +392,6 @@ const PagePlants = () => {
   };
 
   const handleSprayPress = useCallback(async () => {
-    if (suppressNextSprayClickRef.current) {
-      suppressNextSprayClickRef.current = false;
-      return;
-    }
     if (!activeHomeId) return;
     const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -420,60 +409,6 @@ const PagePlants = () => {
       appToast.error("Spray update failed");
     }
   }, [activeHomeId, sprayPrefs]);
-
-  const handleSprayPressStart = useCallback(() => {
-    isSprayLongPressRef.current = false;
-    sprayPressTimerRef.current = setTimeout(() => {
-      isSprayLongPressRef.current = true;
-      setIsSprayLongPressArmed(true);
-    }, 500);
-  }, []);
-
-  const handleSprayPressEnd = useCallback(() => {
-    if (sprayPressTimerRef.current) {
-      clearTimeout(sprayPressTimerRef.current);
-      sprayPressTimerRef.current = null;
-    }
-    setIsSprayLongPressArmed(false);
-
-    // Opening a native <select> picker only works as the direct, synchronous
-    // result of a genuine touch-ending gesture on iOS/WebKit — it can't be
-    // triggered from a setTimeout while the finger is still down. So the
-    // long-press timer above only arms a flag; the picker actually opens
-    // here, the instant the finger lifts (immediately, once armed).
-    if (isSprayLongPressRef.current) {
-      isSprayLongPressRef.current = false;
-      suppressNextSprayClickRef.current = true;
-      sprayIntervalSelectRef.current?.click();
-    }
-  }, []);
-
-  const handleSprayIntervalChange = useCallback(
-    async (value: string | number) => {
-      const next = Number(value);
-      if (!activeHomeId || !Number.isFinite(next) || !sprayPrefs || isSavingSprayInterval) return;
-
-      if (next === sprayPrefs.intervalDays) return;
-
-      setIsSavingSprayInterval(true);
-      const previous = sprayPrefs.intervalDays;
-      setSprayPrefs((prev) => (prev ? { ...prev, intervalDays: next } : prev));
-
-      const { error } = await supabase
-        .from("home_spray_preferences")
-        .update({ interval_days: next })
-        .eq("home_id", activeHomeId);
-
-      if (error) {
-        setSprayPrefs((prev) => (prev ? { ...prev, intervalDays: previous } : prev));
-        appToast.error("Failed to save interval");
-      } else {
-        appToast.success("Changes saved");
-      }
-      setIsSavingSprayInterval(false);
-    },
-    [activeHomeId, sprayPrefs, isSavingSprayInterval],
-  );
 
   const restartReplantCounter = async (plantId: string) => {
     const nowIso = new Date().toISOString();
@@ -601,53 +536,23 @@ const PagePlants = () => {
                 <button
                   type="button"
                   onClick={handleSprayPress}
-                  onTouchStart={handleSprayPressStart}
-                  onTouchEnd={handleSprayPressEnd}
-                  onContextMenu={(e) => e.preventDefault()}
-                  className={`relative flex h-10 select-none items-center gap-[5px] rounded-full pl-[10px] pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95 [-webkit-touch-callout:none] ${
-                    isSprayLongPressArmed ? "scale-105" : ""
-                  }`}
-                  style={{ ...glassAction, WebkitUserSelect: "none", userSelect: "none" }}
+                  className="relative flex h-10 items-center gap-[5px] rounded-full pl-[10px] pr-3.5 text-sm font-semibold text-foreground transition-all active:scale-95"
+                  style={glassAction}
                 >
-                  <span
-                    className="h-4 w-4 shrink-0 bg-foreground"
-                    style={{
-                      WebkitMaskImage: "url('/spray%20icon.svg')",
-                      maskImage: "url('/spray%20icon.svg')",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
-                    }}
-                  />
-                  <span>{sprayStatus.urgent ? "Spray" : `in ${sprayStatus.daysLeft}`}</span>
+                  {!sprayStatus.urgent && (
+                    <span
+                      className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ background: "var(--icon-primary)" }}
+                    >
+                      {sprayStatus.daysLeft}
+                    </span>
+                  )}
+                  <span>Spray</span>
                   {sprayStatus.urgent && (
                     <div
                       className="absolute -right-[2px] -top-[2px] h-[14px] w-[14px] rounded-full"
                       style={{ background: "var(--icon-warning)" }}
                     />
-                  )}
-                  {/* Hidden native select — long-pressing the button opens the
-                      OS action sheet, same mechanism as the Label component's
-                      mode="select" used on the Notification Preferences page. */}
-                  {sprayPrefs && (
-                    <select
-                      ref={sprayIntervalSelectRef}
-                      value={String(sprayPrefs.intervalDays)}
-                      onChange={(e) => handleSprayIntervalChange(Number(e.target.value))}
-                      disabled={isSavingSprayInterval}
-                      tabIndex={-1}
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 h-full w-full cursor-default opacity-0"
-                    >
-                      {SPRAY_INTERVAL_OPTIONS.map((option) => (
-                        <option key={option.value} value={String(option.value)}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
                   )}
                 </button>
               </motion.div>
